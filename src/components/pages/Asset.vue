@@ -1,5 +1,5 @@
 <template>
-<div class="page asset">
+<div class="page asset" style="position: relative; left: 215px;">
   <div class="page-header flexrow">
     <router-link
       class="flexrow-item has-text-centered back-link"

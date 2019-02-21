@@ -7,42 +7,14 @@
   <div class="modal-content">
     <div class="box">
 
-      <h1 class="title" v-if="shotToEdit && this.shotToEdit.id">
-        {{ $t("shots.edit_title") }} {{ shotToEdit.name }}
-      </h1>
-      <h1 class="title" v-else>
-        {{ $t("shots.new_shot") }}
+      <h1 class="title" v-if="taskToEdit && this.taskToEdit.id">
+        {{ $t("tasks.edit_title") }} {{ taskToEdit.name }}
       </h1>
 
       <form v-on:submit.prevent>
-        <combobox
-          :label="$t('shots.fields.sequence')"
-          :options="getSequenceOptions"
-          v-model="form.sequence_id"
-        />
-        <text-field
-          ref="nameField"
-          :label="$t('shots.fields.name')"
-          v-model="form.name"
-          @enter="runConfirmation"
-          v-focus
-        />
-        <textarea-field
-          ref="descriptionField"
-          :label="$t('shots.fields.description')"
-          v-model="form.description"
-          @keyup.ctrl.enter="runConfirmation"
-        />
-        <text-field
-          ref="shotLengthField"
-          :label="$t('shots.fields.shot_length')"
-          v-model="form.shotLength"
-          type="number"
-          @enter="runConfirmation"
-        />
         <text-field
           ref="dueDateField"
-          :label="$t('shots.fields.due_date')"
+          :label="$t('task.fields.due_date')"
           v-model="form.dueDate"
           type="date"
           @enter="runConfirmation"
@@ -112,7 +84,7 @@ import TextareaField from '../widgets/TextareaField'
 import Combobox from '../widgets/Combobox'
 
 export default {
-  name: 'edit-shot-modal',
+  name: 'edit-task-modal',
   mixins: [modalMixin],
 
   components: {
@@ -130,7 +102,7 @@ export default {
     'isLoading',
     'isLoadingStay',
     'isSuccess',
-    'shotToEdit',
+    'taskToEdit',
     'errorText'
   ],
 
@@ -151,6 +123,7 @@ export default {
       'openProductions',
       'sequences',
       'shots',
+      'tasks',
       'shotCreated',
       'shotMetadataDescriptors'
     ]),
@@ -220,10 +193,10 @@ export default {
         this.form.data = {}
       } else {
         this.form = {
-          sequence_id: this.shotToEdit.sequence_id,
-          project_id: this.shotToEdit.project_id,
-          name: this.shotToEdit.name,
-          description: this.shotToEdit.description,
+          sequence_id: this.taskToEdit.sequence_id,
+          project_id: this.taskToEdit.project_id,
+          name: this.taskToEdit.name,
+          description: this.taskToEdit.description,
           frameIn: this.frameIn,
           frameOut: this.frameOut,
           fps: this.fps,
@@ -270,7 +243,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .modal-content .box p.text {
   margin-bottom: 1em;
 }

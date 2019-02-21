@@ -69,12 +69,16 @@ export default {
     if (
       shot.frameOut !== undefined ||
       shot.frameIn !== undefined ||
-      shot.fps !== undefined
+      shot.fps !== undefined ||
+      shot.dueDate !== undefined ||
+      shot.shotLength !== undefined
     ) {
       Object.assign(data.data, {
         frame_in: shot.frameIn,
         frame_out: shot.frameOut,
-        fps: shot.fps
+        fps: shot.fps,
+        shot_length: shot.shotLength,
+        due_date: shot.dueDate
       })
     }
     client.put(`/api/data/entities/${shot.id}`, data, callback)

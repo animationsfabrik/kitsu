@@ -66,6 +66,11 @@
               params: {production_delete_id: entry.id}
             }"
           />
+          <td class="additional-buttons">
+            <router-link :to="'/productions/createfs/' + entry.id" class="button">
+             Fs
+            </router-link>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -130,6 +135,7 @@ import { mapGetters, mapActions } from 'vuex'
 import ProductionNameCell from '../cells/ProductionNameCell'
 import RowActions from '../widgets/RowActions'
 import TableInfo from '../widgets/TableInfo'
+import ButtonLink from '../widgets/ButtonLink'
 
 export default {
   name: 'production-list',
@@ -146,17 +152,22 @@ export default {
   components: {
     ProductionNameCell,
     RowActions,
-    TableInfo
+    TableInfo,
+    ButtonLink
   },
 
   computed: {
     ...mapGetters([
       'openProductions',
+      'currentProduction',
       'lastProductionScreen'
     ]),
 
     closedProductions () {
       return this.entries.filter(p => p.project_status_name === 'Closed')
+    },
+    createFsPath (pid) {
+      return this.getPath('create-folder-structure', pid)
     }
   },
 
@@ -175,6 +186,19 @@ export default {
     },
     onBodyScroll (event, position) {
       this.$refs.headerWrapper.style.left = `-${position.scrollLeft}px`
+    },
+    getPath (section, pid) {
+      let route = {
+        name: section,
+        params: {
+          production_id: pid
+        }
+      }
+      if (this.isTVShow && this.currentEpisode) {
+        route.name = `episode-${section}`
+        route.params.episode_id = this.currentEpisode.id
+      }
+      return route
     }
   }
 }
@@ -203,6 +227,16 @@ export default {
 
 .actions {
   min-width: 100px;
+}
+
+.additional-buttons {
+  margin: 0px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 400;
+  display: table-cell;
+  width: 1px;
+  padding-right: 10px;
 }
 
 .fps,

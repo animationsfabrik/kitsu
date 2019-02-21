@@ -1,17 +1,25 @@
 <template>
   <div class="topbar">
     <div id="c-mask-user-menu" @click="toggleUserMenu()"
-         v-bind:class="{'is-active': !isUserMenuHidden}"
+         v-bind:class="{ 'is-active': !isUserMenuHidden }"
     >
     </div>
 
     <nav class="nav">
-      <div class="nav-left">
-        <a class="nav-item sidebar-button" id="toggle-menu-button"
+      <!--<div class="nav-left">
+       <a class="nav-item sidebar-button" id="toggle-menu-button"
            @click='toggleSidebar()'
            v-bind:class="{'selected': !isSidebarHidden}">
           ≡
         </a>
+
+        <router-link
+          class="nav-item home-button"
+          to="/"
+        >
+          <img src="../assets/logo.png" v-if="!isDarkTheme" />
+          <img src="../assets/logo-dark.svg" v-else />
+        </router-link>
 
         <div :class="{
           'nav-item': true,
@@ -48,13 +56,13 @@
             </div>
           </div>
         </div>
-      </div>
+      </div>-->
 
       <div class="nav-right">
         <div
           class="nav-item"
         >
-          <router-link :to="{name: 'notifications'}">
+          <router-link :to="{ name: 'notifications' }">
             <bell-icon
               :class="notificationBellClass"
             />
@@ -106,14 +114,11 @@
         </li>
         <li>
           <a href="https://kitsu.cg-wire.com" target="_blank">
-            {{ $t("main.documentation ")}}
+            {{ $t("main.documentation ") }}
           </a>
         </li>
         <li @click="onLogoutClicked">
           {{ $t("main.logout") }}
-        </li>
-        <li class="version">
-          Kitsu {{ kitsuVersion }}
         </li>
       </ul>
     </nav>
@@ -127,7 +132,6 @@ import { BellIcon } from 'vue-feather-icons'
 import Combobox from '../widgets/Combobox'
 import PeopleAvatar from '../widgets/PeopleAvatar'
 import PeopleName from '../widgets/PeopleName'
-import { version } from '../../../package.json'
 
 export default {
   name: 'topbar',
@@ -143,7 +147,6 @@ export default {
       currentProductionId: this.$route.params.production_id,
       currentEpisodeId: this.$route.params.episode_id,
       currentProjectSection: this.getCurrentSectionFromRoute(),
-      kitsuVersion: version,
       silent: false
     }
   },
@@ -207,14 +210,14 @@ export default {
 
     navigationOptions () {
       const options = [
-        {label: this.$t('assets.title'), value: 'assets'},
-        {label: this.$t('shots.title'), value: 'shots'},
-        {label: this.$t('sequences.title'), value: 'sequences'},
-        {label: this.$t('episodes.title'), value: 'episodes'},
-        {label: this.$t('asset_types.production_title'), value: 'assetTypes'},
-        {label: this.$t('breakdown.title'), value: 'breakdown'},
-        {label: this.$t('playlists.title'), value: 'playlists'},
-        {label: this.$t('people.team'), value: 'team'}
+        { label: this.$t('assets.title'), value: 'assets' },
+        { label: this.$t('shots.title'), value: 'shots' },
+        { label: this.$t('sequences.title'), value: 'sequences' },
+        { label: this.$t('episodes.title'), value: 'episodes' },
+        { label: this.$t('asset_types.title'), value: 'assetTypes' },
+        { label: this.$t('breakdown.title'), value: 'breakdown' },
+        { label: this.$t('playlists.title'), value: 'playlists' },
+        { label: this.$t('people.team'), value: 'team' }
       ]
       if (!this.isTVShow) { // Remove episode Section from the list.
         options.splice(3, 1)
@@ -478,9 +481,9 @@ export default {
   box-shadow: 0px 0px 6px rgba(0,0,0,0.2);
   max-height: 60px;
   min-height: 60px;
-  z-index: 204;
+  z-index: 210;
   position: fixed;
-  left: 0;
+  left: 215px;
   right: 0;
 }
 
@@ -576,10 +579,6 @@ export default {
 
 strong {
   margin-right: 1em;
-}
-
-.version {
-  color: $grey;
 }
 
 @media screen and (max-width: 768px) {

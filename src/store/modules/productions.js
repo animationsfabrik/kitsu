@@ -22,6 +22,10 @@ import {
   DELETE_PRODUCTION_ERROR,
   DELETE_PRODUCTION_END,
 
+  CREATE_FOLDER_STRUCTURE_START,
+  CREATE_FOLDER_STRUCTURE_ERROR,
+  CREATE_FOLDER_STRUCTURE_END,
+
   RESET_PRODUCTION_PATH,
   SET_CURRENT_PRODUCTION,
   PRODUCTION_PICTURE_FILE_SELECTED,
@@ -59,17 +63,22 @@ const initialState = {
     isError: false
   },
 
-  assetsPath: {name: 'open-productions'},
-  assetTypesPath: {name: 'open-productions'},
-  shotsPath: {name: 'open-productions'},
-  sequencesPath: {name: 'open-productions'},
-  episodesPath: {name: 'open-productions'},
-  breakdownPath: {name: 'open-productions'},
-  playlistsPath: {name: 'open-productions'},
-  teamPath: {name: 'open-productions'}
+  createFolderStructure: {
+    isLoading: false,
+    isError: false
+  },
+
+  assetsPath: { name: 'open-productions' },
+  assetTypesPath: { name: 'open-productions' },
+  shotsPath: { name: 'open-productions' },
+  sequencesPath: { name: 'open-productions' },
+  episodesPath: { name: 'open-productions' },
+  breakdownPath: { name: 'open-productions' },
+  playlistsPath: { name: 'open-productions' },
+  teamPath: { name: 'open-productions' }
 }
 
-let state = {...initialState}
+let state = { ...initialState }
 
 const helpers = {
   getProductionComponentPath (routeName, productionId, episodeId) {
@@ -89,7 +98,7 @@ const helpers = {
         }
       }
     } else {
-      return {name: 'open-productions'}
+      return { name: 'open-productions' }
     }
   }
 }
@@ -108,6 +117,7 @@ const getters = {
 
   editProduction: state => state.editProduction,
   deleteProduction: state => state.deleteProduction,
+  createFolderStructure: state => state.createFolderStructure,
 
   assetsPath: state => state.assetsPath,
   assetTypesPath: state => state.assetTypesPath,
@@ -242,6 +252,19 @@ const actions = {
     })
   },
 
+  createFolderStructure ({ commit, state }, payload) {
+    commit(CREATE_FOLDER_STRUCTURE_START)
+    const production = payload.production
+    productionsApi.createFolderStructure(production, (err) => {
+      if (err) {
+        commit(CREATE_FOLDER_STRUCTURE_ERROR)
+      } else {
+        commit(CREATE_FOLDER_STRUCTURE_END, production)
+      }
+      if (payload.callback) payload.callback(err)
+    })
+  },
+
   setProduction ({ commit, rootGetters }, productionId) {
     commit(SET_CURRENT_PRODUCTION, productionId)
     if (rootGetters.isTVShow) {
@@ -338,7 +361,7 @@ const actions = {
         descriptorId
       )
         .then(() => {
-          commit(DELETE_METADATA_DESCRIPTOR_END, {id: descriptorId})
+          commit(DELETE_METADATA_DESCRIPTOR_END, { id: descriptorId })
           resolve()
         })
         .catch(reject)
@@ -520,6 +543,27 @@ const mutations = {
     }
   },
 
+  [CREATE_FOLDER_STRUCTURE_START] (state) {
+    state.createFolderStructure = {
+      isLoading: true,
+      isError: false
+    }
+  },
+
+  [CREATE_FOLDER_STRUCTURE_ERROR] (state) {
+    state.createFolderStructure = {
+      isLoading: false,
+      isError: true
+    }
+  },
+
+  [CREATE_FOLDER_STRUCTURE_END] (state) {
+    state.createFolderStructure = {
+      isLoading: false,
+      isError: false
+    }
+  },
+
   [PRODUCTION_PICTURE_FILE_SELECTED] (state, formData) {
     state.productionAvatarFormData = formData
   },
@@ -600,7 +644,7 @@ const mutations = {
   },
 
   [RESET_ALL] (state) {
-    Object.assign(state, {...initialState})
+    Object.assign(state, { ...initialState })
   }
 }
 

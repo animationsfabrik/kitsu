@@ -173,8 +173,8 @@ export const entityListMixin = {
           headerElement = headerElement.parentNode
         }
         const headerBox = headerElement.getBoundingClientRect()
-        const left = headerBox.left + 11
-        const top = headerBox.bottom + 10
+        const left = headerBox.left + 11 - 200
+        const top = headerBox.bottom + 10 - 10
         const width = Math.max(100, headerBox.width - 1)
         headerMenuEl.style.left = left + 'px'
         headerMenuEl.style.top = top + 'px'
@@ -191,14 +191,31 @@ export const entityListMixin = {
         headerMenuEl.className = 'header-menu'
         let headerElement = event.srcElement.parentNode.parentNode
         const headerBox = headerElement.getBoundingClientRect()
-        const left = headerBox.left + 11
-        const top = headerBox.bottom + 10
+        const left = headerBox.left + 11 - 200
+        const top = headerBox.bottom + 10 - 10
         const width = Math.max(100, headerBox.width - 1)
         headerMenuEl.style.left = left + 'px'
         headerMenuEl.style.top = top + 'px'
         headerMenuEl.style.width = width + 'px'
       }
       this.lastMetadaDataHeaderMenuDisplayed = columnId
+    },
+
+    showDisplaySelectMenu (event) {
+      const displaySelectMenuEl = this.$refs.displaySelectMenu.$el
+      if (displaySelectMenuEl.className === 'header-menu') {
+        displaySelectMenuEl.className = 'header-menu hidden'
+      } else {
+        displaySelectMenuEl.className = 'header-menu'
+        let headerElement = event.srcElement
+        const headerBox = headerElement.getBoundingClientRect()
+        const left = headerBox.left - 190
+        const top = headerBox.bottom
+        const width = Math.max(150, headerBox.width - 1)
+        displaySelectMenuEl.style.left = left + 'px'
+        displaySelectMenuEl.style.top = top + 'px'
+        displaySelectMenuEl.style.width = width + 'px'
+      }
     },
 
     onMinimizeColumnToggled () {

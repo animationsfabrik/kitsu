@@ -7,65 +7,14 @@
   <div class="modal-content">
     <div class="box">
 
-      <h1 class="title" v-if="shotToEdit && this.shotToEdit.id">
-        {{ $t("shots.edit_title") }} {{ shotToEdit.name }}
-      </h1>
-      <h1 class="title" v-else>
-        {{ $t("shots.new_shot") }}
-      </h1>
+      <h1 class="title">
+        {{ $t("shots.task_display") }}
+      </h1>{{ form.displayedTasks }}
 
       <form v-on:submit.prevent>
-        <combobox
-          :label="$t('shots.fields.sequence')"
-          :options="getSequenceOptions"
-          v-model="form.sequence_id"
-        />
-        <text-field
-          ref="nameField"
-          :label="$t('shots.fields.name')"
-          v-model="form.name"
-          @enter="runConfirmation"
-          v-focus
-        />
-        <textarea-field
-          ref="descriptionField"
-          :label="$t('shots.fields.description')"
-          v-model="form.description"
-          @keyup.ctrl.enter="runConfirmation"
-        />
-        <text-field
-          ref="shotLengthField"
-          :label="$t('shots.fields.shot_length')"
-          v-model="form.shotLength"
-          type="number"
-          @enter="runConfirmation"
-        />
-        <text-field
-          ref="dueDateField"
-          :label="$t('shots.fields.due_date')"
-          v-model="form.dueDate"
-          type="date"
-          @enter="runConfirmation"
-        />
-
-        <div
-          :key="descriptor.id"
-          v-for="descriptor in shotMetadataDescriptors"
-        >
-          <combobox
-            v-if="descriptor.choices.length > 0"
-            :label="descriptor.name"
-            :options="getDescriptorChoicesOptions(descriptor)"
-            v-model="form.data[descriptor.field_name]"
-          />
-          <text-field
-            :label="descriptor.name"
-            v-model="form.data[descriptor.field_name]"
-            @enter="runConfirmation"
-            v-else
-          />
-        </div>
-      </form>
+        <checkbox :id="taskTypes[0].id" :value="taskTypes[0].id" :v-model="form.displayed_tasks" :label="taskTypes[0].name" />
+        <!--<checkbox v-for="task in taskTypes" :id="task.id" :value="task.id" :v-model="form.displayed_tasks" :key="task.id" :label="task.name" />-->
+      </form>{{ form.displayedTasks }}
 
       <div class="has-text-right">
         <a
@@ -110,13 +59,15 @@ import { modalMixin } from './base_modal'
 import TextField from '../widgets/TextField'
 import TextareaField from '../widgets/TextareaField'
 import Combobox from '../widgets/Combobox'
+import Checkbox from '../widgets/Checkbox'
 
 export default {
-  name: 'edit-shot-modal',
+  name: 'task-display-modal',
   mixins: [modalMixin],
 
   components: {
     Combobox,
+    Checkbox,
     TextField,
     TextareaField
   },
@@ -151,29 +102,10 @@ export default {
       'openProductions',
       'sequences',
       'shots',
+      'taskTypes',
       'shotCreated',
       'shotMetadataDescriptors'
-    ]),
-
-    frameIn () {
-      return this.shotToEdit.data ? this.shotToEdit.data.frame_in : ''
-    },
-
-    frameOut () {
-      return this.shotToEdit.data ? this.shotToEdit.data.frame_out : ''
-    },
-
-    fps () {
-      return this.shotToEdit.data ? this.shotToEdit.data.fps : ''
-    },
-
-    dueDate () {
-      return this.shotToEdit.data ? this.shotToEdit.data.due_date : ''
-    },
-
-    shotLength () {
-      return this.shotToEdit.data ? this.shotToEdit.data.shot_length : ''
-    }
+    ])
   },
 
   methods: {
@@ -215,21 +147,11 @@ export default {
         if (this.sequences.length > 0) {
           this.form.sequence_id = this.sequences[0].id
         }
-        this.form.name = ''
-        this.form.description = ''
-        this.form.data = {}
+        this.form.displayed_tasks = ''
       } else {
         this.form = {
           sequence_id: this.shotToEdit.sequence_id,
-          project_id: this.shotToEdit.project_id,
-          name: this.shotToEdit.name,
-          description: this.shotToEdit.description,
-          frameIn: this.frameIn,
-          frameOut: this.frameOut,
-          fps: this.fps,
-          dueDate: this.dueDate,
-          shotLength: this.shotLength,
-          data: { ...this.shotToEdit.data } || {}
+          displayed_tasks: this.displayedTasks
         }
       }
     }
@@ -252,25 +174,13 @@ export default {
 
     shotToEdit () {
       this.resetForm()
-    },
-
-    shotCreated () {
-      if (this.isEditing()) {
-        this.shotSuccessText = this.$t('shots.edit_success', {
-          name: this.shotCreated
-        })
-      } else {
-        this.shotSuccessText = this.$t('shots.new_success', {
-          name: this.shotCreated
-        })
-      }
     }
   }
 
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .modal-content .box p.text {
   margin-bottom: 1em;
 }

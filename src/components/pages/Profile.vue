@@ -74,6 +74,7 @@
               <option value="en_US">English</option>
               <option value="fr_FR">French</option>
               <option value="zh_Hans_CN">Chinese</option>
+              <option value="de_de">Deutsch</option>
             </select>
           </span>
         </div>
@@ -233,7 +234,7 @@ export default {
       'user'
     ]),
     departments () {
-      return [{name: 'Animation'}, {name: 'Modeling'}]
+      return [{ name: 'Animation' }, { name: 'Modeling' }]
     },
     timezones () {
       return moment.tz.names().filter((timezone) => {
@@ -284,7 +285,7 @@ export default {
         }
         this.changeAvatar.isLoading = false
         this.$refs.avatar.reloadAvatar()
-        this.$router.push({name: 'profile'})
+        this.$router.push({ name: 'profile' })
       })
     },
 

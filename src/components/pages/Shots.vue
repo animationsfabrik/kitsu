@@ -11,40 +11,49 @@
                 :can-save="true"
                 @change="onSearchChange"
                 @save="saveSearchQuery"
-                placeholder="ex: e01 s01 anim=wip"
+                placeholder=""
               />
             </div>
           </div>
 
-          <div class="level-right">
-            <div class="flexrow">
-              <show-assignations-button class="flexrow-item" />
-              <show-infos-button class="flexrow-item" />
-              <div class="flexrow-item"></div>
+          <div class="level-right" v-if="isCurrentUserManager">
+            <display-select-menu
+              ref="displaySelectMenu"
+            />
+            <!--<button-link
+              class="level-item"
+              :text="$t('shots.task_display')"
+              icon="edit"
+              :is-responsive="true"
+              :path="taskDisplayPath"
+            />-->
+            <div class="level-item">
+              <button class="button" @click="showDisplaySelectMenu($event)">Show / Hide</button>
             </div>
-            <div class="flexrow" v-if="isCurrentUserManager">
-              <button-link
-                class="flexrow-item"
-                :title="$t('main.csv.import_file')"
-                icon="upload"
-                :is-responsive="true"
-                :path="importPath"
-              />
-              <button-href-link
-                class="flexrow-item"
-                :title="$t('main.csv.export_file')"
-                icon="download"
-                :is-responsive="true"
-                :path="'/api/export/csv/projects/' + currentProduction.id + '/shots.csv'"
-              />
-              <button-link
-                class="flexrow-item"
-                :text="$t('shots.manage')"
-                icon="plus"
-                :is-responsive="true"
-                :path="manageShotsPath"
-              />
-            </div>
+            <!--<show-due-dates-button class="level-item"/>
+            <show-tasks-button class="level-item"/>
+            <show-assignations-button class="level-item"/>-->
+            <button-link
+              class="level-item"
+              :text="$t('main.csv.import_file')"
+              icon="upload"
+              :is-responsive="true"
+              :path="importPath"
+            />
+            <button-href-link
+              class="level-item"
+              :text="$t('main.csv.export_file')"
+              icon="download"
+              :is-responsive="true"
+              :path="'/api/export/csv/projects/' + currentProduction.id + '/shots.csv'"
+            />
+            <button-link
+              class="level-item"
+              :text="$t('shots.manage')"
+              icon="plus"
+              :is-responsive="true"
+              :path="manageShotsPath"
+            />
           </div>
         </div>
 
@@ -100,6 +109,13 @@
     :cancel-route="shotsPath"
     :shot-to-edit="shotToEdit"
     @confirm="confirmEditShot"
+  />
+
+  <task-display-modal
+    :active="modals.isTaskDisplayDisplayed"
+    :is-loading="loading.taskDisplay"
+    :cancel-route="shotsPath"
+    @confirm="confirmTaskDisplay"
   />
 
   <delete-modal
@@ -186,6 +202,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { SearchIcon } from 'vue-feather-icons'
+import { entityListMixin } from './lists/base'
 
 import AddMetadataModal from '../modals/AddMetadataModal'
 import ButtonHrefLink from '../widgets/ButtonHrefLink'
@@ -194,6 +211,7 @@ import Combobox from '../widgets/Combobox'
 import CreateTasksModal from '../modals/CreateTasksModal'
 import DeleteModal from '../widgets/DeleteModal'
 import EditShotModal from '../modals/EditShotModal'
+import TaskDisplayModal from '../modals/TaskDisplayModal'
 import ImportModal from '../modals/ImportModal'
 import HardDeleteModal from '../modals/HardDeleteModal'
 import ManageShotsModal from '../modals/ManageShotsModal'
@@ -201,12 +219,15 @@ import PageTitle from '../widgets/PageTitle'
 import SearchField from '../widgets/SearchField'
 import SearchQueryList from '../widgets/SearchQueryList'
 import ShowAssignationsButton from '../widgets/ShowAssignationsButton'
-import ShowInfosButton from '../widgets/ShowInfosButton'
+import ShowTasksButton from '../widgets/ShowTasksButton'
+import ShowDueDatesButton from '../widgets/ShowDueDatesButton'
 import ShotList from '../lists/ShotList.vue'
 import TaskInfo from '../sides/TaskInfo.vue'
+import DisplaySelectMenu from '../widgets/DisplaySelectMenu'
 
 export default {
   name: 'shots',
+  mixins: [entityListMixin],
 
   components: {
     AddMetadataModal,
@@ -216,6 +237,7 @@ export default {
     CreateTasksModal,
     DeleteModal,
     EditShotModal,
+    TaskDisplayModal,
     ImportModal,
     HardDeleteModal,
     ManageShotsModal,
@@ -224,9 +246,11 @@ export default {
     SearchIcon,
     SearchQueryList,
     ShowAssignationsButton,
-    ShowInfosButton,
+    ShowTasksButton,
+    ShowDueDatesButton,
     ShotList,
-    TaskInfo
+    TaskInfo,
+    DisplaySelectMenu
   },
 
   data () {
@@ -240,6 +264,7 @@ export default {
         isDeleteAllTasksDisplayed: false,
         isImportDisplayed: false,
         isNewDisplayed: false,
+        isTaskDisplayDisplayed: false,
         isRestoreDisplayed: false
       },
       loading: {
@@ -249,6 +274,7 @@ export default {
         deleteAllTasks: false,
         deleteMetadata: false,
         edit: false,
+        taskDisplay: false,
         importing: false,
         stay: false
       },
@@ -269,7 +295,9 @@ export default {
         'Description',
         'FPS',
         'Frame In',
-        'Frame Out'
+        'Frame Out',
+        'Due Date',
+        'Shot Length'
       ],
       deleteAllTasksLockText: null
     }
@@ -288,6 +316,8 @@ export default {
       'isShotsLoading',
       'isShotsLoadingError',
       'isShowAssignations',
+      'isShowTasks',
+      'isShowDueDates',
       'isTVShow',
       'nbSelectedTasks',
       'openProductions',
@@ -310,6 +340,10 @@ export default {
 
     manageShotsPath () {
       return this.getPath('manage-shots')
+    },
+
+    taskDisplayPath () {
+      return this.getPath('task-display')
     }
   },
 
@@ -369,7 +403,9 @@ export default {
       'setLastProductionScreen',
       'setShotSearch',
       'showAssignations',
-      'hideAssignations'
+      'hideAssignations',
+      'showTasks',
+      'hideTasks'
     ]),
 
     confirmAddMetadata (form) {
@@ -421,6 +457,10 @@ export default {
         d => d.id === descriptorId
       )
       this.modals.isAddMetadataDisplayed = true
+    },
+
+    confirmTaskDisplay (form) {
+      console.log(form)
     },
 
     confirmEditShot (form) {
@@ -537,7 +577,7 @@ export default {
     deleteText () {
       const shot = this.shotToDelete
       if (shot) {
-        return this.$t('shots.delete_text', {name: shot.name})
+        return this.$t('shots.delete_text', { name: shot.name })
       } else {
         return ''
       }
@@ -546,7 +586,7 @@ export default {
     deleteAllTasksText () {
       const taskType = this.taskTypeMap[this.$route.params.task_type_id]
       if (taskType) {
-        return this.$t('tasks.delete_all_text', {name: taskType.name})
+        return this.$t('tasks.delete_all_text', { name: taskType.name })
       } else {
         return ''
       }
@@ -555,7 +595,7 @@ export default {
     restoreText () {
       const shot = this.shotToRestore
       if (shot) {
-        return this.$t('shots.restore_text', {name: shot.name})
+        return this.$t('shots.restore_text', { name: shot.name })
       } else {
         return ''
       }
@@ -576,6 +616,7 @@ export default {
         isImportDisplayed: false,
         isManagedDisplayed: false,
         isNewDisplayed: false,
+        isTaskDisplayDisplayed: false,
         isRestoreDisplayed: false
       }
 
@@ -599,6 +640,8 @@ export default {
         this.modals.isCreateTasksDisplayed = true
       } else if (path.indexOf('manage') > 0) {
         this.modals.isManageDisplayed = true
+      } else if (path.indexOf('task-display') > 0) {
+        this.modals.isTaskDisplayDisplayed = true
       }
     },
 

@@ -5,7 +5,7 @@ import tasksStore from './tasks'
 import peopleStore from './people'
 import taskTypesStore from './tasktypes'
 
-import {PAGE_SIZE} from '../../lib/pagination'
+import { PAGE_SIZE } from '../../lib/pagination'
 import {
   sortShots,
   sortSequences,
@@ -187,9 +187,12 @@ const initialState = {
   isFps: false,
   isFrameIn: false,
   isFrameOut: false,
+  isDueDate: false,
+  isShotLength: false,
 
   displayedShots: [],
   displayedShotsLength: 0,
+  displayedShotsShotLengths: 0,
   displayedSequences: [],
   displayedSequencesLength: 0,
   displayedEpisodes: [],
@@ -247,6 +250,8 @@ const getters = {
   isFps: state => state.isFps,
   isFrameIn: state => state.isFrameIn,
   isFrameOut: state => state.isFrameOut,
+  isDueDate: state => state.isDueDate,
+  isShotLength: state => state.isShotLength,
 
   shotSearchText: state => state.shotSearchText,
   sequenceSearchText: state => state.sequenceSearchText,
@@ -256,6 +261,7 @@ const getters = {
 
   displayedShots: state => state.displayedShots,
   displayedShotsLength: state => state.displayedShotsLength,
+  displayedShotsShotLengths: state => state.displayedShotsShotLengths,
   displayedSequences: state => state.displayedSequences,
   displayedSequencesLength: state => state.displayedSequencesLength,
   displayedEpisodes: state => state.displayedEpisodes,
@@ -384,7 +390,7 @@ const actions = {
     })
   },
 
-  newShot ({ commit, dispatch, rootGetters }, {shot, callback}) {
+  newShot ({ commit, dispatch, rootGetters }, { shot, callback }) {
     commit(NEW_SHOT_START)
     shotsApi.newShot(shot, (err, shot) => {
       if (err) {
@@ -550,15 +556,15 @@ const actions = {
     })
   },
 
-  displayMoreSequences ({commit}) {
+  displayMoreSequences ({ commit }) {
     commit(DISPLAY_MORE_SEQUENCES)
   },
 
-  displayMoreEpisodes ({commit}) {
+  displayMoreEpisodes ({ commit }) {
     commit(DISPLAY_MORE_EPISODES)
   },
 
-  setShotSearch ({commit, rootGetters}, shotSearch) {
+  setShotSearch ({ commit, rootGetters }, shotSearch) {
     const taskStatusMap = rootGetters.taskStatusMap
     const taskTypeMap = rootGetters.taskTypeMap
     const taskMap = rootGetters.taskMap
@@ -628,7 +634,7 @@ const actions = {
     })
   },
 
-  setSequenceSearch ({commit}, searchQuery) {
+  setSequenceSearch ({ commit }, searchQuery) {
     commit(SET_SEQUENCE_SEARCH, searchQuery)
   },
 
@@ -681,7 +687,7 @@ const actions = {
     })
   },
 
-  setEpisodeSearch ({commit}, searchQuery) {
+  setEpisodeSearch ({ commit }, searchQuery) {
     commit(SET_EPISODE_SEARCH, searchQuery)
   },
 
@@ -714,6 +720,7 @@ const mutations = {
     state.sequenceIndex = {}
     state.displayedShots = []
     state.displayedShotsLength = 0
+    state.displayedShotsShotLengths = 0
     state.shotSearchQueries = []
     state.displayedSequences = []
     state.displayedSequencesLength = 0
@@ -734,6 +741,8 @@ const mutations = {
     let isFps = false
     let isFrameIn = false
     let isFrameOut = false
+    let isDueDate = false
+    let isShotLength = false
     shots = sortShots(shots)
 
     state.shotMap = {}
@@ -747,6 +756,10 @@ const mutations = {
       if (!isFps && shot.data.fps) isFps = true
       if (!isFrameIn && shot.data.frame_in) isFrameIn = true
       if (!isFrameOut && shot.data.frame_out) isFrameOut = true
+      if (!isDueDate && shot.data.due_date) isDueDate = true
+      if (!isShotLength && shot.data.shot_length) isShotLength = true
+
+      state.displayedShotsShotLengths = state.displayedShotsShotLengths + parseInt(shot.data.shot_length)
 
       state.shotMap[shot.id] = shot
     })
@@ -758,6 +771,8 @@ const mutations = {
     state.isFps = isFps
     state.isFrameIn = isFrameIn
     state.isFrameOut = isFrameOut
+    state.isDueDate = isDueDate
+    state.isShotLength = isShotLength
 
     cache.shotIndex = buildShotIndex(shots)
 
@@ -889,6 +904,8 @@ const mutations = {
     if (newShot.data.fps) state.isFps = true
     if (newShot.data.frame_in) state.isFrameIn = true
     if (newShot.data.frame_out) state.isFrameOut = true
+    if (newShot.data.due_date) state.isDueDate = true
+    if (newShot.data.shot_length) state.isShotLength = true
   },
 
   [EDIT_SEQUENCE_START] (state, data) {},
@@ -999,7 +1016,7 @@ const mutations = {
     cache.shotIndex = buildShotIndex(cache.shots)
   },
 
-  [NEW_TASK_COMMENT_END] (state, {comment, taskId}) {},
+  [NEW_TASK_COMMENT_END] (state, { comment, taskId }) {},
 
   [SET_SHOT_SEARCH] (
     state,
@@ -1022,6 +1039,11 @@ const mutations = {
 
     state.displayedShots = result.slice(0, PAGE_SIZE)
     state.displayedShotsLength = result.length
+    state.displayedShotsShotLengths = 0
+
+    result.forEach((shot) => {
+      state.displayedShotsShotLengths = state.displayedShotsShotLengths + parseInt(shot.data.shot_length)
+    })
     state.shotFilledColumns = getFilledColumns(state.displayedShots)
     state.shotSearchText = shotSearch
 
@@ -1080,6 +1102,8 @@ const mutations = {
     if (shot.data.fps) state.isFps = true
     if (shot.data.frame_in) state.isFrameIn = true
     if (shot.data.frame_out) state.isFrameOut = true
+    if (shot.data.shot_length) state.isShotLength = true
+    if (shot.data.due_date) state.isDueDate = true
   },
 
   [NEW_SEQUENCE_START] (state) {},
@@ -1110,7 +1134,7 @@ const mutations = {
       if (task) {
         const shot = state.shotMap[task.entity_id]
         if (shot) {
-          const validations = {...shot.validations}
+          const validations = { ...shot.validations }
           Vue.set(validations, task.task_type_id, task.id)
           delete shot.validations
           Vue.set(shot, 'validations', validations)
@@ -1283,7 +1307,7 @@ const mutations = {
       if (task) {
         const shot = state.shotMap[task.entity_id]
         if (shot) {
-          const validations = {...shot.validations}
+          const validations = { ...shot.validations }
           Vue.set(validations, task.task_type_id, task.id)
           delete shot.validations
           Vue.set(shot, 'validations', validations)
@@ -1321,7 +1345,7 @@ const mutations = {
   },
 
   [RESET_ALL] (state) {
-    Object.assign(state, {...initialState})
+    Object.assign(state, { ...initialState })
 
     cache.shots = []
     cache.shotIndex = {}

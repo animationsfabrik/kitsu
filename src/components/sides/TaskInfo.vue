@@ -48,6 +48,12 @@
       </div>
     </div>
 
+    <div class="task_info_due_date">
+
+    Due date: {{ (task.due_date || "").split(" ")[0] }}
+
+    </div>
+
     <div class="task-columns" ref="task-columns">
       <div class="task-column preview-column">
         <div class="preview-column-content">
@@ -105,6 +111,22 @@
             </div>
           </div>
 
+        </div>
+      </div>
+
+      <div class="task-column workfiles-column">
+        <div>
+          <div v-if="this.taskWorkingFiles.length > 0">
+            <h2>{{ $t('tasks.working_files') }}</h2>
+            <div class="task-column workfile">
+              {{ this.taskWorkingFiles[0].name }}
+            </div>
+            <combobox
+              :label="'Version'"
+              :options="taskWorkingFiles.map(obj => { var rObj = {}; rObj['label'] = obj['revision']; rObj['value'] = obj['id']; return rObj;})"
+            />
+          </div>
+          <button class="button" @click="newTaskVersion(task.id, user.id)">New Version</button>
         </div>
       </div>
 
@@ -193,10 +215,12 @@ import {
   getTaskTypeStyle
 } from '../../lib/helpers'
 
+import tasksApi from '../../store/api/tasks'
 import AddComment from '../widgets/AddComment'
 import AddPreviewModal from '../modals/AddPreviewModal'
 import ButtonLink from '../widgets/ButtonLink'
 import ButtonSimple from '../widgets/ButtonSimple'
+import Combobox from '../widgets/Combobox'
 import Comment from '../widgets/Comment'
 import ModelViewer from '../previews/ModelViewer'
 import PeopleName from '../widgets/PeopleName'
@@ -211,6 +235,7 @@ export default {
   name: 'task-info',
   components: {
     AddComment,
+    Combobox,
     AddPreviewModal,
     ButtonLink,
     ButtonSimple,
@@ -243,6 +268,8 @@ export default {
       currentPreviewDlPath: '',
       isSubscribed: false,
       taskComments: [],
+      taskWorkingFiles: [],
+      uniqueWorkingFileNames: [],
       taskPreviews: [],
       errors: {
         addComment: false,
@@ -274,6 +301,8 @@ export default {
       'currentProduction',
       'getTaskComment',
       'getTaskComments',
+      'getTaskWorkingFile',
+      'getTaskWorkingFiles',
       'getTaskPreviews',
       'isCurrentUserManager',
       'isSingleEpisode',
@@ -377,6 +406,14 @@ export default {
       return `/api/movies/originals/preview-files/${previewId}.mp4`
     },
 
+    taskStatusOptionsForCurrentUser () {
+      if (this.isCurrentUserManager) {
+        return this.taskStatusOptions
+      } else {
+        return this.taskStatusOptions.filter(status => status.isArtistAllowed)
+      }
+    },
+
     tasktypeStyle () {
       return getTaskTypeStyle(this.task)
     },
@@ -434,12 +471,42 @@ export default {
                   this.isSubscribed = subscribed
                 }
               })
+        this.loadTaskWorkingFiles({
+          taskId: this.task.id,
+          callback: (err) => {
+            this.loading.task = false
+            if (err) {
+              console.log(err)
+              this.errors.task = true
+            } else {
+              this.reset()
             }
           }
         })
       }
     },
 
+    editPath (taskId) {
+      return this.getPath('edit-task', taskId)
+    },
+
+    deletePath (taskId) {
+      return this.getPath('delete-task', taskId)
+    },
+
+    newTaskVersion (taskId, userId) {
+      let newVersion = tasksApi.newTaskVersion(taskId, userId)
+      this.reset()
+      return newVersion
+    },
+
+    getPath (section, taskId) {
+      let route = {
+        name: section,
+        params: {
+          production_id: this.currentProduction.id
+        }
+      }
     addComment (comment, taskStatusId) {
       const finalize = (err, preview) => {
         if (err) {
@@ -469,6 +536,8 @@ export default {
 
     reset () {
       this.taskComments = this.getTaskComments(this.task.id)
+      this.taskWorkingFiles = this.getTaskWorkingFiles(this.task.id)
+      console.log(this.taskWorkingFiles)
       this.taskPreviews = this.getTaskPreviews(this.task.id)
       this.setOtherPreviews()
       this.currentPreviewPath = this.getOriginalPath()
@@ -672,6 +741,11 @@ export default {
   box-shadow: 0px 0px 6px #E0E0E0;
 }
 
+.task_info_due_date {
+  margin: 10px;
+  margin-left: 0px;
+}
+
 .page-header {
   padding: 0;
   margin-top: 0;
@@ -712,6 +786,10 @@ export default {
 .task-column {
   margin-top: 1em;
 }
+.title {
+  font-size: 1.3em;
+  line-height: 1.5em;
+}
 
 .comment {
   border-top: 1px solid $white-grey;
@@ -719,6 +797,29 @@ export default {
   border-right: 1px solid $white-grey;
   margin-top: 0.1em;
   box-shadow: 0px 0px 6px #E0E0E0;
+}
+
+.dark .workfiles-column {
+  background: #46494F;
+  border-color: #25282E;
+  box-shadow: 0px 0px 6px #333;
+}
+
+.workfile {
+  background: #4E5159;
+  border-color: #25282E;
+  color: #EEEEEE;
+  border-radius: 3px;
+  margin-left: 0.1em;
+  margin-top: 0.3em;
+  padding: 0.3em;
+  border: 1px solid #25282E;
+}
+
+.workfiles-column {
+  border-radius: 5px;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 .add-preview-button {

@@ -72,7 +72,9 @@
         >
 
           <td class="name">
-            {{ entry.name }}
+            <router-link :to="production-planning">
+              {{ entry.name }}
+            </router-link>
           </td>
 
           <td class="description">

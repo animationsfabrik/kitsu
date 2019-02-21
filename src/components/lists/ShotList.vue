@@ -40,6 +40,7 @@
               v-if="isCurrentUserAdmin && !isLoading"
             />
           </th>
+
           <th
             class="metadata-descriptor"
             :key="descriptor.id"
@@ -57,13 +58,13 @@
             </div>
           </th>
 
-          <th class="framein" v-if="isFrameIn">
-            {{ $t('shots.fields.frame_in') }}
+          <th class="shotlength" v-if="isShotLength && isShowAdditionalInfo">
+            {{ $t('shots.fields.shot_length') }}
           </th>
-          <th class="frameout" v-if="isFrameOut">
-            {{ $t('shots.fields.frame_out') }}
+
+          <th class="duedate" v-if="isDueDate && isShowAdditionalInfo">
+            {{ $t('shots.fields.due_date') }}
           </th>
-          <th class="fps" v-if="isFps">{{ $t('shots.fields.fps') }}</th>
 
           <th
             :class="{
@@ -72,8 +73,8 @@
             }"
             :key="columnId"
             :style="getValidationStyle(columnId)"
-            v-for="columnId in sortedValidationColumns"
-            v-if="!isLoading && (!hiddenColumns[columnId] || isShowInfos)"
+            v-for="columnId in displayedValidationColumns"
+            v-if="!isLoading"
           >
             <div class="flexrow">
               <router-link
@@ -173,14 +174,11 @@
           >
             {{ shot.data ? shot.data[descriptor.field_name] : '' }}
           </td>
-          <td class="framein" v-if="isFrameIn">
-            {{ shot.data && shot.data.frame_in ? shot.data.frame_in : ''}}
+          <td class="shotlength" v-if="isShotLength && isShowAdditionalInfo">
+            {{ shot.data && shot.data.shot_length ? shot.data.shot_length : ''}}
           </td>
-          <td class="frameout" v-if="isFrameOut">
-            {{ shot.data && shot.data.frame_out ? shot.data.frame_out : ''}}
-          </td>
-          <td class="fps" v-if="isFps">
-            {{ shot.data && shot.data.fps ? shot.data.fps : ''}}
+          <td class="duedate" v-if="isDueDate && isShowAdditionalInfo">
+            {{ shot.data && shot.data.due_date ? shot.data.due_date : ''}}
           </td>
           <validation-cell
             :class="{
@@ -198,8 +196,7 @@
             :columnY="j"
             @select="onTaskSelected"
             @unselect="onTaskUnselected"
-            v-for="(columnId, j) in sortedValidationColumns"
-            v-if="!isLoading && (!hiddenColumns[columnId] || isShowInfos)"
+            v-for="(columnId, j) in displayedValidationColumns"
           />
           <row-actions v-if="isCurrentUserManager"
             :entry="shot"
@@ -215,9 +212,10 @@
 
   <p
     class="has-text-centered nb-shots"
+    style="margin-bottom: 10px; margin-top: 10px;"
     v-if="!isEmptyList && !isLoading"
   >
-    {{ displayedShotsLength }} {{ $tc('shots.number', displayedShotsLength) }}
+    {{ displayedShotsLength }} {{ $tc('shots.number', displayedShotsLength) }}, {{ displayedShotsShotLengths }} {{ $tc('shots.total_frames', displayedShotsShotLengths) }}
   </p>
 
 </div>
@@ -282,15 +280,19 @@ export default {
       'currentProduction',
       'currentEpisode',
       'displayedShotsLength',
+      'displayedShotsShotLengths',
       'isCurrentUserAdmin',
       'isCurrentUserManager',
       'isCurrentUserClient',
       'isFps',
       'isFrameIn',
       'isFrameOut',
+      'isDueDate',
+      'isShotLength',
       'isSingleEpisode',
       'isShowInfos',
       'isTVShow',
+      'isShowAdditionalInfo',
       'nbSelectedTasks',
       'shotFilledColumns',
       'shotMap',
@@ -311,6 +313,12 @@ export default {
 
     createTasksPath () {
       return this.getPath('create-shot-tasks')
+    },
+
+    displayedValidationColumns () {
+      // const displayedValidationColumns = ['6d603792-6e90-46e2-b958-3cabac189917', '5f5dc116-1b4a-4629-80a3-111e26c2c9d4']
+      // return this.sortedValidationColumns.filter(v => displayedValidationColumns.includes(v))
+      return this.sortedValidationColumns
     },
 
     manageShotsPath () {
@@ -496,6 +504,18 @@ th.actions {
   min-width: 50px;
   max-width: 50px;
   width: 50px;
+}
+
+.duedate {
+  min-width: 100px;
+  max-width: 100px;
+  width: 100px;
+}
+
+.shotlength {
+  min-width: 100px;
+  max-width: 100px;
+  width: 100px;
 }
 
 .description {

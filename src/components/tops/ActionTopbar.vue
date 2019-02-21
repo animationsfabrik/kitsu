@@ -274,6 +274,14 @@
 
         <div
           class="more-menu-item"
+          v-if="isCurrentViewAsset || isCurrentViewShot"
+          @click="selectBar('due_date')"
+        >
+          {{ $t('menu.change_due_date') }}
+        </div>
+
+        <div
+          class="more-menu-item"
           v-if="isCurrentViewTaskType"
           @click="selectBar('estimations')"
         >
@@ -325,6 +333,7 @@ import { sortPeople } from '../../lib/sorting'
 import { ChevronDownIcon, XIcon, MoreVerticalIcon } from 'vue-feather-icons'
 import ButtonHrefLink from '../widgets/ButtonHrefLink'
 import Combobox from '../widgets/Combobox'
+import TextField from '../widgets/TextField'
 import ComboboxStatus from '../widgets/ComboboxStatus'
 import PeopleField from '../widgets/PeopleField'
 import Spinner from '../widgets/Spinner'
@@ -340,6 +349,7 @@ export default {
     PeopleField,
     Spinner,
     ButtonHrefLink,
+    TextField,
     XIcon
   },
 
@@ -360,6 +370,7 @@ export default {
       customActionOptions: [],
       estimation: 0,
       priority: '0',
+      due_date: '0',
       currentTeam: [],
       priorityOptions: [
         {
@@ -473,6 +484,7 @@ export default {
         'estimations': 'menu.set_estimations',
         'change-status': 'menu.change_status',
         'priorities': 'menu.change_priority',
+        'due_date': 'menu.change_due_date',
         'tasks': 'menu.create_tasks',
         'delete-tasks': 'menu.delete_tasks',
         'custom-actions': 'menu.run_custom_action'
@@ -498,6 +510,7 @@ export default {
       'deleteSelectedTasks',
       'unassignSelectedTasks',
       'changeSelectedTaskStatus',
+      'changeSelectedDueDates',
       'changeSelectedPriorities',
       'clearSelectedTasks'
     ]),
@@ -532,6 +545,16 @@ export default {
       this.isChangePriorityLoading = true
       this.changeSelectedPriorities({
         priority: Number(this.priority),
+        callback: () => {
+          this.isChangePriorityLoading = false
+        }
+      })
+    },
+
+    confirmDueDateChange () {
+      this.isChangeStatusLoading = true
+      this.changeSelectedDueDates({
+        duedate: this.due_date.split(' ')[0],
         callback: () => {
           this.isChangePriorityLoading = false
         }

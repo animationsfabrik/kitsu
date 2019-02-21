@@ -9,14 +9,14 @@ import {
 } from '../mutation-types'
 
 const initialState = {
-  isDarkTheme: false,
-  isSidebarHidden: true,
+  isDarkTheme: true,
+  isSidebarHidden: false,
   isUserMenuHidden: true,
   lastProductionScreen: 'assets',
   currentProductionScreen: 'assets'
 }
 
-const state = {...initialState}
+const state = { ...initialState }
 
 const getters = {
   isDarkTheme: state => state.isDarkTheme,
@@ -66,7 +66,7 @@ const mutations = {
 
   [RESET_ALL] (state) {
     const isDarkTheme = state.isDarkTheme
-    Object.assign(state, {...initialState})
+    Object.assign(state, { ...initialState })
     state.isDarkTheme = isDarkTheme
   }
 }

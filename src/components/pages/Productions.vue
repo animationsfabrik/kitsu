@@ -32,6 +32,16 @@
       @confirm="confirmEditProduction"
     />
 
+    <create-folder-structure-modal
+      :active="modals.isCreateFSDisplayed"
+      :is-loading="createFolderStructure.isLoading"
+      :is-error="createFolderStructure.isError"
+      :cancel-route="'/productions'"
+      :text="createFSText()"
+      :folder-structure-to-create="folderStructureToCreate"
+      @confirm="confirmCreateFolderStructure"
+    />
+
     <delete-modal
       :active="modals.isDeleteDisplayed"
       :is-loading="deleteProduction.isLoading"
@@ -52,6 +62,7 @@ import EditProductionModal from '../modals/EditProductionModal'
 import DeleteModal from '../widgets/DeleteModal'
 import ButtonLink from '../widgets/ButtonLink'
 import PageTitle from '../widgets/PageTitle'
+import CreateFolderStructureModal from './modals/CreateFolderStructureModal'
 
 export default {
   name: 'productions',
@@ -59,6 +70,7 @@ export default {
   components: {
     ButtonLink,
     DeleteModal,
+    CreateFolderStructureModal,
     EditProductionModal,
     PageTitle,
     ProductionList
@@ -68,8 +80,10 @@ export default {
     return {
       modals: {
         isNewDisplayed: false,
-        isDeleteDisplayed: false
+        isDeleteDisplayed: false,
+        isCreateFSDisplayed: false
       },
+      folderStructureToCreate: null,
       productionToDelete: null,
       productionToEdit: null,
       choices: []
@@ -80,6 +94,7 @@ export default {
     ...mapGetters([
       'deleteProduction',
       'editProduction',
+      'createFolderStructure',
       'getProduction',
       'isProductionsLoading',
       'isProductionsLoadingError',
@@ -100,6 +115,15 @@ export default {
       'storeProductionPicture',
       'uploadProductionAvatar'
     ]),
+
+    confirmCreateFolderStructure (form) {
+      this.$store.dispatch('createFolderStructure', {
+        production: this.folderStructureToCreate,
+        callback: (err) => {
+          if (!err) this.modals.isCreateFSDisplayed = false
+        }
+      })
+    },
 
     confirmEditProduction (form) {
       let action = 'newProduction'
@@ -140,10 +164,14 @@ export default {
     deleteText () {
       const production = this.productionToDelete
       if (production) {
-        return this.$t('productions.delete_text', {name: production.name})
+        return this.$t('productions.delete_text', { name: production.name })
       } else {
         return ''
       }
+    },
+
+    createFSText () {
+      return this.$t('productions.createfs_text')
     },
 
     handleModalsDisplay () {
@@ -160,9 +188,14 @@ export default {
         const productionId = this.$store.state.route.params.production_delete_id
         this.productionToDelete = this.getProduction(productionId)
         this.modals.isDeleteDisplayed = true
+      } else if (path.indexOf('createfs') > 0) {
+        const productionId = this.$store.state.route.params.folder_structure_create_id
+        this.folderStructureToCreate = this.getProduction(productionId)
+        this.modals.isCreateFSDisplayed = true
       } else {
         this.modals.isNewDisplayed = false
         this.modals.isDeleteDisplayed = false
+        this.modals.isCreateFSDisplayed = false
       }
     },
 

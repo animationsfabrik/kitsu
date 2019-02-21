@@ -22,6 +22,7 @@ import People from '../components/pages/People'
 import Person from '../components/pages/Person'
 import Productions from '../components/pages/Productions'
 import ProductionAssetTypes from '../components/pages/ProductionAssetTypes'
+import ProductionPlanning from '../components/ProductionPlanning'
 import Playlist from '../components/pages/Playlist'
 import Profile from '../components/pages/Profile'
 import ResetPassword from '../components/pages/ResetPassword'
@@ -54,22 +55,22 @@ export const routes = [
           if (store.state.productions.openProductions.length === 0) {
             init((err) => {
               if (err) {
-                next({name: 'server-down'})
+                next({ name: 'server-down' })
               } else {
                 if (!userStore.getters.isCurrentUserCGArtist(userStore.state)) {
-                  next({name: 'open-productions'})
+                  next({ name: 'open-productions' })
                 } else {
-                  next({name: 'todos'})
+                  next({ name: 'todos' })
                 }
               }
             })
           } else {
             if (!userStore.getters.isCurrentUserCGArtist(userStore.state)) {
               store.commit('DATA_LOADING_END')
-              next({name: 'open-productions'})
+              next({ name: 'open-productions' })
             } else {
               store.commit('DATA_LOADING_END')
-              next({name: 'todos'})
+              next({ name: 'todos' })
             }
           }
         }
@@ -187,6 +188,11 @@ export const routes = [
         name: 'productions-new'
       },
       {
+        path: '/productions/createfs/:folder_structure_create_id',
+        component: Productions,
+        name: 'create-folder-structure'
+      },
+      {
         path: '/productions/edit/:production_edit_id',
         component: Productions,
         name: 'edit-production'
@@ -196,7 +202,11 @@ export const routes = [
         component: Productions,
         name: 'delete-production'
       },
-
+      {
+        path: '/productions/:production_id/planning',
+        component: ProductionPlanning,
+        name: 'production-planning'
+      },
       {
         path: '/productions/:production_id/breakdown',
         component: Breakdown,
@@ -340,6 +350,11 @@ export const routes = [
         path: '/productions/:production_id/shots/manage',
         component: Shots,
         name: 'manage-shots'
+      },
+      {
+        path: '/productions/:production_id/shots/task-display',
+        component: Shots,
+        name: 'task-display'
       },
       {
         path: '/productions/:production_id/shots/import',

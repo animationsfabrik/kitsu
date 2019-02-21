@@ -46,6 +46,13 @@ export default {
     client.del(`/api/data/projects/${production.id}`, callback)
   },
 
+  createFolderStructure (production, callback) {
+    const data = {
+      project_id: production.id
+    }
+    client.post(`/api/actions/projects/${production.id}/generate-folder-structure`, data, callback)
+  },
+
   addPersonToTeam (productionId, personId) {
     return new Promise((resolve, reject) => {
       const data = {

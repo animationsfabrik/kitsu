@@ -258,6 +258,8 @@ a {
 }
 
 .page {
+  position: relative;
+  left: 215px;
   padding-top: 90px
 }
 

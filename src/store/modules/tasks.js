@@ -16,6 +16,7 @@ import {
   LOAD_TASK_END,
   LOAD_TASK_STATUSES_END,
   LOAD_TASK_COMMENTS_END,
+  LOAD_TASK_WORKING_FILES_END,
   LOAD_TASK_ENTITY_PREVIEW_FILES_END,
   LOAD_TASK_SUBSCRIBE_END,
   LOAD_SEQUENCE_SUBSCRIBE_END,
@@ -23,6 +24,8 @@ import {
   NEW_TASK_COMMENT_END,
   NEW_TASK_END,
   EDIT_TASK_END,
+
+  NEW_TASK_WORKING_FILE_END,
 
   CREATE_TASKS_END,
   DELETE_TASK_END,
@@ -44,7 +47,10 @@ import {
 
   SET_PREVIEW,
   SET_IS_SHOW_ASSIGNATIONS,
+  SET_IS_SHOW_TASKS,
+  SET_IS_SHOW_DUE_DATES,
   SET_IS_SHOW_INFOS,
+  SET_DISPLAYED_TASKS,
   DELETE_PREVIEW_END,
 
   LOAD_PERSON_TASKS_END,
@@ -64,15 +70,20 @@ const initialState = {
 
   taskStatuses: [],
   taskComments: {},
+  taskWorkingFiles: {},
   taskPreviews: {},
   taskEntityPreviews: {},
   selectedTasks: {},
   selectedValidations: {},
   taskSearchQueries: [],
 
+  dueDate: 5,
+
   nbSelectedTasks: 0,
   nbSelectedValidations: 0,
   isShowAssignations: true,
+  isShowTasks: true,
+  isShowDueDates: true,
   isShowInfos: true,
 
   isSavingCommentPreview: false,
@@ -98,11 +109,19 @@ const helpers = {
 const getters = {
   taskMap: (state) => state.taskMap,
   getTaskComments: (state, getters) => (id) => state.taskComments[id],
+  getTaskWorkingFiles: (state, getters) => (id) => state.taskWorkingFiles[id],
   getTaskPreviews: (state, getters) => (id) => state.taskPreviews[id],
 
   getTaskComment: (state, getters) => (taskId, commentId) => {
     return state.taskComments[taskId].find(
       (comment) => comment.id === commentId
+    )
+  },
+
+  getTaskWorkingFile: (state, getters) => (taskId, workingFileId) => {
+    console.log('getTaskWorkingFile')
+    return state.taskWorkingFiles[taskId].find(
+      (workingFile) => workingFile.id === workingFileId
     )
   },
 
@@ -126,10 +145,14 @@ const getters = {
   nbSelectedValidations: state => state.nbSelectedValidations,
   taskSearchQueries: state => state.taskSearchQueries,
   isShowAssignations: state => state.isShowAssignations,
+  isShowTasks: state => state.isShowTasks,
+  isShowDueDates: state => state.isShowDueDates,
   isShowInfos: state => state.isShowInfos,
+  displayedTasks: state => state.displayedTasks,
   taskEntityPreviews: state => state.taskEntityPreviews,
   previewFormData: state => state.previewFormData,
   isSavingCommentPreview: state => state.isSavingCommentPreview,
+  dueDate: state => state.dueDate,
 
   assetValidationColumns: (state, getters) => {
     return sortValidationColumns(
@@ -238,35 +261,59 @@ const actions = {
       if (err) {
         callback(err)
       } else {
-        commit(LOAD_TASK_COMMENTS_END, {comments, taskId})
+        commit(LOAD_TASK_COMMENTS_END, { comments, taskId })
         dispatch('loadTaskEntityPreviewFiles', { callback, entityId })
       }
     })
   },
 
+  loadTaskWorkingFiles (
+    { commit, state },
+    { taskId, callback }
+  ) {
+    console.log('loadTaskWorkingFiles')
+    tasksApi.getTaskWorkingFiles(taskId, (err, workingFiles) => {
+      if (err) {
+        callback(err)
+      } else {
+        commit(LOAD_TASK_WORKING_FILES_END, { workingFiles, taskId })
+      }
+    })
+  },
+
   loadTaskEntityPreviewFiles ({ commit, state }, { callback, entityId }) {
-    const entity = {id: entityId}
+    const entity = { id: entityId }
     playlistsApi.getEntityPreviewFiles(entity, (err, previewFiles) => {
       commit(LOAD_TASK_ENTITY_PREVIEW_FILES_END, previewFiles)
       if (callback) callback(err)
     })
   },
 
-  commentTask ({ commit, state }, {taskId, taskStatusId, comment, callback}) {
-    tasksApi.commentTask({taskId, taskStatusId, comment}, (err, comment) => {
+  commentTask ({ commit, state }, { taskId, taskStatusId, comment, callback }) {
+    tasksApi.commentTask({ taskId, taskStatusId, comment }, (err, comment) => {
       if (!err) {
-        commit(NEW_TASK_COMMENT_END, {comment, taskId})
+        commit(NEW_TASK_COMMENT_END, { comment, taskId })
       }
       if (callback) callback(err, comment)
     })
   },
 
-  loadComment ({ commit, state }, {commentId, callback}) {
-    tasksApi.getTaskComment({id: commentId}, (err, comment) => {
+  loadComment ({ commit, state }, { commentId, callback }) {
+    tasksApi.getTaskComment({ id: commentId }, (err, comment) => {
       if (!err) {
-        commit(NEW_TASK_COMMENT_END, {comment, taskId: comment.object_id})
+        commit(NEW_TASK_COMMENT_END, { comment, taskId: comment.object_id })
       }
       if (callback) callback(err, comment)
+    })
+  },
+
+  loadWorkingFile ({ commit, state }, { workingFileId, callback }) {
+    tasksApi.getTaskWorkingFile({ id: workingFileId }, (err, workingFile) => {
+      console.log('loadWorkingFile')
+      if (!err) {
+        commit(NEW_TASK_WORKING_FILE_END, { workingFile, taskId: workingFile.object_id })
+      } else { console.log(err) }
+      if (callback) callback(err, workingFile)
     })
   },
 
@@ -358,7 +405,7 @@ const actions = {
     })
   },
 
-  changeSelectedTaskStatus ({ commit, state }, {taskStatusId, callback}) {
+  changeSelectedTaskStatus ({ commit, state }, { taskStatusId, callback }) {
     async.eachSeries(Object.keys(state.selectedTasks), (taskId, next) => {
       const task = state.taskMap[taskId]
       if (task && task.task_status_id !== taskStatusId) {
@@ -389,6 +436,29 @@ const actions = {
 
       if (task && task.priority !== priority) {
         tasksApi.updateTask(taskId, { priority }, (err, task) => {
+          if (!err) {
+            commit(EDIT_TASK_END, { task, taskType })
+          }
+          next(err)
+        })
+      } else {
+        next()
+      }
+    }, (err) => {
+      callback(err)
+    })
+  },
+
+  changeSelectedDueDates (
+    { commit, state, rootGetters },
+    { duedate, callback }
+  ) {
+    async.eachSeries(Object.keys(state.selectedTasks), (taskId, next) => {
+      const task = state.taskMap[taskId]
+      const taskType = rootGetters.taskTypeMap[task.task_type_id]
+
+      if (task && task.due_date !== duedate) {
+        tasksApi.updateTask(taskId, { 'due_date': duedate }, (err, task) => {
           if (!err) {
             commit(EDIT_TASK_END, { task, taskType })
           }
@@ -619,6 +689,10 @@ const actions = {
     })
   },
 
+  setDisplayedTasks ({ commit, state }, displayedTasks) {
+    commit(SET_DISPLAYED_TASKS, displayedTasks)
+  },
+
   showAssignations ({ commit, state }) {
     commit(SET_IS_SHOW_ASSIGNATIONS, true)
   },
@@ -627,12 +701,28 @@ const actions = {
     commit(SET_IS_SHOW_ASSIGNATIONS, false)
   },
 
+  showTasks ({ commit, state }) {
+    commit(SET_IS_SHOW_TASKS, true)
+  },
+
+  hideTasks ({ commit, state }) {
+    commit(SET_IS_SHOW_TASKS, false)
+  },
+
   showInfos ({ commit, state }) {
     commit(SET_IS_SHOW_INFOS, true)
   },
 
   hideInfos ({ commit, state }) {
     commit(SET_IS_SHOW_INFOS, false)
+  },
+
+  showDueDates ({ commit, state }) {
+    commit(SET_IS_SHOW_DUE_DATES, true)
+  },
+
+  hideDueDates ({ commit, state }) {
+    commit(SET_IS_SHOW_DUE_DATES, false)
   },
 
   loadPreviewFileFormData ({ commit }, previewFormData) {
@@ -792,7 +882,7 @@ const mutations = {
     state.taskEntityPreviews = previewFiles
   },
 
-  [LOAD_TASK_COMMENTS_END] (state, {taskId, comments}) {
+  [LOAD_TASK_COMMENTS_END] (state, { taskId, comments }) {
     comments.forEach((comment) => {
       comment.person = personStore.helpers.addAdditionalInformation(
         comment.person
@@ -815,6 +905,14 @@ const mutations = {
         return previews
       }
     }, [])
+    console.log('commentsstate')
+    console.log(state.taskComments[taskId])
+  },
+
+  [LOAD_TASK_WORKING_FILES_END] (state, { taskId, workingFiles }) {
+    state.taskWorkingFiles[taskId] = workingFiles
+    console.log('LOAD_TASK_WORKING_FILES_END')
+    console.log(state.taskWorkingFiles[taskId])
   },
 
   [LOAD_TASK_STATUSES_END] (state, taskStatuses) {
@@ -826,8 +924,28 @@ const mutations = {
 
   [LOAD_TASK_SUBSCRIBE_END] (state, { taskId, subscribed }) {},
 
-  [NEW_TASK_COMMENT_END] (state, {comment, taskId}) {
+  [NEW_TASK_WORKING_FILE_END] (state, { workingFile, taskId }) {
     const task = state.taskMap[taskId]
+    console.log('NEW_TASK_WORKING_FILE_END')
+
+    if (!state.taskWorkingFiles[taskId]) state.taskWorkingFiles[taskId] = []
+    if (!state.taskWorkingFiles[taskId].find((wf) => wf.id === workingFile.id)) {
+      state.taskWorkingFiles[taskId].unshift(workingFile)
+    }
+
+    console.log('2')
+    console.log(state.taskWorkingFiles[taskId])
+
+    if (task) {
+      Object.assign(task, {
+        last_working_file: workingFile
+      })
+    }
+  },
+
+  [NEW_TASK_COMMENT_END] (state, { comment, taskId }) {
+    const task = state.taskMap[taskId]
+    console.log('NEW_TASK_COMMENT_END')
     if (comment.task_status === undefined) {
       const getTaskStatus = getters.getTaskStatus(state, getters)
       comment.task_status = getTaskStatus(comment.task_status_id)
@@ -919,7 +1037,7 @@ const mutations = {
         existingPreview.previews.push(newPreview)
       }
     } else {
-      newPreview.previews = [{...newPreview}]
+      newPreview.previews = [{ ...newPreview }]
       state.taskPreviews[taskId] =
         [newPreview].concat(state.taskPreviews[taskId])
 
@@ -1054,7 +1172,8 @@ const mutations = {
         end_date: task.end_date,
         real_end_date: task.end_date,
         last_comment_date: task.last_comment_date,
-        retake_count: task.retake_count
+        retake_count: task.retake_count,
+        due_date: task.due_date
       })
     }
   },
@@ -1083,8 +1202,20 @@ const mutations = {
     }
   },
 
+  [SET_DISPLAYED_TASKS] (state, displayedTasks) {
+    state.displayedTasks = displayedTasks
+  },
+
   [SET_IS_SHOW_ASSIGNATIONS] (state, isShowAssignations) {
     state.isShowAssignations = isShowAssignations
+  },
+
+  [SET_IS_SHOW_TASKS] (state, isShowTasks) {
+    state.isShowTasks = isShowTasks
+  },
+
+  [SET_IS_SHOW_DUE_DATES] (state, isShowDueDates) {
+    state.isShowDueDates = isShowDueDates
   },
 
   [SET_IS_SHOW_INFOS] (state, isShowInfos) {
@@ -1129,7 +1260,7 @@ const mutations = {
   },
 
   [RESET_ALL] (state, shots) {
-    Object.assign(state, {...initialState})
+    Object.assign(state, { ...initialState })
   }
 }
 

@@ -58,6 +58,7 @@ export default {
     ...mapActions([
       'getTask',
       'loadComment',
+      'loadWorkingFile',
       'loadPersonTasks',
       'refreshPreview',
       'refreshMetadataDescriptor'
@@ -98,6 +99,12 @@ export default {
       'comment:new' (eventData) {
         const commentId = eventData.comment_id
         if (!this.isSavingCommentPreview) this.loadComment({ commentId })
+      },
+
+      'working_file:new' (eventData) {
+        console.log('workingfile_new')
+        const workingFileId = eventData.working_file_id
+        this.loadWorkingFile({ workingFileId })
       },
 
       'task:update' (eventData) {
@@ -651,9 +658,9 @@ input.search-input:focus {
 
 .fixed-page {
   position: fixed;
-  left: 0;
+  left: 200px;
   right: 0;
-  top: 0;
+  top: 10px;
   bottom: 0;
   display: flex;
   flex-direction: column;
@@ -902,7 +909,7 @@ tbody:last-child .empty-line:last-child {
 .side-column {
   width: 400px;
   max-width: 400px;
-  margin-top: 70px;
+  margin-top: 60px;
   background: white;
   margin-right: 10px;
   margin-bottom: 10px;

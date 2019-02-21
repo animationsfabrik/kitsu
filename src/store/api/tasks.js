@@ -46,6 +46,10 @@ export default {
     client.get(`/api/data/tasks/${taskId}/comments`, callback)
   },
 
+  getTaskWorkingFiles (taskId, callback) {
+    client.get(`/api/data/tasks/${taskId}/working-files`, callback)
+  },
+
   getTaskPreviews (taskId, callback) {
     client.get(`/api/data/tasks/${taskId}/previews`, callback)
   },
@@ -62,8 +66,16 @@ export default {
     )
   },
 
+  newTaskVersion (taskId, userId, callback) {
+    client.post(`/api/actions/tasks/${taskId}/new-version`, { 'user_id': userId }, callback)
+  },
+
   getTaskComment (data, callback) {
     client.get(`/api/data/comments/${data.id}`, callback)
+  },
+
+  getTaskWorkingFile (data, callback) {
+    client.get(`/api/data/working-files/${data.id}`, callback)
   },
 
   editTaskComment (comment, callback) {
@@ -187,7 +199,7 @@ export default {
   assignTasks (personId, selectedTaskIds, callback) {
     client.put(
       `/api/actions/persons/${personId}/assign`,
-      {task_ids: selectedTaskIds},
+      { task_ids: selectedTaskIds },
       callback
     )
   },
@@ -195,7 +207,7 @@ export default {
   unassignTasks (selectedTaskIds, callback) {
     client.put(
       `/api/actions/tasks/clear-assignation`,
-      {task_ids: selectedTaskIds},
+      { task_ids: selectedTaskIds },
       callback
     )
   }

@@ -1,5 +1,5 @@
 <template>
-<div class="page shot">
+<div class="page shot" style="position: relative; left: 215px;">
 
   <div class="page-header flexrow">
     <router-link
@@ -47,17 +47,17 @@
               </td>
             </tr>
 
-            <tr v-if="currentShot.data && currentShot.data.frame_in">
-              <td class="field-label">{{ $t('shots.fields.frame_in') }}</td>
+            <tr v-if="currentShot.data && currentShot.data.shot_length">
+              <td class="field-label">{{ $t('shots.fields.shot_length') }}</td>
               <td>
-                {{ currentShot ? currentShot.data.frame_in : '' }}
+                {{ currentShot ? currentShot.data.shot_length : '' }}
               </td>
             </tr>
 
-            <tr v-if="currentShot.data && currentShot.data.frame_out">
-              <td class="field-label">{{ $t('shots.fields.frame_out') }}</td>
+            <tr v-if="currentShot.data && currentShot.data.due_date">
+              <td class="field-label">{{ $t('shots.fields.due_date') }}</td>
               <td>
-                {{ currentShot ? currentShot.data.frame_out : '' }}
+                {{ currentShot ? currentShot.data.due_date : '' }}
               </td>
             </tr>
 

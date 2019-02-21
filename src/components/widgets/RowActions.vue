@@ -39,7 +39,8 @@ import { mapGetters, mapActions } from 'vuex'
 import {
   EditIcon,
   RotateCcwIcon,
-  TrashIcon
+  TrashIcon,
+  ArchiveIcon
 } from 'vue-feather-icons'
 
 export default {
@@ -47,7 +48,8 @@ export default {
   components: {
     EditIcon,
     RotateCcwIcon,
-    TrashIcon
+    TrashIcon,
+    ArchiveIcon
   },
 
   props: {

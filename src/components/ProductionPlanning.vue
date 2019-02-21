@@ -11,50 +11,22 @@
         </div>
       </div>
     </div>
-
-    <sequence-list
-      ref="sequence-list"
-      :entries="displayedSequences"
-      :is-loading="isShotsLoading || initialLoading"
-      :is-error="isShotsLoadingError"
-      :validation-columns="shotValidationColumns"
-      :sequence-stats="sequenceStats"
-      @scroll="saveScrollPosition"
-    />
-
-    <edit-sequence-modal
-      :active="modals.isNewDisplayed"
-      :is-loading="loading.edit"
-      :is-error="errors.edit"
-      :cancel-route="sequencesPath"
-      :sequence-to-edit="sequenceToEdit"
-      @confirm="confirmEditSequence"
-    />
-
-    <delete-modal
-      :active="modals.isDeleteDisplayed"
-      :is-loading="loading.del"
-      :is-error="errors.del"
-      :text="deleteText()"
-      :error-text="$t('sequences.delete_error')"
-      :cancel-route="sequencesPath"
-      @confirm="confirmDeleteSequence"
-    />
-
+    <gantt class="left-container" :tasks="gantttasks"></gantt>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { SearchIcon } from 'vue-feather-icons'
-import SequenceList from '../lists/SequenceList.vue'
-import DeleteModal from '../widgets/DeleteModal'
-import EditSequenceModal from '../modals/EditSequenceModal'
-import PageTitle from '../widgets/PageTitle'
-import SearchField from '../widgets/SearchField'
+import SequenceList from './lists/SequenceList.vue'
+import DeleteModal from './widgets/DeleteModal'
+import EditSequenceModal from './modals/EditSequenceModal'
+import PageTitle from './widgets/PageTitle'
+import SearchField from './widgets/SearchField'
+import Gantt from './widgets/Gantt'
 
 export default {
-  name: 'sequences',
+  name: 'production-planning',
 
   components: {
     SequenceList,
@@ -62,7 +34,8 @@ export default {
     DeleteModal,
     PageTitle,
     SearchField,
-    SearchIcon
+    SearchIcon,
+    Gantt
   },
 
   data () {
@@ -307,12 +280,16 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .data-list {
   margin-top: 0;
 }
 
 .filters-area {
   margin-bottom: 2em;
+}
+
+.left-container {
+  flex: 1;
 }
 </style>

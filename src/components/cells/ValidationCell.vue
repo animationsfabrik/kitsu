@@ -7,7 +7,7 @@
   }"
   :style="{
     'border-left': isBorder ? '1px solid ' + column.color : 'none',
-    'background': isBorder ? getBackground() : 'transparent'
+    'background': this.task ? backgroundColor : 'transparent'
   }"
   @mouseover="onMouseOver"
   @mouseout="onMouseOut"
@@ -22,7 +22,7 @@
       :task="task"
       :is-static="selectable || isStatic"
       :pointer="true"
-      v-if="task"
+      v-if="task && isShowTasks"
     />
     <people-avatar
       class="person-avatar"
@@ -34,6 +34,11 @@
       v-if="isAssignees && isShowAssignations && !isCurrentUserClient"
       v-for="personId in assignees"
     />
+    <div v-if="task && isShowDueDates">
+      <div v-if="task.due_date">
+        {{ task.due_date === typeof "undefined" ? "" : task.due_date === "None" ? "" : task.due_date.split(' ')[0] }}
+      </div>
+    </div>
   </div>
   <div
     class="wrapper"
@@ -130,13 +135,36 @@ export default {
       'isDarkTheme',
       'isCurrentUserClient',
       'isShowAssignations',
+      'isShowTasks',
+      'isShowDueDates',
       'nbSelectedTasks',
       'personMap',
       'selectedTasks',
       'selectedValidations',
       'taskMap',
-      'taskStatusMap'
+      'taskStatus',
+      'taskStatusMap',
+      'dueDate'
     ]),
+
+    taskStatus () {
+      if (this.task) {
+        const taskStatusId = this.task.task_status_id
+        return this.taskStatusMap ? this.taskStatusMap[taskStatusId] : {}
+      } else {
+        return {}
+      }
+    },
+
+    backgroundColor () {
+      if (this.taskStatus.short_name === 'todo' && this.isDarkTheme) {
+        return '#5F626A'
+      } else if (this.isDarkTheme) {
+        return colors.darkenColor(this.taskStatus.color)
+      } else {
+        return this.taskStatus.color
+      }
+    },
 
     assignees () {
       if (this.task) {
@@ -169,7 +197,7 @@ export default {
 
     onMouseOut (event) {
       if (this.selectable && !this.selected) {
-        const background = this.getBackground()
+        const background = this.task ? this.backgroundColor : 'transparent'
         this.changeStyle(background)
       }
     },
@@ -243,6 +271,10 @@ export default {
 .validation {
   cursor: pointer;
   margin-bottom: 3px;
+}
+
+.task_due_date {
+  text-align: right;
 }
 
 .wrapper {
