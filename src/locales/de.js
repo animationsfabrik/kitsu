@@ -34,6 +34,7 @@ export default {
     new_asset_type: 'Add an asset type',
     number: 'asset type | asset types',
     title: 'Asset Types',
+    production_title: 'Asset Types Stats',
     fields: {
       name: 'Name'
     }
@@ -53,6 +54,7 @@ export default {
     change_preview: 'Change preview',
     empty_text: 'This comment is empty',
     edit_title: 'Edit comment',
+    error: 'An error occured while posting comment',
     no_file_attached: 'No file attached',
     post_status: 'Post comment',
     retake: 'Retake',
@@ -151,6 +153,7 @@ export default {
     production: 'Production',
     remove: 'Remove',
     save: 'Save',
+    sorted_by: 'Tasks sorted by:',
     studio: 'Studio',
     user: 'User',
     white_theme: 'White Theme',
@@ -172,7 +175,8 @@ export default {
     create_tasks: 'Create tasks',
     delete_tasks: 'Delete tasks',
     run_custom_action: 'Run custom action',
-    change_due_date: 'Change due date'
+    change_due_date: 'Change due date',
+    set_estimations: 'Set estimations'
   },
 
   not_found: {
@@ -194,9 +198,9 @@ export default {
     delete_error: 'An error occured while deleting this person. There are probably data linked to it. Are you sure this person has no assignation or wrote no comment?',
     delete_text: 'Are you sure you want to remove {personName} from your database?',
     edit_title: 'Edit person',
-    empty_team: 'There is noone listed in the project team.',
+    empty_team: 'There is no one listed in the project team.',
     new_person: 'Add a new employee',
-    no_task_assigned: 'There is no assigned running tasks.',
+    no_task_assigned: 'There are no assigned running tasks.',
     persons: 'person | persons',
     running_tasks: 'Running tasks',
     select_person: 'Select a person...',
@@ -349,10 +353,11 @@ export default {
     new_task_status: 'Add a task status',
     title: 'Task Status',
     fields: {
+      is_artist_allowed: 'Is artist allowed',
       color: 'Color',
       is_done: 'Is done',
       is_reviewable: 'Is reviewable',
-      is_artist_allowed: 'Is artist allowed',
+      is_retake: 'Has retake value',
       name: 'Name',
       short_name: 'Short name'
     }
@@ -471,12 +476,13 @@ export default {
     hide_infos: 'Hide infos',
     my_tasks: 'Meine Todos',
     next: 'next task',
-    no_assignation_right: 'you are no allowed to manage assignations',
+    no_assignation_right: 'You are not allowed to manage assignations',
     no_comment: 'There is currently no comment for this task.',
     no_preview: 'There is currently no preview for this task.',
     preview: 'Previews',
     previous: 'previous task',
     unsubscribe_notifications: 'Unsubscribe from notifications',
+    set_estimations: 'Set estimations for selected tasks:',
     set_preview: 'Set this preview as thumbnail',
     set_preview_error: 'An error occured while setting preview as thumbnail',
     set_preview_done: 'This preview is used as thumbnail for the current entity.',
@@ -490,12 +496,25 @@ export default {
     working_files: 'Working files',
     tasks: 'Tasks',
     fields: {
+      asset_type: 'Asset type',
       assignees: 'Assignees',
       end_date: 'End date',
+      duration: 'Duration',
       entity: 'Entity',
+      entity_name: 'Name',
+      estimation: 'Estimation',
       last_comment: 'Last comment',
+      last_comment_date: 'Last comment',
+      priority: 'Priority',
       production: 'Prod',
+      start_date: 'Startdatum (Planung)',
+      due_date: 'Enddatum (Planung)',
+      real_end_date: 'Enddatum',
+      real_start_date: 'Startdatum',
+      retake_count: 'Retakes',
+      sequence: 'Sequence',
       task_status: 'Status',
+      task_status_short_name: 'Status',
       task_type: 'Type'
     },
     priority: {

@@ -51,8 +51,8 @@
     <div class="task_info_due_date">
 
     Due date: {{ (task.due_date || "").split(" ")[0] }}
-
     </div>
+    <button class="button is-primary" @click="newTaskVersion(task.id, user.id)">New Version</button>
 
     <div class="task-columns" ref="task-columns">
       <div class="task-column preview-column">
@@ -126,7 +126,6 @@
               :options="taskWorkingFiles.map(obj => { var rObj = {}; rObj['label'] = obj['revision']; rObj['value'] = obj['id']; return rObj;})"
             />
           </div>
-          <button class="button" @click="newTaskVersion(task.id, user.id)">New Version</button>
         </div>
       </div>
 
@@ -474,7 +473,7 @@ export default {
               })
             }
           }
-        }),
+        })
 
         this.loadTaskWorkingFiles({
           taskId: this.task.id,

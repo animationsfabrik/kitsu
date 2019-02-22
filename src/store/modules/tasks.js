@@ -449,26 +449,26 @@ const actions = {
     })
   },
 
-  changeSelectedDueDates (
-    { commit, state, rootGetters },
-    { duedate, callback }
-  ) {
-    async.eachSeries(Object.keys(state.selectedTasks), (taskId, next) => {
-      const task = state.taskMap[taskId]
-      const taskType = rootGetters.taskTypeMap[task.task_type_id]
+  changeSelectedDueDates ({ commit, state, rootGetters }, duedate) {
+    return new Promise((resolve, reject) => {
+      async.eachSeries(Object.keys(state.selectedTasks), (taskId, next) => {
+        const task = state.taskMap[taskId]
+        const taskType = rootGetters.taskTypeMap[task.task_type_id]
 
-      if (task && task.due_date !== duedate) {
-        tasksApi.updateTask(taskId, { 'due_date': duedate }, (err, task) => {
-          if (!err) {
-            commit(EDIT_TASK_END, { task, taskType })
-          }
-          next(err)
-        })
-      } else {
-        next()
-      }
-    }, (err) => {
-      callback(err)
+        if (task && task.due_date !== duedate) {
+          tasksApi.updateTask(taskId, { 'due_date': duedate }, (err, task) => {
+            if (!err) {
+              commit(EDIT_TASK_END, { task, taskType })
+            }
+            next(err)
+          })
+        } else {
+          next()
+        }
+      }, (err) => {
+        if (err) reject(err)
+        else resolve()
+      })
     })
   },
 
@@ -1161,6 +1161,7 @@ const mutations = {
   [EDIT_TASK_END] (state, { task }) {
     const currentTask = state.taskMap[task.id]
     if (currentTask) {
+      console.log(task.due_date)
       Object.assign(state.taskMap[task.id], {
         task_status_id: task.task_status_id,
         task_status_short_name:
@@ -1173,7 +1174,7 @@ const mutations = {
         real_end_date: task.end_date,
         last_comment_date: task.last_comment_date,
         retake_count: task.retake_count,
-        due_date: task.due_date
+        due_date: task.due_date.slice(0, 10)
       })
     }
   },

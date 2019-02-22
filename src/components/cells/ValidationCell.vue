@@ -34,7 +34,7 @@
       v-if="isAssignees && isShowAssignations && !isCurrentUserClient"
       v-for="personId in assignees"
     />
-    <div v-if="task && isShowDueDates">
+    <div v-if="task && isShowDueDates && !isCurrentViewTaskType">
       <div v-if="task.due_date">
         {{ task.due_date === typeof "undefined" ? "" : task.due_date === "None" ? "" : task.due_date.split(' ')[0] }}
       </div>
@@ -147,6 +147,10 @@ export default {
       'dueDate'
     ]),
 
+    isCurrentViewTaskType () {
+      return this.$route.path.indexOf('task-type') > 0
+    },
+
     taskStatus () {
       if (this.task) {
         const taskStatusId = this.task.task_status_id
@@ -190,7 +194,7 @@ export default {
 
     onMouseOver (event) {
       if (this.selectable && !this.selected) {
-        const background = this.isDarkTheme ? '#878B97' : '#CCFFCC'
+        const background = this.isDarkTheme ? '#2F4858' : '#A790A5'
         this.changeStyle(background)
       }
     },
@@ -246,8 +250,7 @@ export default {
         const background = this.isDarkTheme ? '#5E60BA' : '#D1C4E9'
         this.changeStyle(background)
       } else {
-        const background = this.getBackground(this.column.color)
-        this.changeStyle(background)
+        this.changeStyle(this.backgroundColor)
       }
     },
 

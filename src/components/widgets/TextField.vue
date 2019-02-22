@@ -88,6 +88,11 @@ input.input {
   font-size: 1.2em;
 }
 
+.input::-webkit-inner-spin-button {
+  display: none;
+  -webkit-appearance: none;
+}
+
 .flexrow-item {
   margin: 0;
 }

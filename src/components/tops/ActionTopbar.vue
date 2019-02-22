@@ -125,13 +125,16 @@
                  type="date"
                />
             </div>
-            <div class="flexrow-item combobox-item">
+            <div class="flexrow-item combobox-item" v-if="!isChangeDueDatesLoading">
                <button
                  class="button is-success confirm-button"
                  @click="confirmDueDateChange"
                >
                  {{ $t('main.confirmation') }}
                </button>
+            </div>
+            <div class="flexrow-item" v-if="isChangeDueDatesLoading">
+              <spinner :is-white="true" />
             </div>
           </div>
         </div>
@@ -381,6 +384,7 @@ export default {
       isChangeEstimationLoading: false,
       isChangePriorityLoading: false,
       isChangeStatusLoading: false,
+      isChangeDueDatesLoading: false,
       isCreationLoading: false,
       isDeletionLoading: false,
       isMoreMenuDisplayed: true,
@@ -574,13 +578,14 @@ export default {
     },
 
     confirmDueDateChange () {
-      this.isChangeStatusLoading = true
-      this.changeSelectedDueDates({
-        duedate: this.due_date.split(' ')[0],
-        callback: () => {
-          this.isChangePriorityLoading = false
-        }
-      })
+      this.isChangeDueDatesLoading = true
+      this.changeSelectedDueDates(this.due_date)
+        .then(() => {
+          this.isChangeDueDatesLoading = false
+        })
+        .catch((err) => {
+          console.error(err)
+        })
     },
 
     confirmEstimationChange () {

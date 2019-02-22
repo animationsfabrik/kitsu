@@ -108,7 +108,7 @@
            <h2>{{ $t('productions.task_management') }}</h2>
 
            <p v-for="task in taskTypes" :key="task.task_type_id" @click="toggleSidebar()" class="menu_sublink">
-             <router-link :to="{name: 'task-type', params: { task_type_id: task.id, production_id: currentProduction.id, type: task.type }}">
+             <router-link :to="{name: 'task-type', params: { task_type_id: task.id, production_id: currentProduction.id, type: task.for_shots ? 'shots' : 'assets' }}">
               -{{ task.name }}
              </router-link>
            </p>
