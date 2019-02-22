@@ -62,7 +62,7 @@ import EditProductionModal from '../modals/EditProductionModal'
 import DeleteModal from '../widgets/DeleteModal'
 import ButtonLink from '../widgets/ButtonLink'
 import PageTitle from '../widgets/PageTitle'
-import CreateFolderStructureModal from './modals/CreateFolderStructureModal'
+import CreateFolderStructureModal from '../modals/CreateFolderStructureModal'
 
 export default {
   name: 'productions',

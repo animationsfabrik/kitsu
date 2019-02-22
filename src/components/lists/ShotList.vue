@@ -58,11 +58,11 @@
             </div>
           </th>
 
-          <th class="shotlength" v-if="isShotLength && isShowAdditionalInfo">
+          <th class="shotlength" v-if="isShotLength && isShowInfos">
             {{ $t('shots.fields.shot_length') }}
           </th>
 
-          <th class="duedate" v-if="isDueDate && isShowAdditionalInfo">
+          <th class="duedate" v-if="isDueDate && isShowInfos">
             {{ $t('shots.fields.due_date') }}
           </th>
 
@@ -174,10 +174,10 @@
           >
             {{ shot.data ? shot.data[descriptor.field_name] : '' }}
           </td>
-          <td class="shotlength" v-if="isShotLength && isShowAdditionalInfo">
+          <td class="shotlength" v-if="isShotLength && isShowInfos">
             {{ shot.data && shot.data.shot_length ? shot.data.shot_length : ''}}
           </td>
-          <td class="duedate" v-if="isDueDate && isShowAdditionalInfo">
+          <td class="duedate" v-if="isDueDate && isShowInfos">
             {{ shot.data && shot.data.due_date ? shot.data.due_date : ''}}
           </td>
           <validation-cell
@@ -292,7 +292,6 @@ export default {
       'isSingleEpisode',
       'isShowInfos',
       'isTVShow',
-      'isShowAdditionalInfo',
       'nbSelectedTasks',
       'shotFilledColumns',
       'shotMap',

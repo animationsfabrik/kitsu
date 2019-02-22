@@ -3,7 +3,7 @@
     <show-due-dates-button class="level-item"/>
     <show-tasks-button class="level-item"/>
     <show-assignations-button class="level-item"/>
-    <show-additional-info-button class="level-item"/>
+    <show-infos-button class="level-item"/>
   </div>
 </template>
 
@@ -12,7 +12,7 @@ import { mapGetters, mapActions } from 'vuex'
 import ShowDueDatesButton from './ShowDueDatesButton'
 import ShowTasksButton from './ShowTasksButton'
 import ShowAssignationsButton from './ShowAssignationsButton'
-import ShowAdditionalInfoButton from './ShowAdditionalInfoButton'
+import ShowInfosButton from './ShowInfosButton'
 
 export default {
   name: 'display-select-menu',
@@ -21,7 +21,7 @@ export default {
     ShowDueDatesButton,
     ShowTasksButton,
     ShowAssignationsButton,
-    ShowAdditionalInfoButton
+    ShowInfosButton
   },
 
   props: {

@@ -447,7 +447,8 @@ export default {
       'setPreview',
       'subscribeToTask',
       'unsubscribeFromTask',
-      'updatePreviewAnnotation'
+      'updatePreviewAnnotation',
+      'loadTaskWorkingFiles'
     ]),
 
     loadTaskData () {
@@ -471,6 +472,10 @@ export default {
                   this.isSubscribed = subscribed
                 }
               })
+            }
+          }
+        }),
+
         this.loadTaskWorkingFiles({
           taskId: this.task.id,
           callback: (err) => {
@@ -507,6 +512,19 @@ export default {
           production_id: this.currentProduction.id
         }
       }
+
+      if (this.isTVShow && this.currentEpisode) {
+        route.name = `episode-${section}`
+        route.params.episode_id = this.currentEpisode.id
+      }
+
+      if (taskId) {
+        route.params.task_id = taskId
+      }
+
+      return route
+    },
+
     addComment (comment, taskStatusId) {
       const finalize = (err, preview) => {
         if (err) {

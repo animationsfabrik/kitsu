@@ -17,12 +17,13 @@
           </div>
 
           <div class="level-right flexrow">
-            <div class="flexrow">
-              <show-assignations-button class="flexrow-item" />
-              <show-infos-button class="flexrow-item" />
-              <div class="flexrow-item"></div>
-            </div>
             <div class="flexrow" v-if="isCurrentUserManager">
+            <display-select-menu
+              ref="displaySelectMenu"
+            />
+            <div class="level-item">
+              <button class="button" @click="showDisplaySelectMenu($event)">Show / Hide</button>
+            </div>
             <button-link
               class="flexrow-item"
               :title="$t('main.csv.import_file')"
@@ -177,6 +178,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { entityListMixin } from '../lists/base'
 
 import AssetList from '../lists/AssetList'
 import AddMetadataModal from '../modals/AddMetadataModal'
@@ -193,9 +195,11 @@ import SearchQueryList from '../widgets/SearchQueryList'
 import ShowAssignationsButton from '../widgets/ShowAssignationsButton'
 import ShowInfosButton from '../widgets/ShowInfosButton'
 import TaskInfo from '../sides/TaskInfo.vue'
+import DisplaySelectMenu from '../widgets/DisplaySelectMenu'
 
 export default {
   name: 'assets',
+  mixins: [entityListMixin],
 
   components: {
     AssetList,
@@ -212,7 +216,8 @@ export default {
     SearchQueryList,
     ShowAssignationsButton,
     ShowInfosButton,
-    TaskInfo
+    TaskInfo,
+    DisplaySelectMenu
   },
 
   data () {

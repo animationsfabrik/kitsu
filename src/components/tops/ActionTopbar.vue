@@ -114,6 +114,28 @@
           </div>
         </div>
 
+        <div class="flexrow-item" v-if="selectedBar === 'due_date'">
+          <div class="flexrow">
+            <div class="assignation flexrow-item hide-small-screen">
+              {{ $tc('tasks.due_date') }}
+            </div>
+            <div class="flexrow-item combobox-item">
+               <text-field
+                 v-model="due_date"
+                 type="date"
+               />
+            </div>
+            <div class="flexrow-item combobox-item">
+               <button
+                 class="button is-success confirm-button"
+                 @click="confirmDueDateChange"
+               >
+                 {{ $t('main.confirmation') }}
+               </button>
+            </div>
+          </div>
+        </div>
+
         <div
           class="flexrow-item"
           v-if="selectedBar === 'estimations'"

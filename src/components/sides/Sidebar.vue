@@ -108,7 +108,7 @@
            <h2>{{ $t('productions.task_management') }}</h2>
 
            <p v-for="task in taskTypes" :key="task.task_type_id" @click="toggleSidebar()" class="menu_sublink">
-             <router-link :to="{name: 'shots-task-type', params: { task_type_id: task.id, production_id: currentProduction.id }}">
+             <router-link :to="{name: 'task-type', params: { task_type_id: task.id, production_id: currentProduction.id, type: task.type }}">
               -{{ task.name }}
              </router-link>
            </p>
@@ -194,13 +194,256 @@ export default {
       'isCurrentUserClient',
       'isCurrentUserCGArtist',
       'isCurrentUserManager',
-      'isCurrentUserAdmin'
+      'isCurrentUserAdmin',
+      'openProductionOptions',
+      'assetsPath',
+      'currentEpisode',
+      'currentProduction',
+      'episodes',
+      'episodeOptions',
+      'isDarkTheme',
+      'isSidebarHidden',
+      'isUserMenuHidden',
+      'isTVShow',
+      'isNewNotification',
+      'openProductions',
+      'openProductionOptions',
+      'productionMap',
+      'user',
+      'taskTypes'
     ])
   },
   methods: {
     ...mapActions([
-      'toggleSidebar'
-    ])
+      'toggleSidebar',
+      'clearEpisodes',
+      'loadEpisodes',
+      'loadNotification',
+      'logout',
+      'setProduction',
+      'setCurrentEpisode',
+      'toggleDarkTheme',
+      'toggleSidebar',
+      'toggleUserMenu'
+    ]),
+
+    onLogoutClicked () {
+      this.logout((err, success) => {
+        if (err) console.log(err)
+        this.toggleUserMenu()
+        if (success) this.$router.push('/login')
+      })
+    },
+
+    getCurrentSectionFromRoute () {
+      let name = ''
+      const segments = this.$route.path.split('/')
+      if (this.isTVShow) {
+        name = segments[5]
+      }
+      if (!name) {
+        name = segments[3]
+
+        if (name === 'episodes' && segments.length === 6) {
+          name = segments[5]
+        }
+      }
+
+      if (name === 'asset-types') name = 'assetTypes'
+      return name
+    },
+
+    updateRoute () {
+      const sectionFromRoute = this.getCurrentSectionFromRoute()
+      let section = this.currentProjectSection
+
+      const isProperContext =
+        section &&
+        this.$route.path.indexOf('manage') < 0
+
+      const isContextChanged =
+        section !== sectionFromRoute ||
+        this.$route.params.production_id !== this.currentProductionId ||
+        (
+          this.currentEpisodeId &&
+          this.$route.params.episode_id &&
+          this.$route.params.episode_id !== this.currentEpisodeId
+        )
+
+      if (isProperContext && isContextChanged) {
+        if (section === 'assetTypes') section = 'production-asset-types'
+        this.pushContextRoute(section)
+      }
+
+      return this.$route.path
+    },
+
+    pushContextRoute (section) {
+      let episodeId = this.currentEpisodeId
+      let isTVShow = !!this.currentEpisodeId
+
+      let route = {
+        name: section,
+        params: {
+          production_id: this.currentProductionId
+        }
+      }
+
+      if (
+        this.productionMap[this.currentProductionId] &&
+        (
+          this.$route.params.production_id !== this.currentProductionId ||
+          !episodeId
+        )
+      ) {
+        episodeId =
+          this.productionMap[this.currentProductionId].first_episode_id
+        isTVShow =
+          this.productionMap[this.currentProductionId].production_type === 'tvshow'
+      }
+
+      const isEpisodeContext =
+        isTVShow &&
+        section !== 'team' &&
+        section !== 'episodes'
+
+      if (isEpisodeContext) {
+        route.name = `episode-${section}`
+        route.params.episode_id = episodeId
+      } else if (section === 'episodes' && !isTVShow) {
+        route.name = 'assets'
+      }
+
+      if (
+        route.params.production_id
+      ) {
+        this.$router.push(route)
+      }
+    },
+
+    clearContext () {
+      this.silent = true
+      this.currentProductionId = null
+      this.currentEpisodeId = null
+      this.currentProjectSection = null
+      this.setCurrentEpisode(null)
+      this.setProduction(null)
+      this.silent = false
+    },
+
+    setProductionFromRoute () {
+      const routeProductionId = this.$route.params.production_id
+      const routeEpisodeId = this.$route.params.episode_id
+      if (!this.currentProduction ||
+          this.currentProductionId !== routeProductionId ||
+          this.currentProduction.id !== routeProductionId
+      ) {
+        this.setProduction(routeProductionId)
+        if (this.isTVShow) {
+          this.loadEpisodes(() => {
+            this.setEpisodeFromRoute()
+            this.updateComboFromRoute()
+          })
+        } else {
+          this.updateComboFromRoute()
+        }
+      } else if (
+        this.episodes.length < 2 &&
+        this.isTVShow &&
+        (
+          !this.currentEpisode ||
+          this.currentEpisode.id !== routeEpisodeId
+        )
+      ) {
+        // This loading is required when the production is the first production
+        // it is already set as current production but episodes are not
+        // loaded.
+        this.loadEpisodes(() => {
+          this.setEpisodeFromRoute()
+          this.updateComboFromRoute()
+        })
+      } else {
+        if (this.assetsPath.name === 'open-productions' && routeProductionId) {
+          this.setProduction(routeProductionId)
+        }
+        this.setEpisodeFromRoute()
+        this.updateComboFromRoute()
+      }
+    },
+
+    setEpisodeFromRoute () {
+      const routeEpisodeId = this.$route.params.episode_id
+      if (this.isTVShow) {
+        if (
+          !this.currentEpisode ||
+          this.currentEpisodeId !== routeEpisodeId ||
+          this.currentEpisode.id !== routeEpisodeId
+        ) {
+          this.setCurrentEpisode(routeEpisodeId)
+        }
+      } else {
+        this.silent = true
+        this.clearEpisodes()
+        this.currentEpisodeId = null
+        this.silent = false
+      }
+    },
+
+    updateContext (productionId) {
+      if (!productionId) {
+        this.clearContext()
+      } else {
+        this.setProductionFromRoute()
+      }
+    },
+
+    updateComboFromRoute () {
+      const productionId = this.$route.params.production_id
+      const episodeId = this.$route.params.episode_id
+      const section = this.getCurrentSectionFromRoute()
+
+      this.silent = true
+      this.currentProductionId = productionId
+      this.currentEpisodeId = episodeId
+      this.currentProjectSection = section
+      this.silent = false
+    }
+  },
+
+  watch: {
+    $route () {
+      const productionId = this.$route.params.production_id
+      this.updateContext(productionId)
+    },
+
+    currentProductionId () {
+      if (!this.silent) this.updateRoute()
+    },
+
+    currentEpisodeId () {
+      if (!this.silent) this.updateRoute()
+    },
+
+    currentProjectSection () {
+      if (!this.silent) this.updateRoute()
+    }
+  },
+
+  socket: {
+    events: {
+      'notifications:new' (eventData) {
+        if (this.user.id === eventData.person_id) {
+          const notificationId = eventData.notification_id
+          this.loadNotification(notificationId)
+        }
+      },
+
+      'person:update' (eventData) {
+        if (this.user.id === eventData.person_id) {
+          this.$refs.avatar.reloadAvatar()
+        }
+      }
+    }
   }
 }
 </script>

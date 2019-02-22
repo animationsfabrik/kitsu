@@ -202,7 +202,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { SearchIcon } from 'vue-feather-icons'
-import { entityListMixin } from './lists/base'
+import { entityListMixin } from '../lists/base'
 
 import AddMetadataModal from '../modals/AddMetadataModal'
 import ButtonHrefLink from '../widgets/ButtonHrefLink'
@@ -348,7 +348,7 @@ export default {
   },
 
   created () {
-    this.setLastProductionScreen('shots')
+    // this.setLastProductionScreen('shots')
   },
 
   mounted () {

@@ -8,21 +8,25 @@
   }"
   :title="$t(isShowAssignations ? 'tasks.hide_assignations' : 'tasks.show_assignations')"
   @click="toggleAssignations"
+  style="background: none; border: none; box-shadow: none;"
 >
-  <users-icon class="icon is-small" />
+  <eye-off-icon class="icon is-small"></eye-off-icon>
+  <span class="text is-hidden-touch">{{ $t(isShowAssignations ? 'tasks.hide_assignations' : 'tasks.show_assignations') }}</span>
 </button>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import {
-  UsersIcon
+  EyeIcon,
+  EyeOffIcon
 } from 'vue-feather-icons'
 
 export default {
   name: 'show-assignations-button',
   components: {
-    UsersIcon
+    EyeIcon,
+    EyeOffIcon
   },
 
   props: {},

@@ -8,21 +8,25 @@
   }"
   :title="$t(isShowInfos ? 'tasks.hide_infos' : 'tasks.show_infos')"
   @click="toggleInfos"
+  style="background: none; border: none; box-shadow: none;"
 >
-  <database-icon class="icon is-small" />
+  <eye-off-icon class="icon is-small"></eye-off-icon>
+  <span class="text is-hidden-touch">{{ $t(isShowInfos ? 'tasks.hide_infos': 'tasks.show_infos') }}</span>
 </button>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import {
-  DatabaseIcon
+  EyeIcon,
+  EyeOffIcon
 } from 'vue-feather-icons'
 
 export default {
   name: 'show-infos-button',
   components: {
-    DatabaseIcon
+    EyeIcon,
+    EyeOffIcon
   },
 
   props: {
