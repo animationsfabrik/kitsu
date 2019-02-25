@@ -28,7 +28,7 @@
         @keyup.enter.ctrl="runAddComment(text, task_status_id)"
         v-focus>
       </textarea>
-      <div class="flexrow preview-section">
+      <!--<div class="flexrow preview-section">
         <button
           class="button flexrow-item"
           @click="$emit('add-preview')"
@@ -49,7 +49,7 @@
             {{ attachedFileName }}
           </em>
         </span>
-      </div>
+      </div>-->
       <div class="flexrow mt1">
         <span class="flexrow-item">
           {{ $t('comments.set_status_to') }}
@@ -85,6 +85,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ComboboxStatus from './ComboboxStatus'
 import PeopleAvatar from './PeopleAvatar'
 
@@ -156,6 +157,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters([
+      'taskStatusMap'
+    ]),
     isFileAttached () {
       return (
         this.attachedFileName !== undefined &&

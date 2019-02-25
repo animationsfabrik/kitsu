@@ -50,6 +50,7 @@ import {
   SET_IS_SHOW_TASKS,
   SET_IS_SHOW_DUE_DATES,
   SET_IS_SHOW_INFOS,
+  SET_IS_SHOW_SEQUENCE_STATS,
   SET_DISPLAYED_TASKS,
   DELETE_PREVIEW_END,
 
@@ -85,6 +86,7 @@ const initialState = {
   isShowTasks: true,
   isShowDueDates: true,
   isShowInfos: true,
+  isShowSequenceStats: true,
 
   isSavingCommentPreview: false,
   previewFormData: null
@@ -148,6 +150,7 @@ const getters = {
   isShowTasks: state => state.isShowTasks,
   isShowDueDates: state => state.isShowDueDates,
   isShowInfos: state => state.isShowInfos,
+  isShowSequenceStats: state => state.isShowSequenceStats,
   displayedTasks: state => state.displayedTasks,
   taskEntityPreviews: state => state.taskEntityPreviews,
   previewFormData: state => state.previewFormData,
@@ -713,6 +716,14 @@ const actions = {
     commit(SET_IS_SHOW_INFOS, true)
   },
 
+  showSequenceStats ({ commit, state }) {
+    commit(SET_IS_SHOW_SEQUENCE_STATS, true)
+  },
+
+  hideSequenceStats ({ commit, state }) {
+    commit(SET_IS_SHOW_SEQUENCE_STATS, false)
+  },
+
   hideInfos ({ commit, state }) {
     commit(SET_IS_SHOW_INFOS, false)
   },
@@ -1221,6 +1232,10 @@ const mutations = {
 
   [SET_IS_SHOW_INFOS] (state, isShowInfos) {
     state.isShowInfos = isShowInfos
+  },
+
+  [SET_IS_SHOW_SEQUENCE_STATS] (state, isShowSequenceStats) {
+    state.isShowSequenceStats = isShowSequenceStats
   },
 
   [LOAD_PERSON_TASKS_END] (state, { tasks }) {

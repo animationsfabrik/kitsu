@@ -31,7 +31,6 @@
               :can-save="true"
               @change="onSearchChange"
               @save="saveSearchQuery"
-              placeholder="ex: retake chara"
             />
           </div>
           <div class="flexrow-item ml1">

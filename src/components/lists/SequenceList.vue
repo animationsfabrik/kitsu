@@ -72,7 +72,7 @@
         >
 
           <td class="name">
-            <router-link :to="production-planning">
+            <router-link to="shots">
               {{ entry.name }}
             </router-link>
           </td>
@@ -85,15 +85,22 @@
             class="validation"
             :style="getValidationStyle(columnId)"
             :key="columnId"
-            v-for="columnId in sortedValidationColumns">
-            <pie-chart
-              width="70px"
-              height="50px"
-              :legend="false"
-              :colors="chartColors(entry, taskTypeMap[columnId])"
-              :data="chartData(entry, taskTypeMap[columnId])"
-              v-if="isStats(entry, taskTypeMap[columnId])"
-            />
+            v-for="columnId in sortedValidationColumns"
+          >
+            <div v-if="isStats(entry, taskTypeMap[columnId]) && isShowSequenceStats">
+              <pie-chart
+                width="70px"
+                height="50px"
+                :legend="false"
+                :colors="chartColors(entry, taskTypeMap[columnId])"
+                :data="chartData(entry, taskTypeMap[columnId])"
+                v-if="isStats(entry, taskTypeMap[columnId])"
+              />
+
+              <li v-for="data in chartData(entry, taskTypeMap[columnId])" :key="data[0]">
+                {{ data[0] }} {{ data[1] }}
+              </li>
+            </div>
           </td>
 
           <row-actions v-if="isCurrentUserManager"
@@ -163,7 +170,8 @@ export default {
       'isCurrentUserManager',
       'isTVShow',
       'sequenceSearchText',
-      'taskTypeMap'
+      'taskTypeMap',
+      'isShowSequenceStats'
     ]),
 
     isEmptyList () {

@@ -52,7 +52,7 @@
 
     Due date: {{ (task.due_date || "").split(" ")[0] }}
     </div>
-    <button class="button is-primary" @click="newTaskVersion(task.id, user.id)">New Version</button>
+    <button class="button is-primary" @click="newTaskVersion(task.id, user.id)">{{ $t('tasks.new_version') }}</button>
 
     <div class="task-columns" ref="task-columns">
       <div class="task-column preview-column">
@@ -125,6 +125,7 @@
               :label="'Version'"
               :options="taskWorkingFiles.map(obj => { var rObj = {}; rObj['label'] = obj['revision']; rObj['value'] = obj['id']; return rObj;})"
             />
+          <button class="button is-primary" @click="checkoutWorkingFile(this.taskWorkingFile[0].id, task.id, user.id)">Checkout</button>
           </div>
         </div>
       </div>
@@ -214,6 +215,7 @@ import {
   getTaskTypeStyle
 } from '../../lib/helpers'
 
+import filesApi from '../../store/api/files'
 import tasksApi from '../../store/api/tasks'
 import AddComment from '../widgets/AddComment'
 import AddPreviewModal from '../modals/AddPreviewModal'
@@ -502,6 +504,11 @@ export default {
       let newVersion = tasksApi.newTaskVersion(taskId, userId)
       this.reset()
       return newVersion
+    },
+
+    checkoutWorkingFile (workingFileId, taskId, userId) {
+      filesApi.checkoutWorkingFile(workingFileId, taskId, userId)
+      return true
     },
 
     getPath (section, taskId) {

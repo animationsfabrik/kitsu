@@ -34,7 +34,7 @@
       v-if="isAssignees && isShowAssignations && !isCurrentUserClient"
       v-for="personId in assignees"
     />
-    <div v-if="task && isShowDueDates && !isCurrentViewTaskType">
+    <div v-if="task && isShowDueDates && !isCurrentViewTaskType && !isCurrentViewTodos">
       <div v-if="task.due_date">
         {{ task.due_date === typeof "undefined" ? "" : task.due_date === "None" ? "" : task.due_date.split(' ')[0] }}
       </div>
@@ -149,6 +149,10 @@ export default {
 
     isCurrentViewTaskType () {
       return this.$route.path.indexOf('task-type') > 0
+    },
+
+    isCurrentViewTodos () {
+      return this.$route.path.indexOf('todos') > 0
     },
 
     taskStatus () {

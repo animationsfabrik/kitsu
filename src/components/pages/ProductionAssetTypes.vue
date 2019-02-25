@@ -5,7 +5,6 @@
         <search-field
           ref="asset-type-search-field"
           @change="onSearchChange"
-          placeholder="ex: chars, agent327"
         />
       </div>
     </div>

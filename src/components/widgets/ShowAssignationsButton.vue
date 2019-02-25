@@ -10,7 +10,8 @@
   @click="toggleAssignations"
   style="background: none; border: none; box-shadow: none;"
 >
-  <eye-off-icon class="icon is-small"></eye-off-icon>
+  <eye-off-icon v-if="isShowAssignations" class="icon is-small"></eye-off-icon>
+  <eye-icon v-else class="icon is-small"></eye-icon>
   <span class="text is-hidden-touch">{{ $t(isShowAssignations ? 'tasks.hide_assignations' : 'tasks.show_assignations') }}</span>
 </button>
 </template>

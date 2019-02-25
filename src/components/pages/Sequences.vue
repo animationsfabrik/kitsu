@@ -6,8 +6,10 @@
           <search-field
             ref="sequence-search-field"
             @change="onSearchChange"
-            placeholder="ex: e01 s01 anim=wip"
           />
+        </div>
+        <div class="level-right">
+          <show-sequence-stats-button class="level-item" />
         </div>
       </div>
     </div>
@@ -52,6 +54,7 @@ import DeleteModal from '../widgets/DeleteModal'
 import EditSequenceModal from '../modals/EditSequenceModal'
 import PageTitle from '../widgets/PageTitle'
 import SearchField from '../widgets/SearchField'
+import ShowSequenceStatsButton from '../widgets/ShowSequenceStatsButton'
 
 export default {
   name: 'sequences',
@@ -62,7 +65,8 @@ export default {
     DeleteModal,
     PageTitle,
     SearchField,
-    SearchIcon
+    SearchIcon,
+    ShowSequenceStatsButton
   },
 
   data () {

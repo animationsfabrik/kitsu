@@ -759,7 +759,11 @@ const mutations = {
       if (!isDueDate && shot.data.due_date) isDueDate = true
       if (!isShotLength && shot.data.shot_length) isShotLength = true
 
-      state.displayedShotsShotLengths = state.displayedShotsShotLengths + parseInt(shot.data.shot_length)
+      if (isShotLength) {
+        state.displayedShotsShotLengths = state.displayedShotsShotLengths + parseInt(shot.data.shot_length)
+      } else {
+        state.displayedShotsShotLenghts = state.displayedShotsShotLengths + 0
+      }
 
       state.shotMap[shot.id] = shot
     })

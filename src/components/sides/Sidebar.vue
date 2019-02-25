@@ -131,11 +131,11 @@
               -{{ $t('productions.asset_type_planning') }}
              </router-link>
            </p>
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <!--<p @click="toggleSidebar()" class="menu_sublink">
              <router-link :to="{name: 'custom-actions'}">
               -{{ $t('custom_actions.title') }}
              </router-link>
-           </p>
+           </p>-->
          </div>
 
         </section>

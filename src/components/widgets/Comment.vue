@@ -10,9 +10,9 @@
   }"
 >
 
-  <figure class="media-left">
+  <!--<figure class="media-left">
     <people-avatar class="level-item" :person="comment.person" />
-  </figure>
+  </figure>-->
 
   <div class="media-content">
     <div class="content">
@@ -21,6 +21,7 @@
           <strong class="">
             <people-name class="" :person="comment.person" />
           </strong>
+          <validation-tag :status="comment.task_status_id" :task="getTask(comment.object_id)" />
           <span class="comment-date">
             {{ formatDate(comment.created_at) }}
           </span>
@@ -57,11 +58,11 @@
         </router-link>
       </div>
 
-      <p v-if="comment.task_status.name === 'Done'">
+      <!--<p v-if="comment.task_status.name === 'Done'">
         <span :style="{'color': comment.task_status.color}">
         {{ $t('comments.validated') }}
         </span>
-      </p>
+      </p>-->
 
       <p
         v-html="compileMarkdown(comment.text)"
@@ -85,13 +86,15 @@ import { mapGetters } from 'vuex'
 import PeopleAvatar from './PeopleAvatar.vue'
 import PeopleName from './PeopleName.vue'
 import ButtonLink from './ButtonLink.vue'
+import ValidationTag from './ValidationTag.vue'
 
 export default {
   name: 'comment',
   components: {
     PeopleAvatar,
     PeopleName,
-    ButtonLink
+    ButtonLink,
+    ValidationTag
   },
 
   props: {
@@ -173,6 +176,14 @@ export default {
 
     compileMarkdown (input) {
       return marked(input || '')
+    },
+
+    getTask (task) {
+      if (typeof (task) === 'string') {
+        return this.taskMap[task]
+      } else {
+        return task
+      }
     },
 
     getPath (name) {

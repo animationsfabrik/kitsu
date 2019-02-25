@@ -11,7 +11,6 @@
                 :can-save="true"
                 @change="onSearchChange"
                 @save="saveSearchQuery"
-                placeholder="ex: props modeling=wip"
               />
             </div>
           </div>

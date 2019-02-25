@@ -10,7 +10,8 @@
   @click="toggleInfos"
   style="background: none; border: none; box-shadow: none;"
 >
-  <eye-off-icon class="icon is-small"></eye-off-icon>
+  <eye-off-icon v-if="isShowInfos" class="icon is-small"></eye-off-icon>
+  <eye-icon v-else class="icon is-small"></eye-icon>
   <span class="text is-hidden-touch">{{ $t(isShowInfos ? 'tasks.hide_infos': 'tasks.show_infos') }}</span>
 </button>
 </template>

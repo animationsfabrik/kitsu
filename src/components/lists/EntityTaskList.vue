@@ -14,6 +14,9 @@
           <th class="assignees">
             {{ $t('tasks.fields.assignees') }}
           </th>
+          <th class="due_date">
+            {{ $t('tasks.fields.due_date') }}
+          </th>
         </tr>
       </thead>
     </table>
@@ -48,15 +51,19 @@
                 :key="personId"
                 v-for="personId in getAssignees(task)"
               >
-                <people-avatar
+                {{ personMap[personId].name }}
+                <!--<people-avatar
                   class="person-avatar flexrow-item"
                   :key="task.id + '-' + personId"
                   :person="personMap[personId]"
                   :size="30"
                   :font-size="15"
-                />
+                />-->
               </div>
             </div>
+          </td>
+          <td class="due_date">
+            {{ getDueDate(task) }}
           </td>
        </tr>
       </tbody>
@@ -68,11 +75,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-
+import moment from 'moment-timezone'
 import TaskTypeName from '../cells/TaskTypeName'
 import TableInfo from '../widgets/TableInfo'
 import ValidationTag from '../widgets/ValidationTag'
 import PeopleAvatar from '../widgets/PeopleAvatar'
+import LastCommentCell from '../cells/LastCommentCell'
 
 export default {
   name: 'todos-list',
@@ -81,7 +89,8 @@ export default {
     TableInfo,
     TaskTypeName,
     PeopleAvatar,
-    ValidationTag
+    ValidationTag,
+    LastCommentCell
   },
 
   props: {
@@ -116,6 +125,11 @@ export default {
       this.$refs.headerWrapper.style.left = `-${position.scrollLeft}px`
     },
 
+    formatDate (date) {
+      if (date) return moment(date).format('YYYY-MM-DD')
+      else return ''
+    },
+
     getTask (task) {
       if (typeof (task) === 'string') {
         return this.taskMap[task]
@@ -132,6 +146,16 @@ export default {
     getAssignees (entry) {
       const task = this.getTask(entry)
       return task ? task.assignees : []
+    },
+
+    getDueDate (entry) {
+      const task = this.getTask(entry)
+      return task ? this.formatDate(task.due_date) : []
+    },
+
+    getLastComment (entry) {
+      const task = this.getTask(entry)
+      return task ? task.id : []
     }
   }
 }
@@ -139,7 +163,7 @@ export default {
 
 <style lang="scss" scoped>
 .data-list {
-  max-width: 500px;
+  max-width: 652px;
 }
 
 .type {
@@ -155,6 +179,16 @@ export default {
 .assignees {
   max-width: 150px;
   min-width: 150px;
+}
+
+.due_date {
+  max-width: 150px;
+  min-width: 150px;
+}
+
+.last_comment {
+  max-width: 200px;
+  min-width: 200px;
 }
 
 .flexrow-item {

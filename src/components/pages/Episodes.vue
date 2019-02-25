@@ -5,7 +5,6 @@
         <search-field
           ref="episode-search-field"
           @change="onSearchChange"
-          placeholder="ex: e01 s01, anim=wip"
         />
       </div>
     </div>

@@ -36,7 +36,6 @@
       ref="people-search-field"
       :can-save="false"
       @change="onSearchChange"
-      placeholder="ex: John Doe"
     />
 
     <people-list

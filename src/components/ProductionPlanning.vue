@@ -6,7 +6,6 @@
           <search-field
             ref="sequence-search-field"
             @change="onSearchChange"
-            placeholder="ex: e01 s01 anim=wip"
           />
         </div>
       </div>

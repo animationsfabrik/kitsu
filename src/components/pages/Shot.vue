@@ -36,7 +36,7 @@
     />
     </div>
     <div class="column">
-      <page-subtitle :text="$t('main.info')" />
+      <page-subtitle :text="$t('shots.information')" />
       <div class="table-body">
         <table class="table" v-if="currentShot">
           <tbody>
