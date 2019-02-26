@@ -6,7 +6,7 @@
     highlighted: highlighted
   }"
   :style="{
-    'border-left': '6px solid ' + comment.task_status.color
+    'background-color': darkenColor(comment.task_status.color)
   }"
 >
 
@@ -82,6 +82,7 @@
 import marked from 'marked'
 import moment from 'moment-timezone'
 import { mapGetters } from 'vuex'
+import colors from '../../lib/colors'
 
 import PeopleAvatar from './PeopleAvatar.vue'
 import PeopleName from './PeopleName.vue'
@@ -165,6 +166,10 @@ export default {
   },
 
   methods: {
+    darkenColor (color) {
+      return colors.darkenColor(color)
+    },
+
     formatDate (date) {
       const utcDate = moment.tz(date, 'UTC')
       if (moment().diff(utcDate, 'days') > 1) {

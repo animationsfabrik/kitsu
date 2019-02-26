@@ -15,6 +15,7 @@
         ref="select"
         @keyup.enter="emitEnter()"
         @change="updateValue"
+        :style="{'background-color': this.background}"
       >
         <option
           v-for="(option, i) in options"
@@ -79,6 +80,10 @@ export default {
     isSimple: {
       default: false,
       type: Boolean
+    },
+    background: {
+      default: '',
+      type: String
     }
   },
 

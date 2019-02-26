@@ -106,8 +106,6 @@ export default {
     taskStatus () {
       if (this.task) {
         const taskStatusId = this.status ? this.status : this.task.task_status_id
-        console.log(this.status)
-        console.log(this.taskStatusMap['1aeedf90-6ff5-4092-9c7c-c6b2089a96e0'])
         return this.taskStatusMap ? this.taskStatusMap[taskStatusId] : {}
       } else {
         return {}

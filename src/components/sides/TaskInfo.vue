@@ -561,7 +561,6 @@ export default {
     reset () {
       this.taskComments = this.getTaskComments(this.task.id)
       this.taskWorkingFiles = this.getTaskWorkingFiles(this.task.id)
-      console.log(this.taskWorkingFiles)
       this.taskPreviews = this.getTaskPreviews(this.task.id)
       this.setOtherPreviews()
       this.currentPreviewPath = this.getOriginalPath()

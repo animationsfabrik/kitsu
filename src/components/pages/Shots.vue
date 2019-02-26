@@ -20,19 +20,17 @@
             <display-select-menu
               ref="displaySelectMenu"
             />
-            <!--<button-link
+            <combobox
               class="level-item"
-              :text="$t('shots.task_display')"
-              icon="edit"
-              :is-responsive="true"
-              :path="taskDisplayPath"
-            />-->
+              :options="getSequenceOptions"
+              :is-top="false"
+              @input="onSequenceSelect"
+              style="margin-bottom: 0px"
+              background="#4E5159"
+            />
             <div class="level-item">
               <button class="button" @click="showDisplaySelectMenu($event)">Show / Hide</button>
             </div>
-            <!--<show-due-dates-button class="level-item"/>
-            <show-tasks-button class="level-item"/>
-            <show-assignations-button class="level-item"/>-->
             <button-link
               class="level-item"
               :text="$t('main.csv.import_file')"
@@ -331,7 +329,9 @@ export default {
       'shotsPath',
       'shotValidationColumns',
       'shotListScrollPosition',
-      'taskTypeMap'
+      'taskTypeMap',
+      'getSequenceOptions',
+      'sequenceMap'
     ]),
 
     importPath () {
@@ -407,6 +407,13 @@ export default {
       'showTasks',
       'hideTasks'
     ]),
+
+    onSequenceSelect (value) {
+      const sequence = this.sequenceMap[value].name
+      const searchQuery = sequence
+      this.setShotSearch(searchQuery)
+      this.resizeHeaders()
+    },
 
     confirmAddMetadata (form) {
       this.loading.addMetadata = true

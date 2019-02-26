@@ -27,9 +27,6 @@
                 :is-top="true"
                 v-model="currentProductionId"
               />
-              <strong>
-              >
-              </strong>
             </div>
           </div>
         </div>
