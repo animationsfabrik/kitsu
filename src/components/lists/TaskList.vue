@@ -85,6 +85,7 @@
             <entity-thumbnail
               :entity="getEntity(task.entity.id)"
               :width="50"
+              :height="33"
             />
           </td>
           <td class="asset-type" v-if="isAssets">
@@ -117,7 +118,7 @@
             </div>
           </td>
           <td class="estimation">
-            {{ task.estimation }}
+            {{ formatEstimation(task.estimation) }}
           </td>
           <td class="duration">
             {{ formatDuration(task.duration) }}
@@ -260,6 +261,18 @@ export default {
       'clearSelectedTasks',
       'removeSelectedTask'
     ]),
+
+    formatEstimation (estimation) {
+      if (estimation) {
+        if (estimation < 10) {
+          return estimation
+        } else {
+          return this.formatDuration(estimation)
+        }
+      } else {
+        return 0
+      }
+    },
 
     formatDuration (duration) {
       if (duration) {

@@ -590,11 +590,14 @@ export default {
 
     confirmEstimationChange () {
       this.isChangeEstimationLoading = true
-      this.changeSelectedEstimations(this.estimation)
+      const estimation = Math.floor(this.estimation * 8 * 60)
+      this.changeSelectedEstimations(estimation)
         .then(() => {
           this.isChangeEstimationLoading = false
         })
         .catch((err) => {
+          this.isChangeEstimationLoading = false
+          this.isChangeEstimationError = true
           console.error(err)
         })
     },
@@ -723,6 +726,10 @@ export default {
     },
 
     currentProductionTeam () {
+      this.setCurrentTeam()
+    },
+
+    people () {
       this.setCurrentTeam()
     },
 
