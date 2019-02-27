@@ -121,7 +121,6 @@ const getters = {
   },
 
   getTaskWorkingFile: (state, getters) => (taskId, workingFileId) => {
-    console.log('getTaskWorkingFile')
     return state.taskWorkingFiles[taskId].find(
       (workingFile) => workingFile.id === workingFileId
     )
@@ -274,7 +273,6 @@ const actions = {
     { commit, state },
     { taskId, callback }
   ) {
-    console.log('loadTaskWorkingFiles')
     tasksApi.getTaskWorkingFiles(taskId, (err, workingFiles) => {
       if (err) {
         callback(err)
@@ -312,7 +310,6 @@ const actions = {
 
   loadWorkingFile ({ commit, state }, { workingFileId, callback }) {
     tasksApi.getTaskWorkingFile({ id: workingFileId }, (err, workingFile) => {
-      console.log('loadWorkingFile')
       if (!err) {
         commit(NEW_TASK_WORKING_FILE_END, { workingFile, taskId: workingFile.object_id })
       } else { console.log(err) }
@@ -916,14 +913,10 @@ const mutations = {
         return previews
       }
     }, [])
-    console.log('commentsstate')
-    console.log(state.taskComments[taskId])
   },
 
   [LOAD_TASK_WORKING_FILES_END] (state, { taskId, workingFiles }) {
     state.taskWorkingFiles[taskId] = workingFiles
-    console.log('LOAD_TASK_WORKING_FILES_END')
-    console.log(state.taskWorkingFiles[taskId])
   },
 
   [LOAD_TASK_STATUSES_END] (state, taskStatuses) {
@@ -937,15 +930,11 @@ const mutations = {
 
   [NEW_TASK_WORKING_FILE_END] (state, { workingFile, taskId }) {
     const task = state.taskMap[taskId]
-    console.log('NEW_TASK_WORKING_FILE_END')
 
     if (!state.taskWorkingFiles[taskId]) state.taskWorkingFiles[taskId] = []
     if (!state.taskWorkingFiles[taskId].find((wf) => wf.id === workingFile.id)) {
       state.taskWorkingFiles[taskId].unshift(workingFile)
     }
-
-    console.log('2')
-    console.log(state.taskWorkingFiles[taskId])
 
     if (task) {
       Object.assign(task, {
@@ -956,7 +945,6 @@ const mutations = {
 
   [NEW_TASK_COMMENT_END] (state, { comment, taskId }) {
     const task = state.taskMap[taskId]
-    console.log('NEW_TASK_COMMENT_END')
     if (comment.task_status === undefined) {
       const getTaskStatus = getters.getTaskStatus(state, getters)
       comment.task_status = getTaskStatus(comment.task_status_id)
@@ -1172,7 +1160,6 @@ const mutations = {
   [EDIT_TASK_END] (state, { task }) {
     const currentTask = state.taskMap[task.id]
     if (currentTask) {
-      console.log(task.due_date)
       Object.assign(state.taskMap[task.id], {
         task_status_id: task.task_status_id,
         task_status_short_name:
