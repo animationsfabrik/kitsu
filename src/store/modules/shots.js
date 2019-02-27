@@ -337,7 +337,7 @@ const actions = {
     const taskTypeMap = rootGetters.taskTypeMap
     const personMap = rootGetters.personMap
     const isTVShow = rootGetters.isTVShow
-    const episode = rootGetters.currentEpisode
+    const episode = isTVShow ? rootGetters.currentEpisode : null
 
     if (isTVShow && !episode) {
       return callback()
@@ -847,6 +847,8 @@ const mutations = {
 
     if (state.episodes.length > 0) {
       state.currentEpisode = state.episodes[0]
+    } else {
+      state.currentEpisode = null
     }
   },
 
@@ -959,6 +961,7 @@ const mutations = {
       cache.shots.splice(shotToDeleteIndex, 1)
       state.displayedShots.splice(displayedShotToDeleteIndex, 1)
       state.shotMap[shotToDelete.id] = undefined
+      state.displayedShotsLength = Math.max(state.displayedShotsLength - 1, 0)
     }
 
     state.deleteShot = {
@@ -979,6 +982,7 @@ const mutations = {
     )
     state.sequences.splice(sequenceToDeleteIndex, 1)
     state.displayedSequences.splice(displayedSequenceToDeleteIndex, 1)
+    state.displayedSequencesLength = state.displayedSequences.length
     state.sequenceMap[sequenceToDelete.id] = undefined
     state.sequenceIndex = buildSequenceIndex(state.sequences)
   },
@@ -994,6 +998,7 @@ const mutations = {
     )
     state.episodes.splice(episodeToDeleteIndex, 1)
     state.displayedEpisodes.splice(displayedEpisodeToDeleteIndex, 1)
+    state.displayedEpisodesLength = state.displayedEpisodes.length
     state.episodeMap[episodeToDelete.id] = undefined
     state.episodeIndex = buildEpisodeIndex(state.episodes)
   },
@@ -1095,6 +1100,7 @@ const mutations = {
     cache.shots.push(shot)
     cache.shots = sortShots(cache.shots)
     state.displayedShots = cache.shots.slice(0, PAGE_SIZE)
+    state.displayedShotsLength = cache.shots.length
     state.shotFilledColumns = getFilledColumns(state.displayedShots)
     state.shotMap[shot.id] = shot
     cache.shotIndex = buildShotIndex(cache.shots)

@@ -421,7 +421,6 @@ const actions = {
         next()
       }
     }, (err) => {
-      commit(CLEAR_SELECTED_TASKS)
       callback(err)
     })
   },
