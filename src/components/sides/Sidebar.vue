@@ -467,7 +467,7 @@ export default {
   bottom: 0;
   left: 0;
   width: 215px;
-  background-color: white;
+  background-color: #464646;
   padding: 20px 1em 1em 1em;
   overflow-y: auto;
   z-index: 205;

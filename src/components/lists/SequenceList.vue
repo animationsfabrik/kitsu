@@ -86,8 +86,8 @@
             :style="getValidationStyle(columnId)"
             :key="columnId"
             v-for="columnId in sortedValidationColumns"
-          >
-            <div v-if="isStats(entry, taskTypeMap[columnId]) && isShowSequenceStats">
+          >aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            <!--<div v-if="isStats(entry, taskTypeMap[columnId]) && isShowSequenceStats">
               <pie-chart
                 width="70px"
                 height="50px"
@@ -97,10 +97,12 @@
                 v-if="isStats(entry, taskTypeMap[columnId])"
               />
 
+              <div>
               <li v-for="data in chartData(entry, taskTypeMap[columnId])" :key="data[0]">
                 {{ data[0] }} {{ data[1] }}
               </li>
-            </div>
+              </div>
+            </div>-->
           </td>
 
           <row-actions v-if="isCurrentUserManager"

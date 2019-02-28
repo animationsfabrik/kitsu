@@ -50,7 +50,7 @@
 
     <div class="task_info_due_date">
 
-    Due date: {{ (task.due_date || "").split(" ")[0] }}
+    Due date: {{ (formatDate(task.due_date)) }}
     </div>
     <button class="button is-primary" @click="newTaskVersion(task.id, user.id)">{{ $t('tasks.new_version') }}</button>
 
@@ -124,8 +124,11 @@
             <combobox
               :label="'Version'"
               :options="taskWorkingFiles.map(obj => { var rObj = {}; rObj['label'] = obj['revision']; rObj['value'] = obj['id']; return rObj;})"
+              v-model="selectedVersion"
+              @input="printSelectedVersion"
             />
-          <button class="button is-primary" @click="checkoutWorkingFile(this.taskWorkingFile[0].id, task.id, user.id)">Checkout</button>
+          <button class="button is-primary" @click="checkoutWorkingFile(selectedVersion, task.id, user.id)">{{ $t('tasks.checkout_version') }}</button>
+          <button style="float: right; background-color: #c51515;" class="button is-primary" @click="deleteWorkingFile(selectedVersion)">{{ $t('tasks.delete_version') }}</button>
           </div>
         </div>
       </div>
@@ -204,6 +207,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import moment from 'moment-timezone'
 import {
   ChevronLeftIcon,
   DownloadIcon,
@@ -264,6 +268,8 @@ export default {
   data () {
     return {
       addExtraPreviewFormData: null,
+      selectedVersion: '',
+      addExtraPreviewData: null,
       attachedFileName: '',
       currentPreviewPath: '',
       currentPreviewDlPath: '',
@@ -452,6 +458,11 @@ export default {
       'loadTaskWorkingFiles'
     ]),
 
+    formatDate (date) {
+      if (date) return moment(date).format('YYYY-MM-DD')
+      else return ''
+    },
+
     loadTaskData () {
       if (this.task) {
         this.loading.task = true
@@ -509,6 +520,16 @@ export default {
     checkoutWorkingFile (workingFileId, taskId, userId) {
       filesApi.checkoutWorkingFile(workingFileId, taskId, userId)
       return true
+    },
+
+    deleteWorkingFile (workingFileId) {
+      console.log(workingFileId)
+      filesApi.deleteWorkingFile(workingFileId)
+      return true
+    },
+
+    printSelectedVersion () {
+      console.log(this.selectedVersion)
     },
 
     getPath (section, taskId) {

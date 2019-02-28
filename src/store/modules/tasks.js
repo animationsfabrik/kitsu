@@ -1171,7 +1171,7 @@ const mutations = {
         real_end_date: task.end_date,
         last_comment_date: task.last_comment_date,
         retake_count: task.retake_count,
-        due_date: task.due_date.slice(0, 10)
+        due_date: task.due_date
       })
     }
   },

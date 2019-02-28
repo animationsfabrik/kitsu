@@ -828,6 +828,8 @@ div.combobox-item {
 }
 
 .action-bar {
+  left: 215px;
+  right: 399px;
   padding: 0;
   margin: 0;
 }
