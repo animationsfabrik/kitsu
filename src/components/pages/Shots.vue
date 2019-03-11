@@ -348,7 +348,7 @@ export default {
   },
 
   created () {
-    // this.setLastProductionScreen('shots')
+    this.setLastProductionScreen('shots')
   },
 
   mounted () {

@@ -86,23 +86,23 @@
             :style="getValidationStyle(columnId)"
             :key="columnId"
             v-for="columnId in sortedValidationColumns"
-          >aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            <!--<div v-if="isStats(entry, taskTypeMap[columnId]) && isShowSequenceStats">
-              <pie-chart
-                width="70px"
-                height="50px"
-                :legend="false"
-                :colors="chartColors(entry, taskTypeMap[columnId])"
-                :data="chartData(entry, taskTypeMap[columnId])"
-                v-if="isStats(entry, taskTypeMap[columnId])"
-              />
-
-              <div>
-              <li v-for="data in chartData(entry, taskTypeMap[columnId])" :key="data[0]">
-                {{ data[0] }} {{ data[1] }}
-              </li>
+          >
+            <div v-if="isStats(entry, taskTypeMap[columnId]) && isShowSequenceStats">
+              <div style="float: left;">  
+                <pie-chart
+                  width="70px"
+                  height="50px"
+                  :legend="false"
+                  :colors="chartColors(entry, taskTypeMap[columnId])"
+                  :data="chartData(entry, taskTypeMap[columnId])"
+                  v-if="isStats(entry, taskTypeMap[columnId])"
+                />
               </div>
-            </div>-->
+
+              <div v-for="data in chartData(entry, taskTypeMap[columnId])" :key="data[0]">
+                {{ data[0] }} ({{ Math.round(data[1] / chartTotal(entry, taskTypeMap[columnId]) * 100) }}%)
+              </div>
+            </div>
           </td>
 
           <row-actions v-if="isCurrentUserManager"
@@ -212,6 +212,14 @@ export default {
           this.sequenceStats[entry.id][column.id][key].value
         ]
       })
+    },
+
+    chartTotal (entry, column) {
+      let total = 0
+      for (var key in this.sequenceStats[entry.id][column.id]) {
+        total = total + this.sequenceStats[entry.id][column.id][key].value
+      }
+      return total
     },
 
     isStats (entry, column) {
@@ -327,9 +335,9 @@ td.name {
 }
 
 .validation {
-  min-width: 110px;
-  max-width: 110px;
-  width: 110px;
+  min-width: 180px;
+  max-width: 180px;
+  width: 180px;
   word-wrap: break-word;
 }
 
