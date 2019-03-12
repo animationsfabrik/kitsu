@@ -10,8 +10,10 @@ export default {
     const data = {
       first_name: person.first_name,
       last_name: person.last_name,
+      company: person.company,
       email: person.email.trim(),
       phone: person.phone,
+      mobile: person.mobile,
       role: person.role,
       active: person.active
     }
@@ -22,14 +24,20 @@ export default {
     const data = {
       first_name: person.first_name,
       last_name: person.last_name,
+      company: person.company,
       email: person.email.trim(),
       phone: person.phone,
+      mobile: person.mobile,
       timezone: person.timezone,
       locale: person.locale,
       role: person.role,
       active: person.active
     }
     client.put(`/api/data/persons/${person.id}`, data, callback)
+  },
+
+  updateSevdeskContacts (token, callback) {
+    client.post(`/api/data/persons/update-sevdesk?token=` + token, '', callback)
   },
 
   deletePerson (personId, callback) {

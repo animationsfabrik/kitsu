@@ -187,26 +187,28 @@ export default {
   notifications: {
     and_change_status: 'and changed status to',
     commented_on: 'commented on',
-    no_notifications: 'There is currently no notification for you for your current projects.',
-    title: 'Notifications',
+    no_notifications: 'keine Benachrichtigungen',
+    title: 'Benachrichtigungen',
     with_preview: 'with a preview'
   },
 
   people: {
-    active: 'Active',
+    update_sevdesk: 'Update Sevdesk',
+    update_error: 'Falsches Token',
+    active: 'Aktiv',
     add_member_to_team: 'Mitarbeiter zum Team hinzufügen: ',
     delete_error: 'An error occured while deleting this person. There are probably data linked to it. Are you sure this person has no assignation or wrote no comment?',
     delete_text: 'Are you sure you want to remove {personName} from your database?',
-    edit_title: 'Edit person',
+    edit_title: 'Kontakt bearbeiten:',
     empty_team: 'There is no one listed in the project team.',
-    new_person: 'Add a new employee',
+    new_person: 'Kontakt hinzufügen',
     no_task_assigned: 'Keine zugewiesenen Tasks',
-    persons: 'person | persons',
+    persons: 'Kontakt | Kontakte',
     running_tasks: 'Running tasks',
     select_person: 'Mitarbeiter auswählen...',
     team: 'Mitarbeiter',
     title: 'Kontakte',
-    unactive: 'Unactive',
+    unactive: 'Inaktiv',
     csv: {
       import_file: 'Import a .csv file',
       export_file: 'Download as a .csv file',
@@ -218,8 +220,10 @@ export default {
     fields: {
       first_name: 'Vorname',
       last_name: 'Nachname',
+      company: 'Firma',
       email: 'E-Mail',
       phone: 'Telefon',
+      mobile: 'Mobil',
       role: 'Funktion',
       old_password: 'Aktuelles Passwort',
       password: 'Neues Passwort',
@@ -231,7 +235,9 @@ export default {
       email: 'E-Mail',
       phone: 'Telefon',
       role: 'Funktion',
-      active: 'Aktiv'
+      active: 'Aktiv',
+      company: 'Firma',
+      mobile: 'Mobil'
     },
     role: {
       admin: 'Admin',

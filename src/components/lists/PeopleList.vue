@@ -7,11 +7,17 @@
           <th class="name">
             {{ $t("people.list.name") }}
           </th>
+          <th class="company">
+            {{ $t("people.list.company") }}
+          </th>
           <th class="email">
             {{ $t("people.list.email") }}
           </th>
           <th class="phone">
             {{ $t("people.list.phone") }}
+          </th>
+          <th class="mobile">
+            {{ $t("people.list.mobile") }}
           </th>
           <th class="role">
             {{ $t("people.list.role") }}
@@ -38,8 +44,10 @@
       <tbody>
         <tr v-for="entry in activePeople" :key="entry.id">
           <people-name-cell class="name" :entry="entry" />
+          <td class="company">{{ entry.company }}</td>
           <td class="email">{{ entry.email }}</td>
           <td class="phone">{{ entry.phone }}</td>
+          <td class="mobile">{{ entry.mobile }}</td>
           <td class="role">{{ $t('people.role.' + entry.role) }}</td>
           <row-actions
             v-if="isCurrentUserAdmin"
@@ -161,6 +169,14 @@ export default {
 .email {
   width: 300px;
   min-width: 300px;
+}
+.company {
+  width: 300px;
+  min-width: 300px;
+}
+.mobile {
+  width: 140px;
+  min-width: 140px;
 }
 .phone {
   width: 140px;

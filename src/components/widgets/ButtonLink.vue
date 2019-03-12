@@ -43,6 +43,12 @@
       'is-small': true,
       'only-icon': !isText
     }" v-if="icon === 'restore'" />
+  <refresh-ccw-icon
+    :class="{
+      icon: true,
+      'is-small': true,
+      'only-icon': !isText
+    }" v-if="icon === 'refresh'" />
 
   <span
     :class="{
@@ -63,7 +69,8 @@ import {
   PlusIcon,
   RotateCcwIcon,
   TrashIcon,
-  UploadIcon
+  UploadIcon,
+  RefreshCcwIcon
 } from 'vue-feather-icons'
 
 export default {
@@ -74,7 +81,8 @@ export default {
     PlusIcon,
     RotateCcwIcon,
     TrashIcon,
-    UploadIcon
+    UploadIcon,
+    RefreshCcwIcon
   },
   props: {
     text: {

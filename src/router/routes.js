@@ -120,6 +120,10 @@ export const routes = [
         component: People,
         name: 'edit-person'
       },
+      { path: '/people/update',
+        component: People,
+        name: 'update-sevdesk-contacts'
+      },
       {
         name: 'delete-person',
         path: '/people/delete/:person_id',

@@ -30,6 +30,11 @@
           v-model="form.last_name"
         />
         <text-field
+          :label="$t('people.fields.company')"
+          @enter="confirmClicked()"
+          v-model="form.company"
+        />
+        <text-field
           :label="$t('people.fields.email')"
           :disabled="isLdap"
           @enter="confirmClicked()"
@@ -39,6 +44,11 @@
           :label="$t('people.fields.phone')"
           @enter="confirmClicked()"
           v-model="form.phone"
+        />
+        <text-field
+          :label="$t('people.fields.mobile')"
+          @enter="confirmClicked()"
+          v-model="form.mobile"
         />
         <combobox
           :label="$t('people.fields.role')"
@@ -100,8 +110,10 @@ export default {
       form: {
         first_name: '',
         last_name: '',
+        company: 'Animationsfabrik GmbH',
         email: '',
         phone: '',
+        mobile: '',
         role: 'user',
         active: 'true'
       },
@@ -156,7 +168,9 @@ export default {
         this.form = {
           first_name: this.personToEdit.first_name,
           last_name: this.personToEdit.last_name,
+          company: this.personToEdit.company,
           phone: this.personToEdit.phone,
+          mobile: this.personToEdit.mobile,
           email: this.personToEdit.email,
           role: this.personToEdit.role,
           active: !this.personToEdit.id || this.personToEdit.active ? 'true' : 'false'
