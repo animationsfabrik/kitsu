@@ -71,26 +71,31 @@ import {
 
 const helpers = {
   addAdditionalInformation (person) {
-    if (person.first_name && person.last_name) {
-      person.name = `${person.first_name} ${person.last_name}`
-      person.initials = `${person.first_name[0]}${person.last_name[0]}`
-    } else if (person.first_name) {
-      person.name = person.first_name
-      person.initials = person.first_name[0]
-    } else if (person.last_name) {
-      person.name = person.last_name
-      person.initials = person.last_name[0]
-    } else {
-      person.name = person.email
-      person.initials = person.email[0]
-    }
-    person.initials = person.initials.toUpperCase()
-    person.color = colors.fromString(person.name)
-    if (person.has_avatar) {
-      const randomHash = Math.random().toString(36).substring(7)
-      person.avatarPath =
-        `/api/pictures/thumbnails/persons/${person.id}` +
-        `.png?unique=${randomHash}`
+    if (person) {
+      if (person.first_name && person.last_name) {
+        person.name = `${person.first_name} ${person.last_name}`
+        person.initials = `${person.first_name[0]}${person.last_name[0]}`
+      } else if (person.first_name) {
+        person.name = person.first_name
+        person.initials = person.first_name[0]
+      } else if (person.last_name) {
+        person.name = person.last_name
+        person.initials = person.last_name[0]
+      } else if (person.email) {
+        person.name = person.email
+        person.initials = person.email[0]
+      } else {
+        person.initials = 'NN'
+      }
+
+      person.initials = person.initials.toUpperCase()
+      person.color = colors.fromString(person.name)
+      if (person.has_avatar) {
+        const randomHash = Math.random().toString(36).substring(7)
+        person.avatarPath =
+          `/api/pictures/thumbnails/persons/${person.id}` +
+          `.png?unique=${randomHash}`
+      }
     }
     return person
   },
@@ -216,6 +221,16 @@ const actions = {
     })
   },
 
+  loadPerson ({ commit, state }, personId) {
+    peopleApi.getPerson(personId, (err, person) => {
+      if (err) console.error(err)
+      else if (person.email) {
+        commit(EDIT_PEOPLE_START, person)
+        commit(EDIT_PEOPLE_END, person)
+      }
+    })
+  },
+
   newPeople ({ commit, state }, payload) {
     commit(EDIT_PEOPLE_START, payload.data)
     peopleApi.newPerson(state.personToEdit, (err, person) => {
@@ -249,7 +264,7 @@ const actions = {
       if (err) {
         commit(DELETE_PEOPLE_ERROR)
       } else {
-        commit(DELETE_PEOPLE_END)
+        commit(DELETE_PEOPLE_END, state.personToDelete)
         commit(HIDE_DELETE_PEOPLE_MODAL)
       }
       if (callback) callback(err)
@@ -482,14 +497,15 @@ const mutations = {
     state.isDeleteLoadingError = false
   },
 
-  [DELETE_PEOPLE_END] (state) {
+  [DELETE_PEOPLE_END] (state, person) {
     state.isDeleteLoading = false
     const personToDeleteIndex = state.people.findIndex(
-      (person) => person.id === state.personToDelete.id
+      (p) => p.id === person.id
     )
-    state.people.splice(personToDeleteIndex, 1)
-    delete state.personMap[state.personToDelete.id]
-    state.personToDelete = undefined
+    if (personToDeleteIndex >= 0) {
+      state.people.splice(personToDeleteIndex, 1)
+    }
+    delete state.personMap[person.id]
   },
 
   [DELETE_PEOPLE_ERROR] (state) {
@@ -539,7 +555,10 @@ const mutations = {
     )
     state.personToEdit = helpers.addAdditionalInformation(state.personToEdit)
     if (personToEditIndex >= 0) {
-      state.people[personToEditIndex] = state.personToEdit
+      console.log('ok', state.personToEdit.name)
+      delete state.people[personToEditIndex]
+      state.personMap[state.personToEdit.id] = {...state.personToEdit}
+      state.people[personToEditIndex] = state.personMap[state.personToEdit.id]
     } else {
       state.people = [
         ...state.people,

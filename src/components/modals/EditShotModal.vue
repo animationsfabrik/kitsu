@@ -34,11 +34,12 @@
           @keyup.ctrl.enter="runConfirmation"
         />
         <text-field
-          ref="shotLengthField"
-          :label="$t('shots.fields.shot_length')"
-          v-model="form.shotLength"
+          ref="nbFramesField"
+          :label="$t('shots.fields.nb_frames')"
           type="number"
+          v-model="form.nb_frames"
           @enter="runConfirmation"
+          v-focus
         />
         <text-field
           ref="dueDateField"
@@ -47,7 +48,6 @@
           type="date"
           @enter="runConfirmation"
         />
-
         <div
           :key="descriptor.id"
           v-for="descriptor in shotMetadataDescriptors"
@@ -197,8 +197,8 @@ export default {
     },
 
     getDescriptorChoicesOptions (descriptor) {
-      const values = descriptor.choices.map(c => ({ label: c, value: c }))
-      return [{ label: '', value: '' }, ...values]
+      const values = descriptor.choices.map(c => ({label: c, value: c}))
+      return [{label: '', value: ''}, ...values]
     },
 
     isEditing () {
@@ -217,6 +217,7 @@ export default {
         }
         this.form.name = ''
         this.form.description = ''
+        this.form.nb_frames = 0
         this.form.data = {}
       } else {
         this.form = {
@@ -224,12 +225,12 @@ export default {
           project_id: this.shotToEdit.project_id,
           name: this.shotToEdit.name,
           description: this.shotToEdit.description,
+          nb_frames: this.shotToEdit.nb_frames,
           frameIn: this.frameIn,
           frameOut: this.frameOut,
           fps: this.fps,
           dueDate: this.dueDate,
-          shotLength: this.shotLength,
-          data: { ...this.shotToEdit.data } || {}
+          data: {...this.shotToEdit.data} || {}
         }
       }
     }

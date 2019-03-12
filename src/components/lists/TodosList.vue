@@ -12,11 +12,14 @@
           </th>
           <th class="thumbnail">
           </th>
-          <th class="name">
+          <th class="name" ref="th-name">
             {{ $t('tasks.fields.entity') }}
           </th>
           <th class="description">
             {{ $t('assets.fields.description') }}
+          </th>
+          <th class="estimation">
+            {{ $t('tasks.fields.estimation').substring(0, 3) }}.
           </th>
           <th class="status">
             {{ $t('tasks.fields.task_status') }}
@@ -69,6 +72,9 @@
             class="description"
             :entry="{description: entry.entity_description}"
           />
+          <td class="estimation">
+            {{ formatDuration(entry.estimation) }}
+          </td>
           <validation-cell
             class="status unselectable"
             :ref="'validation-' + i + '-0'"
@@ -131,10 +137,11 @@ import LastCommentCell from '../cells/LastCommentCell'
 import ProductionNameCell from '../cells/ProductionNameCell'
 import ValidationCell from '../cells/ValidationCell'
 import { selectionListMixin } from './selection'
+import { formatListMixin } from './format_mixin'
 
 export default {
   name: 'todos-list',
-  mixins: [selectionListMixin],
+  mixins: [formatListMixin, selectionListMixin],
 
   components: {
     EntityThumbnail,
@@ -345,8 +352,18 @@ export default {
       const tableBody = this.$refs['body-tbody']
       const isTableBodyContainLines = tableBody && tableBody.children
       if (isTableBodyContainLines) {
-        const typeColumnWidth = tableBody.children[0].children[1].offsetWidth
-        this.$refs['th-type'].style['min-width'] = `${typeColumnWidth}px`
+        const bodyElement = tableBody.children[0]
+        const columnDescriptors = [
+          {index: 1, name: 'type'},
+          {index: 3, name: 'name'}
+        ]
+        columnDescriptors.forEach(desc => {
+          const width = Math.max(
+            bodyElement.children[desc.index].offsetWidth,
+            100
+          )
+          this.$refs['th-' + desc.name].style['min-width'] = `${width}px`
+        })
       }
     }
   }
@@ -387,6 +404,11 @@ export default {
 .status {
   width: 90px;
   min-width: 90px;
+}
+
+.estimation {
+  width: 60px;
+  min-width: 60px;
 }
 
 th.last-comment {

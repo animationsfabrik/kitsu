@@ -23,6 +23,7 @@ export default {
       episode: 'Ep.',
       name: 'Name',
       production: 'Prod',
+      time_spent: 'Time',
       type: 'Type'
     }
   },
@@ -134,6 +135,7 @@ export default {
     confirmation: 'Confirm',
     confirmation_and_stay: 'Confirm and stay',
     dark_theme: 'Dark Theme',
+    days_spent: 'day spent | days spent',
     delete: 'Delete',
     delete_all: 'Delete all',
     delete_text: 'Are you sure you want to remove {name} from your database?',
@@ -149,6 +151,7 @@ export default {
     modify: 'Modify',
     minimize: 'Minimize',
     maximize: 'Maximize',
+    nb_frames: 'frame | frames',
     profile: 'Profile',
     production: 'Production',
     remove: 'Remove',
@@ -407,6 +410,7 @@ export default {
     title: 'Shots',
     fields: {
       description: 'Description',
+      nb_frames: 'Frames',
       episode: 'Episode',
       frame_in: 'In',
       frame_out: 'Out',
@@ -415,7 +419,8 @@ export default {
       due_date: 'Due date',
       name: 'Shot',
       production: 'Prod',
-      sequence: 'Sequence'
+      sequence: 'Sequence',
+      time_spent: 'Time'
     }
   },
 
@@ -463,6 +468,7 @@ export default {
     no_assignation_right: 'You are not allowed to manage assignations',
     no_comment: 'There is currently no comment for this task.',
     no_preview: 'There is currently no preview for this task.',
+    number: 'task | tasks',
     preview: 'Previews',
     previous: 'previous task',
     unsubscribe_notifications: 'Unsubscribe from notifications',
@@ -484,6 +490,7 @@ export default {
       entity: 'Entity',
       entity_name: 'Name',
       estimation: 'Estimation',
+      frames: 'Fram.',
       last_comment: 'Last comment',
       last_comment_date: 'Last comment',
       priority: 'Priority',

@@ -167,6 +167,18 @@ const helpers = {
     })
 
     return task
+  },
+
+  setListStats (state, shots) {
+    let timeSpent = 0
+    let nbFrames = 0
+    state.displayedShotsLength = shots.length
+    shots.forEach((shot) => {
+      timeSpent += shot.timeSpent
+      nbFrames += shot.nb_frames
+    })
+    state.displayedShotsTimeSpent = timeSpent
+    state.displayedShotsFrames = nbFrames
   }
 }
 
@@ -192,7 +204,8 @@ const initialState = {
 
   displayedShots: [],
   displayedShotsLength: 0,
-  displayedShotsShotLengths: 0,
+  displayedShotsTimeSpent: 0,
+  displayedShotsFrames: 0,
   displayedSequences: [],
   displayedSequencesLength: 0,
   displayedEpisodes: [],
@@ -261,7 +274,8 @@ const getters = {
 
   displayedShots: state => state.displayedShots,
   displayedShotsLength: state => state.displayedShotsLength,
-  displayedShotsShotLengths: state => state.displayedShotsShotLengths,
+  displayedShotsTimeSpent: state => state.displayedShotsTimeSpent,
+  displayedShotsFrames: state => state.displayedShotsFrames,
   displayedSequences: state => state.displayedSequences,
   displayedSequencesLength: state => state.displayedSequencesLength,
   displayedEpisodes: state => state.displayedEpisodes,
@@ -687,7 +701,7 @@ const actions = {
     })
   },
 
-  setEpisodeSearch ({ commit }, searchQuery) {
+  setEpisodeSearch ({commit}, searchQuery) {
     commit(SET_EPISODE_SEARCH, searchQuery)
   },
 
@@ -710,6 +724,7 @@ const actions = {
 const mutations = {
   [LOAD_SHOTS_START] (state) {
     cache.shots = []
+    cache.result = []
     cache.shotIndex = {}
     state.shotMap = {}
 
@@ -720,7 +735,8 @@ const mutations = {
     state.sequenceIndex = {}
     state.displayedShots = []
     state.displayedShotsLength = 0
-    state.displayedShotsShotLengths = 0
+    state.displayedTimeSpent = 0
+    state.displayedFrames = 0
     state.shotSearchQueries = []
     state.displayedSequences = []
     state.displayedSequencesLength = 0
@@ -747,11 +763,14 @@ const mutations = {
 
     state.shotMap = {}
     shots.forEach((shot) => {
+      let timeSpent = 0
       shot.production_id = production.id
       shot.tasks.forEach((task) => {
         helpers.populateTask(task, shot, production)
         validationColumns[task.task_type_id] = true
+        timeSpent += task.duration
       })
+      shot.timeSpent = timeSpent
 
       if (!isFps && shot.data.fps) isFps = true
       if (!isFrameIn && shot.data.frame_in) isFrameIn = true
@@ -782,6 +801,7 @@ const mutations = {
 
     state.displayedShots = shots.slice(0, PAGE_SIZE)
     state.displayedShotsLength = shots.length
+    helpers.setListStats(state, shots)
     state.shotFilledColumns = getFilledColumns(state.displayedShots)
     cache.shots = shots
 
@@ -907,6 +927,12 @@ const mutations = {
     cache.shotIndex = buildShotIndex(cache.shots)
     state.shotCreated = newShot.name
 
+    if (state.shotSearchText) {
+      helpers.setListStats(state, cache.result)
+    } else {
+      helpers.setListStats(state, cache.shots)
+    }
+
     if (newShot.data.fps) state.isFps = true
     if (newShot.data.frame_in) state.isFrameIn = true
     if (newShot.data.frame_out) state.isFrameOut = true
@@ -962,6 +988,12 @@ const mutations = {
       state.displayedShots.splice(displayedShotToDeleteIndex, 1)
       state.shotMap[shotToDelete.id] = undefined
       state.displayedShotsLength = Math.max(state.displayedShotsLength - 1, 0)
+      if (shotToDelete.timeSpent) {
+        state.displayedShotsTimeSpent -= shotToDelete.timeSpent
+      }
+      if (shot.nb_frames) {
+        state.displayedShotsFrames -= shotToDelete.nb_frames
+      }
     }
 
     state.deleteShot = {
@@ -1025,7 +1057,7 @@ const mutations = {
     cache.shotIndex = buildShotIndex(cache.shots)
   },
 
-  [NEW_TASK_COMMENT_END] (state, { comment, taskId }) {},
+  [NEW_TASK_COMMENT_END] (state, {comment, taskId}) {},
 
   [SET_SHOT_SEARCH] (
     state,
@@ -1045,8 +1077,10 @@ const mutations = {
     )
     let result = indexSearch(cache.shotIndex, keywords) || cache.shots
     result = applyFilters(result, filters, taskMap)
+    cache.result = result
 
     state.displayedShots = result.slice(0, PAGE_SIZE)
+    helpers.setListStats(state, result)
     state.displayedShotsLength = result.length
     state.displayedShotsShotLengths = 0
 
@@ -1101,6 +1135,7 @@ const mutations = {
     cache.shots = sortShots(cache.shots)
     state.displayedShots = cache.shots.slice(0, PAGE_SIZE)
     state.displayedShotsLength = cache.shots.length
+    helpers.setListStats(state, cache)
     state.shotFilledColumns = getFilledColumns(state.displayedShots)
     state.shotMap[shot.id] = shot
     cache.shotIndex = buildShotIndex(cache.shots)
@@ -1144,7 +1179,7 @@ const mutations = {
       if (task) {
         const shot = state.shotMap[task.entity_id]
         if (shot) {
-          const validations = { ...shot.validations }
+          const validations = {...shot.validations}
           Vue.set(validations, task.task_type_id, task.id)
           delete shot.validations
           Vue.set(shot, 'validations', validations)
@@ -1317,7 +1352,7 @@ const mutations = {
       if (task) {
         const shot = state.shotMap[task.entity_id]
         if (shot) {
-          const validations = { ...shot.validations }
+          const validations = {...shot.validations}
           Vue.set(validations, task.task_type_id, task.id)
           delete shot.validations
           Vue.set(shot, 'validations', validations)
@@ -1355,9 +1390,10 @@ const mutations = {
   },
 
   [RESET_ALL] (state) {
-    Object.assign(state, { ...initialState })
+    Object.assign(state, {...initialState})
 
     cache.shots = []
+    cache.result = []
     cache.shotIndex = {}
   }
 }

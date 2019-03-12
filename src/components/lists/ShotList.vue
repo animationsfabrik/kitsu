@@ -40,7 +40,6 @@
               v-if="isCurrentUserAdmin && !isLoading"
             />
           </th>
-
           <th
             class="metadata-descriptor"
             :key="descriptor.id"
@@ -57,11 +56,16 @@
               />
             </div>
           </th>
-
-          <th class="shotlength" v-if="isShotLength && isShowInfos">
-            {{ $t('shots.fields.shot_length') }}
+          <th
+            ref="th-spent"
+            class="time-spent"
+            v-if="!isCurrentUserClient && isShowInfos"
+           >
+            {{ $t('shots.fields.time_spent') }}
           </th>
-
+          <th class="frames" v-if="isShowInfos">
+            {{ $t('shots.fields.nb_frames') }}
+          </th>
           <th class="duedate" v-if="isDueDate && isShowInfos">
             {{ $t('shots.fields.due_date') }}
           </th>
@@ -73,8 +77,8 @@
             }"
             :key="columnId"
             :style="getValidationStyle(columnId)"
-            v-for="columnId in displayedValidationColumns"
-            v-if="!isLoading"
+            v-for="columnId in sortedValidationColumns"
+            v-if="!isLoading && (!hiddenColumns[columnId] || isShowInfos)"
           >
             <div class="flexrow">
               <router-link
@@ -174,8 +178,16 @@
           >
             {{ shot.data ? shot.data[descriptor.field_name] : '' }}
           </td>
-          <td class="shotlength" v-if="isShotLength && isShowInfos">
-            {{ shot.data && shot.data.shot_length ? shot.data.shot_length : ''}}
+          <td
+            class="time-spent"
+            v-if="!isCurrentUserClient && isShowInfos"
+          >
+            {{ formatDuration(shot.timeSpent) }}
+          </td>
+          <td class="frames"
+            v-if="!isCurrentUserClient && isShowInfos"
+          >
+            {{ shot.nb_frames }}
           </td>
           <td class="duedate" v-if="isDueDate && isShowInfos">
             {{ shot.data && shot.data.due_date ? shot.data.due_date : ''}}
@@ -196,7 +208,8 @@
             :columnY="j"
             @select="onTaskSelected"
             @unselect="onTaskUnselected"
-            v-for="(columnId, j) in displayedValidationColumns"
+            v-for="(columnId, j) in sortedValidationColumns"
+            v-if="!isLoading && (!hiddenColumns[columnId] || isShowInfos)"
           />
           <row-actions v-if="isCurrentUserManager"
             :entry="shot"
@@ -215,7 +228,10 @@
     style="margin-bottom: 10px; margin-top: 10px;"
     v-if="!isEmptyList && !isLoading"
   >
-    {{ displayedShotsLength }} {{ $tc('shots.number', displayedShotsLength) }}, {{ displayedShotsShotLengths }} {{ $tc('shots.total_frames', displayedShotsShotLengths) }}
+    {{ displayedShotsLength }} {{ $tc('shots.number', displayedShotsLength) }}
+    ({{ formatDuration(displayedShotsTimeSpent) }}
+     {{ $tc('main.days_spent', displayedShotsTimeSpent) }}, {{ displayedShotsFrames }} {{ $tc('main.nb_frames', displayedShotsFrames) }})
+
   </p>
 
 </div>
@@ -228,6 +244,7 @@ import {
 } from 'vue-feather-icons'
 import { entityListMixin } from './base'
 import { selectionListMixin } from './selection'
+import { formatListMixin } from './format_mixin'
 
 import ButtonHrefLink from '../widgets/ButtonHrefLink'
 import ButtonLink from '../widgets/ButtonLink'
@@ -243,7 +260,7 @@ import ValidationCell from '../cells/ValidationCell'
 
 export default {
   name: 'shot-list',
-  mixins: [entityListMixin, selectionListMixin],
+  mixins: [entityListMixin, selectionListMixin, formatListMixin],
 
   props: [
     'entries',
@@ -280,7 +297,8 @@ export default {
       'currentProduction',
       'currentEpisode',
       'displayedShotsLength',
-      'displayedShotsShotLengths',
+      'displayedShotsTimeSpent',
+      'displayedShotsFrames',
       'isCurrentUserAdmin',
       'isCurrentUserManager',
       'isCurrentUserClient',
@@ -312,12 +330,6 @@ export default {
 
     createTasksPath () {
       return this.getPath('create-shot-tasks')
-    },
-
-    displayedValidationColumns () {
-      // const displayedValidationColumns = ['6d603792-6e90-46e2-b958-3cabac189917', '5f5dc116-1b4a-4629-80a3-111e26c2c9d4']
-      // return this.sortedValidationColumns.filter(v => displayedValidationColumns.includes(v))
-      return this.sortedValidationColumns
     },
 
     manageShotsPath () {
@@ -527,6 +539,18 @@ th.actions {
   min-width: 150px;
   max-width: 150px;
   width: 150px;
+}
+
+.frames {
+  min-width: 80px;
+  max-width: 80px;
+  width: 80px;
+}
+
+.time-spent {
+  min-width: 80px;
+  max-width: 80px;
+  width: 80px;
 }
 
 td.name {
