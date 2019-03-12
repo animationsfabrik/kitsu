@@ -415,7 +415,6 @@ export default {
       frame_in: 'In',
       frame_out: 'Out',
       fps: 'FPS',
-      shot_length: 'Shot length',
       due_date: 'Due date',
       name: 'Shot',
       production: 'Prod',

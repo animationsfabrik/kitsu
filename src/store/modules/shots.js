@@ -200,7 +200,6 @@ const initialState = {
   isFrameIn: false,
   isFrameOut: false,
   isDueDate: false,
-  isShotLength: false,
 
   displayedShots: [],
   displayedShotsLength: 0,
@@ -264,7 +263,6 @@ const getters = {
   isFrameIn: state => state.isFrameIn,
   isFrameOut: state => state.isFrameOut,
   isDueDate: state => state.isDueDate,
-  isShotLength: state => state.isShotLength,
 
   shotSearchText: state => state.shotSearchText,
   sequenceSearchText: state => state.sequenceSearchText,
@@ -758,7 +756,6 @@ const mutations = {
     let isFrameIn = false
     let isFrameOut = false
     let isDueDate = false
-    let isShotLength = false
     shots = sortShots(shots)
 
     state.shotMap = {}
@@ -776,13 +773,6 @@ const mutations = {
       if (!isFrameIn && shot.data.frame_in) isFrameIn = true
       if (!isFrameOut && shot.data.frame_out) isFrameOut = true
       if (!isDueDate && shot.data.due_date) isDueDate = true
-      if (!isShotLength && shot.data.shot_length) isShotLength = true
-
-      if (isShotLength) {
-        state.displayedShotsShotLengths = state.displayedShotsShotLengths + parseInt(shot.data.shot_length)
-      } else {
-        state.displayedShotsShotLenghts = state.displayedShotsShotLengths + 0
-      }
 
       state.shotMap[shot.id] = shot
     })
@@ -795,7 +785,6 @@ const mutations = {
     state.isFrameIn = isFrameIn
     state.isFrameOut = isFrameOut
     state.isDueDate = isDueDate
-    state.isShotLength = isShotLength
 
     cache.shotIndex = buildShotIndex(shots)
 
@@ -937,7 +926,6 @@ const mutations = {
     if (newShot.data.frame_in) state.isFrameIn = true
     if (newShot.data.frame_out) state.isFrameOut = true
     if (newShot.data.due_date) state.isDueDate = true
-    if (newShot.data.shot_length) state.isShotLength = true
   },
 
   [EDIT_SEQUENCE_START] (state, data) {},
@@ -1082,11 +1070,7 @@ const mutations = {
     state.displayedShots = result.slice(0, PAGE_SIZE)
     helpers.setListStats(state, result)
     state.displayedShotsLength = result.length
-    state.displayedShotsShotLengths = 0
 
-    result.forEach((shot) => {
-      state.displayedShotsShotLengths = state.displayedShotsShotLengths + parseInt(shot.data.shot_length)
-    })
     state.shotFilledColumns = getFilledColumns(state.displayedShots)
     state.shotSearchText = shotSearch
 
@@ -1147,7 +1131,6 @@ const mutations = {
     if (shot.data.fps) state.isFps = true
     if (shot.data.frame_in) state.isFrameIn = true
     if (shot.data.frame_out) state.isFrameOut = true
-    if (shot.data.shot_length) state.isShotLength = true
     if (shot.data.due_date) state.isDueDate = true
   },
 

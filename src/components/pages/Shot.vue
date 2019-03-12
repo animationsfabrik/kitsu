@@ -47,10 +47,10 @@
               </td>
             </tr>
 
-            <tr v-if="currentShot.data && currentShot.data.shot_length">
-              <td class="field-label">{{ $t('shots.fields.shot_length') }}</td>
+            <tr v-if="currentShot.data && currentShot.nb_frames">
+              <td class="field-label">{{ $t('shots.fields.nb_frames') }}</td>
               <td>
-                {{ currentShot ? currentShot.data.shot_length : '' }}
+                {{ currentShot ? currentShot.nb_frames : '' }}
               </td>
             </tr>
 

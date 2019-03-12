@@ -169,10 +169,6 @@ export default {
 
     dueDate () {
       return this.shotToEdit.data ? this.shotToEdit.data.due_date : ''
-    },
-
-    shotLength () {
-      return this.shotToEdit.data ? this.shotToEdit.data.shot_length : ''
     }
   },
 
