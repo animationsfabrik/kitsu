@@ -223,6 +223,7 @@ export default {
       first_name: 'Vorname',
       last_name: 'Nachname',
       company: 'Firma',
+      address: 'Address',
       email: 'E-Mail',
       phone: 'Telefon',
       mobile: 'Mobil',
@@ -239,6 +240,7 @@ export default {
       role: 'Funktion',
       active: 'Aktiv',
       company: 'Firma',
+      address: 'Adresse',
       mobile: 'Mobil'
     },
     role: {

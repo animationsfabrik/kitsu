@@ -19,6 +19,9 @@
           <th class="mobile">
             {{ $t("people.list.mobile") }}
           </th>
+          <th class="address">
+            {{ $t("people.list.address") }}
+          </th>
           <th class="role">
             {{ $t("people.list.role") }}
           </th>
@@ -48,6 +51,7 @@
           <td class="email">{{ entry.email }}</td>
           <td class="phone">{{ entry.phone }}</td>
           <td class="mobile">{{ entry.mobile }}</td>
+          <td class="address">{{ entry.address }}</td>
           <td class="role">{{ $t('people.role.' + entry.role) }}</td>
           <row-actions
             v-if="isCurrentUserAdmin"
@@ -163,14 +167,18 @@ export default {
 
 <style lang="scss" scoped>
 .name {
-  width: 230px;
-  min-width: 230px;
+  width: 200px;
+  min-width: 200px;
 }
 .email {
   width: 300px;
   min-width: 300px;
 }
 .company {
+  width: 260px;
+  min-width: 260px;
+}
+.address {
   width: 300px;
   min-width: 300px;
 }
@@ -183,8 +191,8 @@ export default {
   min-width: 140px;
 }
 .role {
-  width: 125px;
-  min-width: 125px;
+  width: 75px;
+  min-width: 75px;
 }
 .actions {
   min-width: 100px;

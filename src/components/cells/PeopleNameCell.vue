@@ -1,7 +1,7 @@
 <template>
 <td class="name">
   <div class="people-name">
-    <people-avatar class="avatar" :person="entry"></people-avatar>
+    <!--<people-avatar class="avatar" :person="entry"></people-avatar>-->
     <people-name class="people-name" :person="entry"></people-name>
   </div>
 </td>
@@ -40,6 +40,6 @@ export default {
 }
 
 .people-name {
-  margin-left: 0.6em;
+  margin-left: 0em;
 }
 </style>

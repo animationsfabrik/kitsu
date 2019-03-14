@@ -622,6 +622,7 @@ const mutations = {
         first_name: '',
         last_name: '',
         company: 'Animationsfabrik GmbH',
+        address: '',
         phone: '',
         mobile: '',
         email: '',

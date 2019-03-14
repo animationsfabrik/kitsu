@@ -50,6 +50,11 @@
           @enter="confirmClicked()"
           v-model="form.mobile"
         />
+        <text-field
+          :label="$t('people.fields.address')"
+          @enter="confirmClicked()"
+          v-model="form.address"
+        />
         <combobox
           :label="$t('people.fields.role')"
           :options="roleOptions"
@@ -111,6 +116,7 @@ export default {
         first_name: '',
         last_name: '',
         company: 'Animationsfabrik GmbH',
+        address: '',
         email: '',
         phone: '',
         mobile: '',
@@ -169,6 +175,7 @@ export default {
           first_name: this.personToEdit.first_name,
           last_name: this.personToEdit.last_name,
           company: this.personToEdit.company,
+          address: this.personToEdit.address,
           phone: this.personToEdit.phone,
           mobile: this.personToEdit.mobile,
           email: this.personToEdit.email,
