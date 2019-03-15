@@ -194,22 +194,53 @@ export default {
     with_preview: 'with a preview'
   },
 
-  people: {
+  contacts: {
     update_sevdesk: 'Update Sevdesk',
     update_error: 'Falsches Token',
+    delete_error: 'Fehler beim Löschen',
+    title: 'Kontakte',
+    new_contact: 'Kontakt hinzufügen',
+    new_person: 'Neuer Kontakt',
+    persons: 'Kontakt | Kontakte',
+    fields: {
+      first_name: 'Vorname',
+      last_name: 'Nachname',
+      company: 'Firma',
+      address: 'Address',
+      email: 'E-Mail',
+      phone: 'Telefon',
+      mobile: 'Mobil',
+      role: 'Typ'
+    },
+    list: {
+      name: 'Name',
+      email: 'E-Mail',
+      phone: 'Telefon',
+      role: 'Typ',
+      company: 'Firma',
+      address: 'Adresse',
+      mobile: 'Mobil'
+    },
+    role: {
+      client: 'Kunde',
+      supplier: 'Lieferant'
+    }
+  },
+
+  people: {
     active: 'Aktiv',
     add_member_to_team: 'Mitarbeiter zum Team hinzufügen: ',
     delete_error: 'An error occured while deleting this person. There are probably data linked to it. Are you sure this person has no assignation or wrote no comment?',
     delete_text: 'Are you sure you want to remove {personName} from your database?',
-    edit_title: 'Kontakt bearbeiten:',
+    edit_title: 'Benutzer bearbeiten:',
     empty_team: 'There is no one listed in the project team.',
-    new_person: 'Kontakt hinzufügen',
+    new_person: 'Benutzer hinzufügen',
     no_task_assigned: 'Keine zugewiesenen Tasks',
-    persons: 'Kontakt | Kontakte',
+    persons: 'Benutzer | Benutzer',
     running_tasks: 'Running tasks',
     select_person: 'Mitarbeiter auswählen...',
     team: 'Mitarbeiter',
-    title: 'Kontakte',
+    title: 'Benutzer',
     unactive: 'Inaktiv',
     csv: {
       import_file: 'Import a .csv file',
@@ -222,26 +253,21 @@ export default {
     fields: {
       first_name: 'Vorname',
       last_name: 'Nachname',
-      company: 'Firma',
-      address: 'Address',
       email: 'E-Mail',
       phone: 'Telefon',
-      mobile: 'Mobil',
       role: 'Funktion',
       old_password: 'Aktuelles Passwort',
       password: 'Neues Passwort',
       password_2: 'Passwort wiederholen',
       active: 'Aktiv'
     },
+
     list: {
       name: 'Name',
       email: 'E-Mail',
       phone: 'Telefon',
       role: 'Funktion',
-      active: 'Aktiv',
-      company: 'Firma',
-      address: 'Adresse',
-      mobile: 'Mobil'
+      active: 'Aktiv'
     },
     role: {
       admin: 'Admin',

@@ -14,11 +14,8 @@ export default {
     const data = {
       first_name: person.first_name,
       last_name: person.last_name,
-      company: person.company,
-      address: person.address,
       email: person.email.trim(),
       phone: person.phone,
-      mobile: person.mobile,
       role: person.role,
       active: person.active
     }
@@ -29,11 +26,8 @@ export default {
     const data = {
       first_name: person.first_name,
       last_name: person.last_name,
-      company: person.company,
-      address: person.address,
       email: person.email.trim(),
       phone: person.phone,
-      mobile: person.mobile,
       timezone: person.timezone,
       locale: person.locale,
       role: person.role,

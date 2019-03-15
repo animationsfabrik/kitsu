@@ -9,12 +9,6 @@
         <div class="level-item">
           <button-link v-if="isCurrentUserAdmin"
             class="level-item"
-            :is-responsive="true"
-            icon="refresh"
-            path="/people/update"
-          />
-          <button-link v-if="isCurrentUserAdmin"
-            class="level-item"
             :title="$t('main.csv.import_file')"
             :is-responsive="true"
             icon="upload"
@@ -79,16 +73,6 @@
       @confirm="confirmDeletePeople"
     />
 
-    <update-sevdesk-contacts-modal
-      :active="isUpdateSevdeskContactsModalShown"
-      :is-loading="isUpdateSevdeskContactsLoading"
-      :is-error="isUpdateSevdeskContactsLoadingError"
-      :cancel-route="'/people'"
-      :text="$t('people.update_sevdesk')"
-      :error-text="$t('people.update_error')"
-      @confirm="confirmUpdateSevdeskContacts"
-    />
-
   </div>
 </template>
 
@@ -103,7 +87,6 @@ import ButtonLink from '../widgets/ButtonLink'
 import ButtonHrefLink from '../widgets/ButtonHrefLink'
 import PageTitle from '../widgets/PageTitle'
 import SearchField from '../widgets/SearchField'
-import UpdateSevdeskContactsModal from '../modals/UpdateSevdeskContactsModal'
 
 export default {
   name: 'people',
@@ -115,8 +98,7 @@ export default {
     ButtonLink,
     ButtonHrefLink,
     PageTitle,
-    SearchField,
-    UpdateSevdeskContactsModal
+    SearchField
   },
 
   data () {
@@ -163,10 +145,6 @@ export default {
       'isImportModalShown',
       'isImportLoading',
       'isImportLoadingError',
-
-      'isUpdateSevdeskContactsModalShown',
-      'isUpdateSevdeskContactsLoading',
-      'isUpdateSevdeskContactsLoadingError',
 
       'personToDelete',
       'personCsvFormData',
@@ -230,17 +208,6 @@ export default {
       })
     },
 
-    confirmUpdateSevdeskContacts (token) {
-      this.$store.dispatch('updateSevdeskContacts', {
-        token: token,
-        callback: (err) => {
-          if (!err) {
-            this.$router.push('/people')
-          }
-        }
-      })
-    },
-
     selectFile (formData) {
       this.$store.commit('PERSON_CSV_FILE_SELECTED', formData)
     },
@@ -271,21 +238,12 @@ export default {
       }
     },
 
-    showUpdateModalIfNeeded (path) {
-      if (path.indexOf('update') > 0) {
-        this.$store.dispatch('showUpdateSevdeskContactsModal')
-      } else {
-        this.$store.dispatch('hideUpdateSevdeskContactsModal')
-      }
-    },
-
     handleModalsDisplay () {
       const path = this.$store.state.route.path
       const personId = this.$store.state.route.params.person_id
       this.showDeleteModalIfNeeded(path, personId)
       this.showEditModalIfNeeded(path, personId)
       this.showImportModalIfNeeded(path, personId)
-      this.showUpdateModalIfNeeded(path)
     },
 
     onSearchChange () {

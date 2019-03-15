@@ -37,11 +37,6 @@ import {
   DELETE_PEOPLE_END,
   SHOW_DELETE_PEOPLE_MODAL,
   HIDE_DELETE_PEOPLE_MODAL,
-  SHOW_UPDATE_SEVDESK_CONTACTS_MODAL,
-  HIDE_UPDATE_SEVDESK_CONTACTS_MODAL,
-  UPDATE_SEVDESK_CONTACTS_START,
-  UPDATE_SEVDESK_CONTACTS_END,
-  UPDATE_SEVDESK_CONTACTS_ERROR,
 
   UPLOAD_AVATAR_END,
   USER_SAVE_PROFILE_SUCCESS,
@@ -129,10 +124,6 @@ const initialState = {
   isDeleteLoadingError: false,
   personToDelete: undefined,
 
-  isUpdateSevdeskContactsModalShown: false,
-  isUpdateSevdeskContactsLoadingError: false,
-  isUpdateSevdeskContactsLoading: false,
-
   personCsvFormData: undefined,
 
   person: {},
@@ -175,10 +166,6 @@ const getters = {
   isEditLoading: state => state.isEditLoading,
   isEditLoadingError: state => state.isEditLoadingError,
   personToEdit: state => state.personToEdit,
-
-  isUpdateSevdeskContactsModalShown: state => state.isUpdateSevdeskContactsModalShown,
-  isUpdateSevdeskContactsLoading: state => state.isUpdateSevdeskContactsLoading,
-  isUpdateSevdeskContactsLoadingError: state => state.isUpdateSevdeskContactsLoadingError,
 
   personCsvFormData: state => state.personCsvFormData,
 
@@ -282,17 +269,6 @@ const actions = {
     })
   },
 
-  updateSevdeskContacts ({ commit, state }, { token, callback }) {
-    commit(UPDATE_SEVDESK_CONTACTS_START)
-    peopleApi.updateSevdeskContacts(token, (err, people) => {
-      if (err) {
-        commit(UPDATE_SEVDESK_CONTACTS_ERROR)
-      }
-      commit(UPDATE_SEVDESK_CONTACTS_END)
-      if (callback) callback(err)
-    })
-  },
-
   loadPersonTasks (
     { commit, state, rootGetters }, { personId, forced, date, callback }
   ) {
@@ -366,14 +342,6 @@ const actions = {
 
   hidePersonDeleteModal ({ commit, state }, personId) {
     commit(HIDE_DELETE_PEOPLE_MODAL, personId)
-  },
-
-  showUpdateSevdeskContactsModal ({ commit, state }) {
-    commit(SHOW_UPDATE_SEVDESK_CONTACTS_MODAL)
-  },
-
-  hideUpdateSevdeskContactsModal ({ commit, state }) {
-    commit(HIDE_UPDATE_SEVDESK_CONTACTS_MODAL)
   },
 
   setPersonTasksSearch ({ commit, state }, searchText) {
@@ -527,16 +495,6 @@ const mutations = {
     state.personToDelete = undefined
   },
 
-  [SHOW_UPDATE_SEVDESK_CONTACTS_MODAL] (state) {
-    state.isUpdateSevdeskContactsModalShown = true
-    state.isUpdateSevdeskContactsLoading = false
-    state.isUpdateSevdeskContactsLoadingError = false
-  },
-
-  [HIDE_UPDATE_SEVDESK_CONTACTS_MODAL] (state) {
-    state.isUpdateSevdeskContactsModalShown = false
-  },
-
   [EDIT_PEOPLE_START] (state, data) {
     state.isEditLoading = true
     state.isEditLoadingError = false
@@ -594,21 +552,6 @@ const mutations = {
     state.isImportPeopleLoadingError = true
   },
 
-  [UPDATE_SEVDESK_CONTACTS_START] (state) {
-    state.isUpdateSevdeskContactsLoading = true
-    state.isUpdateSevdeskContactsLoadingError = false
-  },
-
-  [UPDATE_SEVDESK_CONTACTS_END] (state) {
-    state.isUpdateSevdeskContactsLoading = false
-    state.isUpdateSevdeskContactsLoadingError = false
-  },
-
-  [UPDATE_SEVDESK_CONTACTS_ERROR] (state) {
-    state.isUpdateSevdeskContactsLoading = false
-    state.isUpdateSevdeskContactsLoadingError = true
-  },
-
   [SHOW_EDIT_PEOPLE_MODAL] (state, personId) {
     state.isEditModalShown = true
     state.isEditLoadingError = false
@@ -621,10 +564,7 @@ const mutations = {
       state.personToEdit = {
         first_name: '',
         last_name: '',
-        company: 'Animationsfabrik GmbH',
-        address: '',
         phone: '',
-        mobile: '',
         email: '',
         role: 'user'
       }

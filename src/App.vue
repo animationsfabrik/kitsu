@@ -31,6 +31,7 @@ export default {
       'isSavingCommentPreview',
       'route',
       'personMap',
+      'contactMap',
       'taskMap',
       'taskStatusMap',
       'taskTypeMap',
@@ -66,6 +67,7 @@ export default {
       'loadComment',
       'loadWorkingFile',
       'loadPerson',
+      'loadContact',
       'loadPersonTasks',
       'loadTaskStatus',
       'loadTaskType',
@@ -178,6 +180,26 @@ export default {
         if (person) {
           this.$store.commit('DELETE_PEOPLE_START', person)
           this.$store.commit('DELETE_PEOPLE_END', person)
+        }
+      },
+
+      'contact:new' (eventData) {
+        if (!this.contactMap[eventData.contact_id]) {
+          this.loadContact(eventData.contact_id)
+        }
+      },
+
+      'contact:update' (eventData) {
+        if (this.contactMap[eventData.contact_id]) {
+          this.loadContact(eventData.contact_id)
+        }
+      },
+
+      'contact:delete' (eventData) {
+        const contact = this.contactMap[eventData.contact_id]
+        if (contact) {
+          this.$store.commit('DELETE_CONTACTS_START', contact)
+          this.$store.commit('DELETE_CONTACTS_END', contact)
         }
       },
 

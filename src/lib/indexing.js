@@ -19,6 +19,30 @@ export const buildNameIndex = (entries, split = true) => {
 }
 
 /*
+ * Build contacts index
+ */
+export const buildContactsIndex = (entries, split = true) => {
+  const index = {}
+  const entryIndex = {}
+  entries.forEach((entry) => {
+    if (entry) {
+      let words
+      if (split) {
+        words = entry.name.split(' ')
+        words.push(...entry.company.split(' '))
+        words.push(...entry.address.split(' '))
+      } else {
+        words = [entry.name]
+        words.push(...entry.company)
+        words.push(...entry.address)
+      }
+      indexWords(index, entryIndex, entry, words)
+    }
+  })
+  return index
+}
+
+/*
  * Generate an index to find task easily. Search will be based on the task
  * entity name and words appearing into it.
  * The result is an array of tasks.

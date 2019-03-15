@@ -94,6 +94,12 @@
              </router-link>
            </p>
 
+           <p class="menu_sublink">
+             <router-link :to="{name: 'contacts'}">
+             {{ $t('contacts.title') }}
+             </router-link>
+           </p>
+
            <p @click="toggleSidebar()" class="menu_sublink">
              <router-link :to="{name: 'timesheets'}">
              {{ $t('timesheets.title') }}

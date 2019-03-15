@@ -11,6 +11,7 @@ import Asset from '../components/pages/Asset'
 import Assets from '../components/pages/Assets'
 import AssetTypes from '../components/pages/AssetTypes'
 import Breakdown from '../components/pages/Breakdown'
+import Contacts from '../components/pages/Contacts'
 import CustomActions from '../components/pages/CustomActions'
 import Episodes from '../components/pages/Episodes'
 import Login from '../components/pages/Login'
@@ -120,14 +121,11 @@ export const routes = [
         component: People,
         name: 'edit-person'
       },
-      { path: '/people/update',
-        component: People,
-        name: 'update-sevdesk-contacts'
-      },
+
       {
-        name: 'delete-person',
         path: '/people/delete/:person_id',
-        component: People
+        component: People,
+        name: 'delete-person'
       },
       {
         path: '/people/import',
@@ -143,6 +141,36 @@ export const routes = [
         path: '/people/:person_id/:tab',
         component: Person,
         name: 'person-tab'
+      },
+
+      {
+        path: '/contacts',
+        component: Contacts,
+        name: 'contacts'
+      },
+
+      {
+        path: '/contacts/new',
+        component: Contacts,
+        name: 'new-contacts'
+      },
+
+      {
+        path: '/contacts/edit/:contact_id',
+        component: Contacts,
+        name: 'edit-contact'
+      },
+
+      {
+        path: '/contacts/update',
+        component: Contacts,
+        name: 'update-sevdesk-contacts'
+      },
+
+      {
+        path: '/contacts/delete/:contact_id',
+        component: Contacts,
+        name: 'delete-contact'
       },
 
       {

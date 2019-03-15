@@ -8,50 +8,59 @@
   <div class="modal-content">
     <div class="box">
 
-      <h1 class="title" v-if="personToEdit.id !== undefined">
-        {{ $t("people.edit_title") }} {{ personName }}
+      <h1 class="title" v-if="contactToEdit.id !== undefined">
+        {{ $t("contacts.edit_title") }} {{ contactName }}
       </h1>
       <h1 class="title" v-else>
-        {{ $t("people.new_person") }}
+        {{ $t("contacts.new_person") }}
       </h1>
 
       <form v-on:submit.prevent>
         <text-field
-          :label="$t('people.fields.first_name')"
+          :label="$t('contacts.fields.first_name')"
           :disabled="isLdap"
           ref="name-field"
           @enter="confirmClicked()"
           v-model="form.first_name"
         />
         <text-field
-          :label="$t('people.fields.last_name')"
+          :label="$t('contacts.fields.last_name')"
           :disabled="isLdap"
           @enter="confirmClicked()"
           v-model="form.last_name"
         />
         <text-field
-          :label="$t('people.fields.email')"
+          :label="$t('contacts.fields.company')"
+          @enter="confirmClicked()"
+          v-model="form.company"
+        />
+        <text-field
+          :label="$t('contacts.fields.email')"
           :disabled="isLdap"
           @enter="confirmClicked()"
           v-model="form.email"
         />
         <text-field
-          :label="$t('people.fields.phone')"
+          :label="$t('contacts.fields.phone')"
           @enter="confirmClicked()"
           v-model="form.phone"
         />
-        <combobox
-          :label="$t('people.fields.role')"
-          :options="roleOptions"
-          localeKeyPrefix="people.role."
+        <text-field
+          :label="$t('contacts.fields.mobile')"
           @enter="confirmClicked()"
-          v-model="form.role"
+          v-model="form.mobile"
+        />
+        <text-field
+          :label="$t('contacts.fields.address')"
+          @enter="confirmClicked()"
+          v-model="form.address"
         />
         <combobox
-          :label="$t('people.fields.active')"
-          :options="activeOptions"
+          :label="$t('contacts.fields.role')"
+          :options="roleOptions"
+          localeKeyPrefix="contacts.role."
           @enter="confirmClicked()"
-          v-model="form.active"
+          v-model="form.role"
         />
       </form>
 
@@ -100,21 +109,17 @@ export default {
       form: {
         first_name: '',
         last_name: '',
+        company: 'Animationsfabrik GmbH',
+        address: '',
         email: '',
         phone: '',
-        role: 'user',
-        active: 'true'
+        mobile: '',
+        role: 'client'
       },
 
       roleOptions: [
-        {label: 'user', value: 'user'},
-        {label: 'manager', value: 'manager'},
-        {label: 'admin', value: 'admin'},
-        {label: 'client', value: 'client'}
-      ],
-      activeOptions: [
-        {label: this.$t('main.yes'), value: 'true'},
-        {label: this.$t('main.no'), value: 'false'}
+        {label: 'client', value: 'client'},
+        {label: 'supplier', value: 'supplier'}
       ]
     }
   },
@@ -127,13 +132,13 @@ export default {
   computed: {
     ...mapGetters([
       'isLdap',
-      'personToEdit',
-      'people'
+      'contactToEdit',
+      'contacts'
     ]),
 
-    personName () {
-      if (this.personToEdit !== undefined) {
-        return this.personToEdit.first_name + ' ' + this.personToEdit.last_name
+    contactName () {
+      if (this.contactToEdit !== undefined) {
+        return this.contactToEdit.first_name + ' ' + this.contactToEdit.last_name
       } else {
         return ''
       }
@@ -152,14 +157,17 @@ export default {
     },
 
     resetForm () {
-      if (this.personToEdit) {
+      if (this.contactToEdit) {
         this.form = {
-          first_name: this.personToEdit.first_name,
-          last_name: this.personToEdit.last_name,
-          phone: this.personToEdit.phone,
-          email: this.personToEdit.email,
-          role: this.personToEdit.role,
-          active: !this.personToEdit.id || this.personToEdit.active ? 'true' : 'false'
+          first_name: this.contactToEdit.first_name,
+          last_name: this.contactToEdit.last_name,
+          company: this.contactToEdit.company,
+          address: this.contactToEdit.address,
+          phone: this.contactToEdit.phone,
+          mobile: this.contactToEdit.mobile,
+          email: this.contactToEdit.email,
+          role: this.contactToEdit.role,
+          active: !this.contactToEdit.id || this.contactToEdit.active ? 'true' : 'false'
         }
       }
       this.checkEmailValidity()
@@ -167,9 +175,9 @@ export default {
 
     checkEmailValidity () {
       const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      const isExist = this.people.some((p) => {
+      const isExist = this.contacts.some((p) => {
         return p.email === this.form.email && (
-          !this.personToEdit || this.personToEdit.email !== p.email
+          !this.contactToEdit || this.contactToEdit.email !== p.email
         )
       })
       this.isValidEmail =
@@ -180,7 +188,7 @@ export default {
   },
 
   watch: {
-    personToEdit () {
+    contactToEdit () {
       this.resetForm()
     },
 
