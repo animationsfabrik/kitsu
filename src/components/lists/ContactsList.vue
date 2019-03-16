@@ -5,8 +5,11 @@
       <thead>
         <tr>
           <th class="numbering"></th>
-          <th class="name">
-            {{ $t("contacts.list.name") }}
+          <th class="last_name">
+            {{ $t("contacts.list.last_name") }}
+          </th>
+          <th class="first_name">
+            {{ $t("contacts.list.first_name") }}
           </th>
           <th class="company">
             {{ $t("contacts.list.company") }}
@@ -43,7 +46,9 @@
       <tbody>
         <tr v-for="(entry, index) in entries" :key="entry.id">
           <td class="numbering"><div style="text-align: center; vertical-align: text-bottom">{{ index + 1 }}</div></td>
-          <people-name-cell class="name" :entry="entry" />
+          <!--<people-name-cell class="name" :entry="entry" />-->
+          <td class="last_name">{{ entry.last_name }}</td>
+          <td class="first_name">{{ entry.first_name }}</td>
           <td class="company">{{ entry.company }}</td>
           <td class="email">{{ entry.email }}</td>
           <td class="phone">{{ entry.phone }}</td>
@@ -125,35 +130,39 @@ export default {
 
 <style lang="scss" scoped>
 .numbering {
-  width: 50px;
-  min-width: 50px;
+  min-width: 30px;
+  max-width: 30px;
 }
-.name {
-  width: 180px;
-  min-width: 180px;
+.first_name {
+  min-width: 90px;
+  max-width: 90px;
+}
+.last_name {
+  max-width: 90px;
+  min-width: 90px;
 }
 .email {
-  width: 260px;
+  max-width: 260px;
   min-width: 260px;
 }
 .company {
-  width: 220px;
+  max-width: 220px;
   min-width: 220px;
 }
 .address {
-  width: 300px;
+  max-width: 300px;
   min-width: 300px;
 }
 .mobile {
-  width: 160px;
+  max-width: 160px;
   min-width: 160px;
 }
 .phone {
-  width: 160px;
+  max-width: 160px;
   min-width: 160px;
 }
 .role {
-  width: 75px;
+  max-width: 75px;
   min-width: 75px;
 }
 .actions {
