@@ -113,11 +113,11 @@ export default {
     },
 
     backgroundColor () {
-      if (this.taskStatus.short_name === 'todo' && !this.isDarkTheme) {
-        return '#ECECEC'
-      } else if (this.taskStatus.short_name === 'todo' && this.isDarkTheme) {
-        return '#5F626A'
-      } else if (this.isDarkTheme) {
+      // if (this.taskStatus.short_name === 'todo' && !this.isDarkTheme) {
+      //   return '#ECECEC'
+      // } else if (this.taskStatus.short_name === 'todo' && this.isDarkTheme) {
+      //   return '#5F626A'
+      if (this.isDarkTheme) {
         return colors.darkenColor(this.taskStatus.color)
       } else {
         return this.taskStatus.color
@@ -125,7 +125,7 @@ export default {
     },
 
     color () {
-      if (this.taskStatus.short_name !== 'todo' || this.isDarkTheme) {
+      if (this.isDarkTheme) {
         return 'white'
       } else {
         return '#333'
