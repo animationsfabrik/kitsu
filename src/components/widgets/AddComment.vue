@@ -19,16 +19,35 @@
       </div>
     </figure>
     <div class="media-content">
-      <textarea
-        ref="commentTextarea"
-        class="textarea flexrow-item"
-        :placeholder="$t('comments.add_comment')"
-        :disabled="isLoading"
-        v-model="text"
-        @keyup.enter.ctrl="runAddComment(text, task_status_id)"
-        v-focus>
-      </textarea>
-      <!--<div class="flexrow preview-section">
+      <at-ta
+        :members="team"
+        name-key="full_name"
+        :limit="2"
+      >
+        <template slot="item" slot-scope="team">
+          <div class="flexrow">
+            <people-avatar
+              class="flexrow-item"
+              :person="team.item"
+              :size="20"
+              :no-cache="true"
+            />
+            <span class="flexrow-item">
+              {{ team.item.full_name }}
+            </span>
+          </div>
+        </template>
+        <textarea
+          ref="commentTextarea"
+          class="textarea flexrow-item"
+          :placeholder="$t('comments.add_comment')"
+          :disabled="isLoading"
+          v-model="text"
+          @keyup.enter.ctrl="runAddComment(text, task_status_id)"
+          v-focus>
+        </textarea>
+      </at-ta>
+      <div class="flexrow preview-section">
         <button
           class="button flexrow-item"
           @click="$emit('add-preview')"
@@ -49,7 +68,7 @@
             {{ attachedFileName }}
           </em>
         </span>
-      </div>-->
+      </div>
       <div class="flexrow mt1">
         <span class="flexrow-item">
           {{ $t('comments.set_status_to') }}
@@ -85,7 +104,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import AtTa from 'vue-at/dist/vue-at-textarea'
 import ComboboxStatus from './ComboboxStatus'
 import PeopleAvatar from './PeopleAvatar'
 
@@ -93,6 +112,7 @@ export default {
   name: 'add-comment',
 
   components: {
+    AtTa,
     ComboboxStatus,
     PeopleAvatar
   },
@@ -141,6 +161,10 @@ export default {
     attachedFileName: {
       type: String,
       default: ''
+    },
+    team: {
+      type: Array,
+      default: () => []
     }
   },
 
@@ -157,9 +181,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      'taskStatusMap'
-    ]),
     isFileAttached () {
       return (
         this.attachedFileName !== undefined &&
