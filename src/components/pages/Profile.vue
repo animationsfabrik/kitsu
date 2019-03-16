@@ -74,7 +74,7 @@
               <option value="en_US">English</option>
               <option value="fr_FR">French</option>
               <option value="zh_Hans_CN">Chinese</option>
-              <option value="de_de">Deutsch</option>
+              <option value="de_DE">Deutsch</option>
             </select>
           </span>
         </div>

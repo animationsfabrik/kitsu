@@ -5,7 +5,6 @@
         <router-link
            class="home-link"
            to="/"
-           @click="toggleSidebar()"
         >
           <div
             class="company-logo has-text-centered"
@@ -35,12 +34,12 @@
          <div v-if="!isCurrentUserClient">
            <h2>{{ $t('main.user')}}</h2>
 
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
              <router-link :to="{name: 'todos'}">
                 -{{ $t("tasks.my_tasks") }}
              </router-link>
            </p>
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
              <router-link :to="{name: 'productions'}">
                 -{{ $t("productions.title") }}
              </router-link>
@@ -50,37 +49,37 @@
          <div v-if="isCurrentUserAdmin">
            <h2>{{ $t('productions.production_management') }}</h2>
 
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
              <router-link :to="{name: 'sequences', params: { production_id: currentProduction.id }}">
               -{{ $t("productions.sequence_management") }}
              </router-link>
            </p>
 
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
              <router-link :to="{name: 'shots', params: { production_id: currentProduction.id }}">
               -{{ $t("productions.shot_management") }}
              </router-link>
            </p>
 
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
              <router-link :to="{name: 'assets', params: { production_id: currentProduction.id }}">
               -{{ $t("productions.asset_management") }}
              </router-link>
            </p>
 
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
              <router-link :to="{name: 'breakdown', params: { production_id: currentProduction.id }}">
               -{{ $t('breakdown.title') }}
              </router-link>
            </p>
 
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
              <router-link :to="{name: 'playlists', params: { production_id: currentProduction.id }}">
               -{{ $t('playlists.title') }}
              </router-link>
            </p>
 
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
              <router-link :to="{name: 'team', params: { production_id: currentProduction.id }}">
               -{{ $t('people.team') }}
              </router-link>
@@ -88,19 +87,13 @@
 
            <br>
 
-           <p @click="toggleSidebar()" class="menu_sublink">
-             <router-link :to="{name: 'people'}">
-             {{ $t('people.title') }}
-             </router-link>
-           </p>
-
            <p class="menu_sublink">
              <router-link :to="{name: 'contacts'}">
              {{ $t('contacts.title') }}
              </router-link>
            </p>
 
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
              <router-link :to="{name: 'timesheets'}">
              {{ $t('timesheets.title') }}
              </router-link>
@@ -110,7 +103,7 @@
          <div v-if="isCurrentUserAdmin">
            <h2>{{ $t('productions.task_management') }}</h2>
 
-           <p v-for="task in taskTypes" :key="task.task_type_id" @click="toggleSidebar()" class="menu_sublink">
+           <p v-for="task in taskTypes" :key="task.task_type_id" class="menu_sublink">
              <router-link :to="{name: 'task-type', params: { task_type_id: task.id, production_id: currentProduction.id, type: task.for_shots ? 'shots' : 'assets' }}">
               -{{ task.name }}
              </router-link>
@@ -119,22 +112,27 @@
 
          <div v-if="isCurrentUserAdmin">
            <h2>{{ $t('productions.production_planning')}}</h2>
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
+             <router-link :to="{name: 'people'}">
+             -{{ $t('people.title') }}
+             </router-link>
+           </p>
+           <p class="menu_sublink">
              <router-link to="/task-types">
               -{{ $t('productions.task_type_planning') }}
              </router-link>
            </p>
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
              <router-link to="/task-status" class="task-status-link">
               -{{ $t('productions.task_status_planning') }}
              </router-link>
            </p>
-           <p @click="toggleSidebar()" class="menu_sublink">
+           <p class="menu_sublink">
              <router-link to="/asset-types">
               -{{ $t('productions.asset_type_planning') }}
              </router-link>
            </p>
-           <!--<p @click="toggleSidebar()" class="menu_sublink">
+           <!--<p class="menu_sublink">
              <router-link :to="{name: 'custom-actions'}">
               -{{ $t('custom_actions.title') }}
              </router-link>
@@ -144,7 +142,7 @@
         </section>
       </div>
     </div>
-    <!--<div id="c-mask" @click="toggleSidebar()"
+    <!--<div id="c-mask"
          v-bind:class="{'is-active': !isSidebarHidden}"
     >
     </div>-->
@@ -218,7 +216,6 @@ export default {
   },
   methods: {
     ...mapActions([
-      'toggleSidebar',
       'clearEpisodes',
       'loadEpisodes',
       'loadNotification',
@@ -226,7 +223,6 @@ export default {
       'setProduction',
       'setCurrentEpisode',
       'toggleDarkTheme',
-      'toggleSidebar',
       'toggleUserMenu'
     ]),
 

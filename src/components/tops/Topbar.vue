@@ -78,13 +78,13 @@
           ref="user-name"
           @click="toggleUserMenu"
         >
-          <people-avatar
+          <!--<people-avatar
             ref="avatar"
             class="avatar"
             :no-cache="true"
             :person="user"
             :is-link="false"
-          />
+          />-->
           <people-name
             class="user-name"
             :person="user"
@@ -508,7 +508,7 @@ export default {
 
 .user-nav {
   cursor: pointer;
-  min-width: 150px;
+  min-width: 120px;
 }
 
 .user-nav.active {

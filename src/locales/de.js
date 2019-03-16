@@ -23,7 +23,7 @@ export default {
       episode: 'Ep.',
       name: 'Name',
       production: 'Prod',
-      type: 'Type'
+      type: 'Typ'
     }
   },
 
@@ -213,7 +213,8 @@ export default {
       role: 'Typ'
     },
     list: {
-      name: 'Name',
+      first_name: 'Vorname',
+      last_name: 'Nachname',
       email: 'E-Mail',
       phone: 'Telefon',
       role: 'Typ',
@@ -300,7 +301,7 @@ export default {
 
   productions: {
     sequence_management: 'Sequenzen',
-    production_planning: 'Produktionsplanung',
+    production_planning: 'Administration',
     production_management: 'Produktionsmanagement',
     task_type_planning: 'Todo-planung',
     task_status_planning: 'Todostatus-planung',
@@ -332,7 +333,7 @@ export default {
       ratio: 'Ratio',
       resolution: 'Resolution',
       status: 'Status',
-      type: 'Type'
+      type: 'Typ'
     },
     metadata: {
       add_explaination: 'Add specific data required by this project.',
@@ -347,10 +348,10 @@ export default {
       title: 'Add metadata column'
     },
     status: {
-      closed: 'Closed',
-      open: 'Open',
-      active: 'Open',
-      archived: 'Closed'
+      closed: 'Abgeschlossen',
+      open: 'Aktiv',
+      active: 'Aktiv',
+      archived: 'Archiviert'
     },
     type: {
       short: 'Short',
@@ -361,16 +362,16 @@ export default {
 
   profile: {
     info_title: 'Information',
-    language: 'Language',
-    password_title: 'Change password',
-    timezone: 'Timezone',
-    title: 'Your Profile',
-    change_avatar: 'Change avatar',
+    language: 'Sprache',
+    password_title: 'Passwort ändern',
+    timezone: 'Zeitzone',
+    title: 'Profil',
+    change_avatar: 'Avatar ändern',
     avatar: {
-      title: 'Change avatar'
+      title: 'Avatar ändern'
     },
     change_password: {
-      button: 'Change password',
+      button: 'Passwort ändern',
       error: 'An error occured while changing password. Please verify your current password.',
       success: 'Your password was successfully changed!',
       unvalid: 'Your new password confirmation doesn\'t match or your password is too short (7 chars, at least, is expected).'

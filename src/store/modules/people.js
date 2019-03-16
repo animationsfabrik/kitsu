@@ -513,7 +513,6 @@ const mutations = {
     )
     state.personToEdit = helpers.addAdditionalInformation(state.personToEdit)
     if (personToEditIndex >= 0) {
-      console.log('ok', state.personToEdit.name)
       delete state.people[personToEditIndex]
       state.personMap[state.personToEdit.id] = {...state.personToEdit}
       state.people[personToEditIndex] = state.personMap[state.personToEdit.id]
