@@ -4,7 +4,7 @@
     <table class="table table-header" ref="headerWrapper">
       <thead>
         <tr>
-          <th class="project">&nbsp;</th>
+          <!--<th class="project">&nbsp;</th>-->
           <th class="name">{{ $t('productions.fields.name') }}</th>
           <th class="type">{{ $t('productions.fields.type') }}</th>
           <th class="fps">{{ $t('productions.fields.fps') }}</th>
@@ -26,17 +26,17 @@
     <table class="table splitted-table">
       <tbody>
         <tr class="type-header">
-          <td colspan="30">
+          <td colspan="30" style="background-color: green">
             {{ $t('productions.status.open') }}
           </td>
         </tr>
-        <tr v-for="entry in openProductions" :key="entry.id">
-          <production-name-cell
+        <tr v-for="entry in openProductions" :key="entry.id" style="background-color: #28993C">
+          <!--<production-name-cell
             class="project"
             :only-avatar="true"
             :entry="entry"
             :last-production-screen="lastProductionScreen"
-          />
+          />-->
           <production-name-cell
             class="name"
             :with-avatar="false"
