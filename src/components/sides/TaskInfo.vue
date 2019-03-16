@@ -8,6 +8,12 @@
           <router-link :to="taskEntityPath">
             {{ task ? title : 'Loading...' }}
           </router-link>
+        <validation-tag
+          class="flexrow-item title"
+          style="margin-left: 0.1em;"
+          :task="task"
+          :is-static="true"
+        />
         </div>
         <task-type-name
           class="flexrow-item task-type"
@@ -19,26 +25,14 @@
       <div
         class="flexrow task-information"
       >
-        <span class="flexrow-item">{{ $t('tasks.current_status') }}</span>
-        <validation-tag
-          class="is-medium flexrow-item"
-          :task="task"
-          :is-static="true"
-        />
-        <router-link
-          class="flexrow-item history-button"
-          :to="taskPath"
-        >
-          {{ $t('main.history') }}
-        </router-link>
-        <button-simple
+        <!--<button-simple
           class="flexrow-item set-thumbnail-button"
           icon="image"
           :disabled="!isSetThumbnailAllowed"
           :title="$t('tasks.set_preview')"
           @click="setCurrentPreviewAsEntityThumbnail"
           v-if="isCurrentUserManager"
-        />
+        />-->
         <subscribe-button
           class="flexrow-item"
           :subscribed="isAssigned || isSubscribed"
@@ -47,15 +41,48 @@
         />
       </div>
     </div>
-
-    <div class="task_info_due_date">
-
-    Due date: {{ (formatDate(task.due_date)) }}
-    </div>
     <button class="button is-primary" @click="newTaskVersion(task.id, user.id)">{{ $t('tasks.new_version') }}</button>
 
+        <router-link
+          class="button"
+          style="float: right;"
+          :to="taskPath"
+        >
+          {{ $t('main.history') }}
+        </router-link>
+
+    <div class="table-body" style="margin-top: 1em;">
+        <table class="table">
+          <tbody>
+            <tr>
+              <td class="field-label">{{ $t('tasks.fields.due_date') }}</td>
+              <td>
+                {{ formatDate(task.due_date) }}
+              </td>
+            </tr>
+            <tr>
+              <td class="field-label">{{ $t('tasks.fields.start_date') }}</td>
+              <td>
+                {{ formatDate(task.start_date) }}
+              </td>
+            </tr>
+            <tr>
+            <td class="field-label">{{ $t('tasks.fields.real_start_date') }}</td>
+              <td>
+                {{ formatDate(task.real_start_date) }}
+              </td>
+            </tr>
+            <tr>
+              <td class="field-label">{{ $t('tasks.fields.real_end_date') }}</td>
+              <td>
+                {{ formatDate(task.real_end_date) }}
+              </td>
+            </tr>
+          </tbody>
+      </table>
+    </div>
     <div class="task-columns" ref="task-columns">
-      <div class="task-column preview-column">
+      <div class="task-column preview-column" v-if="taskPreviews && taskPreviews.length > 0">
         <div class="preview-column-content">
           <div class="preview-picture">
             <div
@@ -103,20 +130,19 @@
               ref="preview-picture"
               v-else-if="isPicturePreview"
             />
-            <div
+            <!--<div
               class="no-preview"
               v-if="!taskPreviews || taskPreviews.length === 0"
             >
               <em>{{ $t('tasks.no_preview') }}</em>
-            </div>
+            </div>-->
           </div>
 
         </div>
       </div>
 
-      <div class="task-column workfiles-column">
+      <div v-if="this.taskWorkingFiles.length > 0" class="task-column workfiles-column">
         <div>
-          <div v-if="this.taskWorkingFiles.length > 0">
             <h2>{{ $t('tasks.working_files') }}</h2>
             <div class="task-column workfile">
               {{ this.taskWorkingFiles[0].name }}
@@ -129,7 +155,6 @@
             />
           <button class="button is-primary" @click="checkoutWorkingFile(selectedVersion, task.id, user.id)">{{ $t('tasks.checkout_version') }}</button>
           <button style="float: right; background-color: #c51515;" class="button is-primary" @click="deleteWorkingFile(selectedVersion)">{{ $t('tasks.delete_version') }}</button>
-          </div>
         </div>
       </div>
 
@@ -811,6 +836,7 @@ export default {
 }
 
 .history-button {
+  color: $white-grey;
   flex: 1;
 }
 
@@ -895,5 +921,8 @@ export default {
 
 .set-thumbnail-button {
   margin-right: 0.2em;
+}
+.dark .table-body {
+  border: 1px solid $dark-grey;
 }
 </style>
