@@ -302,7 +302,6 @@ export default {
       'isCurrentUserAdmin',
       'isCurrentUserManager',
       'isCurrentUserClient',
-      'isFps',
       'isFrameIn',
       'isFrameOut',
       'isDueDate',
@@ -509,12 +508,6 @@ th.actions {
 .frameout {
   min-width: 60px;
   width: 60px;
-}
-
-.fps {
-  min-width: 50px;
-  max-width: 50px;
-  width: 50px;
 }
 
 .duedate {

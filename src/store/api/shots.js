@@ -71,13 +71,11 @@ export default {
     if (
       shot.frameOut !== undefined ||
       shot.frameIn !== undefined ||
-      shot.fps !== undefined ||
       shot.dueDate !== undefined
     ) {
       Object.assign(data.data, {
         frame_in: shot.frameIn,
         frame_out: shot.frameOut,
-        fps: shot.fps,
         due_date: shot.dueDate
       })
     }

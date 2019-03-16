@@ -4,6 +4,7 @@ import peopleApi from '../api/people'
 import tasksStore from './tasks'
 import peopleStore from './people'
 import taskTypesStore from './tasktypes'
+import productionsStore from './productions'
 
 import { PAGE_SIZE } from '../../lib/pagination'
 import {
@@ -131,6 +132,9 @@ const cache = {
 }
 
 const helpers = {
+  getProduction (productionId) {
+    return productionsStore.state.productionMap[productionId]
+  },
   getTask (taskId) {
     return tasksStore.state.taskMap[taskId]
   },
@@ -196,7 +200,6 @@ const initialState = {
   currentEpisode: null,
   episodeValidationColumns: [],
 
-  isFps: false,
   isFrameIn: false,
   isFrameOut: false,
   isDueDate: false,
@@ -259,7 +262,6 @@ const getters = {
   shotSearchQueries: state => state.shotSearchQueries,
   shotMap: state => state.shotMap,
 
-  isFps: state => state.isFps,
   isFrameIn: state => state.isFrameIn,
   isFrameOut: state => state.isFrameOut,
   isDueDate: state => state.isDueDate,
@@ -752,7 +754,6 @@ const mutations = {
     { production, shots, userFilters, taskTypeMap }
   ) {
     const validationColumns = {}
-    let isFps = false
     let isFrameIn = false
     let isFrameOut = false
     let isDueDate = false
@@ -769,7 +770,6 @@ const mutations = {
       })
       shot.timeSpent = timeSpent
 
-      if (!isFps && shot.data.fps) isFps = true
       if (!isFrameIn && shot.data.frame_in) isFrameIn = true
       if (!isFrameOut && shot.data.frame_out) isFrameOut = true
       if (!isDueDate && shot.data.due_date) isDueDate = true
@@ -781,7 +781,6 @@ const mutations = {
     state.isShotsLoadingError = false
     state.nbValidationColumns = Object.keys(validationColumns).length
 
-    state.isFps = isFps
     state.isFrameIn = isFrameIn
     state.isFrameOut = isFrameOut
     state.isDueDate = isDueDate
@@ -823,6 +822,7 @@ const mutations = {
     const sequenceMap = {}
     sequences.forEach((sequence) => {
       sequenceMap[sequence.id] = sequence
+      Object.assign(sequence, { fps: helpers.getProduction(sequence.project_id).fps })
       if (sequence.parent_id) {
         const episode = state.episodeMap[sequence.parent_id]
         if (episode) {
@@ -922,7 +922,6 @@ const mutations = {
       helpers.setListStats(state, cache.shots)
     }
 
-    if (newShot.data.fps) state.isFps = true
     if (newShot.data.frame_in) state.isFrameIn = true
     if (newShot.data.frame_out) state.isFrameOut = true
     if (newShot.data.due_date) state.isDueDate = true
@@ -1128,7 +1127,6 @@ const mutations = {
     const maxY = state.nbValidationColumns
     state.shotSelectionGrid = buildSelectionGrid(maxX, maxY)
 
-    if (shot.data.fps) state.isFps = true
     if (shot.data.frame_in) state.isFrameIn = true
     if (shot.data.frame_out) state.isFrameOut = true
     if (shot.data.due_date) state.isDueDate = true

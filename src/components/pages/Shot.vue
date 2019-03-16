@@ -40,13 +40,6 @@
       <div class="table-body">
         <table class="table" v-if="currentShot">
           <tbody>
-            <tr v-if="currentShot.data && currentShot.data.fps">
-              <td class="field-label">{{ $t('shots.fields.fps') }}</td>
-              <td>
-                {{ currentShot ? currentShot.data.fps : '' }}
-              </td>
-            </tr>
-
             <tr v-if="currentShot.data && currentShot.nb_frames">
               <td class="field-label">{{ $t('shots.fields.nb_frames') }}</td>
               <td>

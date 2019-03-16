@@ -163,10 +163,6 @@ export default {
       return this.shotToEdit.data ? this.shotToEdit.data.frame_out : ''
     },
 
-    fps () {
-      return this.shotToEdit.data ? this.shotToEdit.data.fps : ''
-    },
-
     dueDate () {
       return this.shotToEdit.data ? this.shotToEdit.data.due_date : ''
     }
@@ -224,7 +220,6 @@ export default {
           nb_frames: this.shotToEdit.nb_frames,
           frameIn: this.frameIn,
           frameOut: this.frameOut,
-          fps: this.fps,
           dueDate: this.dueDate,
           data: {...this.shotToEdit.data} || {}
         }
