@@ -22,9 +22,6 @@
             <people-name class="" :person="comment.person" />
           </strong>
           <validation-tag :status="comment.task_status_id" :task="getTask(comment.object_id)" />
-          <span class="comment-date">
-            {{ formatDate(comment.created_at) }}
-          </span>
           <router-link
             :to="previewRoute"
             class="revision"
@@ -47,6 +44,9 @@
             v-if="editable"
           />
         </div>
+        <span class="comment-date">
+          {{ formatDate(comment.created_at) }}
+        </span>
       </div>
       <div>
         <router-link
@@ -70,9 +70,9 @@
         v-if="comment.text"
       >
       </p>
-      <p class="comment-text empty word-break" v-else>
+      <!--<p class="comment-text empty word-break" v-else>
         {{ $t('comments.empty_text') }}
-      </p>
+      </p>-->
     </div>
   </div>
 </article>
@@ -236,9 +236,10 @@ export default {
 }
 
 .comment-date {
-  color: $grey;
+  color: $white-grey;
   margin-left: 0.5em;
   flex: 1;
+  text-align: right;
 }
 
 a.revision {
