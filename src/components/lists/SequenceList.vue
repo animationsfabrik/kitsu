@@ -88,7 +88,7 @@
             v-for="columnId in sortedValidationColumns"
           >
             <div v-if="isStats(entry, taskTypeMap[columnId]) && isShowSequenceStats">
-              <div style="float: left;">  
+              <div style="float: left;">
                 <pie-chart
                   width="70px"
                   height="50px"
@@ -100,7 +100,7 @@
               </div>
 
               <div v-for="data in chartData(entry, taskTypeMap[columnId])" :key="data[0]">
-                {{ data[0] }} ({{ Math.round(data[1] / chartTotal(entry, taskTypeMap[columnId]) * 100) }}%)
+                {{ data[0] }} ({{ Math.round(data[1] / chartTotal(entry, taskTypeMap[columnId]) * 100) }}%, {{ data[2] }} fr, {{ Math.round(data[2]/entry.fps*10)/10 }} sec, {{ Math.round(data[2]/entry.fps/60*10)/10 }} min)
               </div>
             </div>
           </td>
@@ -209,7 +209,8 @@ export default {
       return Object.keys(this.sequenceStats[entry.id][column.id]).map((key) => {
         return [
           this.sequenceStats[entry.id][column.id][key].name,
-          this.sequenceStats[entry.id][column.id][key].value
+          this.sequenceStats[entry.id][column.id][key].value,
+          this.sequenceStats[entry.id][column.id][key].frames
         ]
       })
     },
@@ -335,9 +336,9 @@ td.name {
 }
 
 .validation {
-  min-width: 180px;
-  max-width: 180px;
-  width: 180px;
+  min-width: 280px;
+  max-width: 280px;
+  width: 280px;
   word-wrap: break-word;
 }
 

@@ -81,10 +81,14 @@ export const computeStats = (entities, idField, taskStatusMap, taskMap) => {
               results[sequenceId][taskTypeId][taskStatusId] = {
                 name: taskStatus.short_name,
                 color: taskStatus.color,
-                value: 0
+                value: 0,
+                frames: 0
               }
             }
             results[sequenceId][taskTypeId][taskStatusId].value++
+            if (entity.nb_frames) {
+              results[sequenceId][taskTypeId][taskStatusId].frames += entity.nb_frames
+            }
           }
         }
       })
