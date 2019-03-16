@@ -23,7 +23,6 @@ import People from '../components/pages/People'
 import Person from '../components/pages/Person'
 import Productions from '../components/pages/Productions'
 import ProductionAssetTypes from '../components/pages/ProductionAssetTypes'
-import ProductionPlanning from '../components/ProductionPlanning'
 import Playlist from '../components/pages/Playlist'
 import Profile from '../components/pages/Profile'
 import ResetPassword from '../components/pages/ResetPassword'
@@ -233,11 +232,6 @@ export const routes = [
         path: '/productions/delete/:production_delete_id',
         component: Productions,
         name: 'delete-production'
-      },
-      {
-        path: '/productions/:production_id/planning',
-        component: ProductionPlanning,
-        name: 'production-planning'
       },
       {
         path: '/productions/:production_id/breakdown',
