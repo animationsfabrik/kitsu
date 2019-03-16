@@ -180,6 +180,14 @@ export default {
       }
     },
 
+    getTask (task) {
+      if (typeof (task) === 'string') {
+        return this.taskMap[task]
+      } else {
+        return task
+      }
+    },
+
     getPath (name) {
       let route = {
         name: name,
