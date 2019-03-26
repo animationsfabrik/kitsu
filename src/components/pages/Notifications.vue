@@ -376,9 +376,10 @@ a {
 }
 
 .page {
-  position: relative;
+  position: fixed;
   left: 215px;
-  padding-top: 90px
+  top: 60px;
+  padding-top: 80px;
 }
 
 .notification {

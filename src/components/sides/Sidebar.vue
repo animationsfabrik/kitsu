@@ -33,7 +33,11 @@
         <section>
          <div v-if="!isCurrentUserClient">
            <h2>{{ $t('main.user')}}</h2>
-
+           <p class="menu_sublink">
+            <router-link :to="{ name: 'notifications' }">
+                -{{ $t('notifications.title') }}
+            </router-link>
+           </p>
            <p class="menu_sublink">
              <router-link :to="{name: 'todos'}">
                 -{{ $t("tasks.my_tasks") }}

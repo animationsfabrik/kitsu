@@ -60,16 +60,6 @@
 
       <div class="nav-right">
         <div
-          class="nav-item"
-        >
-          <router-link :to="{ name: 'notifications' }">
-            <bell-icon
-              :class="notificationBellClass"
-            />
-          </router-link>
-        </div>
-
-        <div
           :class="{
             'nav-item': true,
             'user-nav': true,
