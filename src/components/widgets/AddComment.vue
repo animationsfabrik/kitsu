@@ -19,6 +19,22 @@
       </div>
     </figure>
     <div class="media-content">
+      <div class="flexrow mt1">
+        <span class="flexrow-item">
+          {{ $t('comments.set_status_to') }}
+        </span>
+        <combobox-status
+          class="flexrow-item status-selector"
+          :task-status-list="taskStatus"
+          v-model="task_status_id"
+        />
+      </div>
+      <div
+        class="error pull-right"
+        v-if="isError"
+      >
+        <em>{{ $t('comments.error') }}</em>
+      </div>
       <at-ta
         :members="team"
         name-key="full_name"
@@ -39,6 +55,7 @@
         </template>
         <textarea
           ref="commentTextarea"
+          style="margin-bottom: 0.5em"
           class="textarea flexrow-item"
           :placeholder="$t('comments.add_comment')"
           :disabled="isLoading"
@@ -58,27 +75,11 @@
           class="attachment-file flexrow-item"
         >
           <em
-            v-if="!isFileAttached"
-          >
-            {{ $t('comments.no_file_attached') }}
-          </em>
-          <em
             v-if="isFileAttached"
           >
             {{ attachedFileName }}
           </em>
         </span>
-      </div>
-      <div class="flexrow mt1">
-        <span class="flexrow-item">
-          {{ $t('comments.set_status_to') }}
-        </span>
-        <combobox-status
-          class="flexrow-item status-selector"
-          :task-status-list="taskStatus"
-          v-model="task_status_id"
-        />
-
         <div class="flexrow-item post-button-wrapper">
         <button
           :class="{
@@ -92,12 +93,6 @@
           {{ $t('comments.post_status') }}
         </button>
         </div>
-      </div>
-      <div
-        class="error pull-right"
-        v-if="isError"
-      >
-        <em>{{ $t('comments.error') }}</em>
       </div>
     </div>
   </article>
@@ -240,7 +235,7 @@ export default {
   transition: background 0.2s ease;
 
   textarea {
-    min-height: 7em;
+    min-height: 5em;
     margin-bottom: 0.3em;
   }
 
@@ -265,6 +260,7 @@ export default {
 
 .mt1 {
   margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 .is-dragging {
