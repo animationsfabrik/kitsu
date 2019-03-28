@@ -782,7 +782,7 @@ input.search-input:focus {
 
 .fixed-page {
   position: fixed;
-  left: 200px;
+  left: 210px;
   right: 0;
   top: 10px;
   bottom: 0;

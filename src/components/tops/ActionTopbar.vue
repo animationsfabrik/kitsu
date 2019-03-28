@@ -752,8 +752,8 @@ export default {
   min-height: 60px;
   z-index: 210;
   position: fixed;
-  left: 0;
-  right: 0;
+  left: 215px;
+  right: 400px;
 }
 
 div.assignation {
