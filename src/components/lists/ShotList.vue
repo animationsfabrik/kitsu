@@ -220,6 +220,40 @@
           <td class="actions" v-else></td>
         </tr>
       </tbody>
+      <tfoot v-if="!isEmptyList">
+        <tr>
+          <td style="padding-left: 0.5em" class="thumbnail tablefooter">
+            {{ $t('shots.fields.total') }}
+          </td>
+          <td class="tablefooter">
+            {{ displayedSequencesLength }}
+          </td>
+          <td class="tablefooter name shot-name">
+            {{ displayedShotsLength }}
+          </td>
+          <td class="tablefooter description" v-if="!isCurrentUserClient && isShowInfos">
+          </td>
+          <td class="metadata-descriptor" :key="descriptor.id" v-for="descriptor in shotMetadataDescriptors" v-if="isShowInfos">metadata
+          </td>
+          <td class="tablefooter time-spent" v-if="!isCurrentUserClient && isShowInfos">
+            {{ formatDuration(displayedShotsTimeSpent) }}
+          </td>
+          <td class="tablefooter frames" v-if="isShowInfos">
+            {{ displayedShotsFrames }}
+          </td>
+          <td class="tablefooter duedate" v-if="isShowInfos">{{ displayedMaxDates }}
+          </td>
+          <td :class="{'tablefooter': true, 'validation-cell': !hiddenColumns[columnId], 'hidden-validation-cell': hiddenColumns[columnId]}" :key="columnId" v-for="columnId in sortedValidationColumns" v-if="!isLoading && (!hiddenColumns[columnId] || isShowInfos)">
+          <ul style="list-style: none;">
+            <li v-for="(taskStatus, value) in displayedShotsDone[columnId]['status']" :key="taskStatus">
+              {{ taskStatus / displayedShotsDone[columnId]['total'] *100 }}% {{ taskStatusMap[value].short_name }}
+            </li>
+          </ul>
+          </td>
+          <td class="actions">
+          </td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 
@@ -297,6 +331,9 @@ export default {
       'currentProduction',
       'currentEpisode',
       'displayedShotsLength',
+      'displayedMaxDates',
+      'displayedShotsDone',
+      'displayedSequencesLength',
       'displayedShotsTimeSpent',
       'displayedShotsFrames',
       'isCurrentUserAdmin',
@@ -316,6 +353,7 @@ export default {
       'shotSearchText',
       'shotSelectionGrid',
       'taskMap',
+      'taskStatusMap',
       'taskTypeMap'
     ]),
 
@@ -511,9 +549,9 @@ th.actions {
 }
 
 .duedate {
-  min-width: 100px;
-  max-width: 100px;
-  width: 100px;
+  min-width: 110px;
+  max-width: 110px;
+  width: 110px;
 }
 
 .shotlength {
@@ -607,5 +645,11 @@ tbody {
 
 th {
   word-break: break-all
+}
+
+.tablefooter {
+  background-color: $dark-grey;
+  font-weight: bold;
+  color: white;
 }
 </style>

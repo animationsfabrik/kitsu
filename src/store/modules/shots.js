@@ -176,13 +176,53 @@ const helpers = {
   setListStats (state, shots) {
     let timeSpent = 0
     let nbFrames = 0
+    let sequences = []
+    let dates = []
+    let shotsDone = []
     state.displayedShotsLength = shots.length
     shots.forEach((shot) => {
       timeSpent += shot.timeSpent
       nbFrames += shot.nb_frames
+      if (!(shot.data.due_date === undefined)) {
+        dates.push(new Date(shot.data.due_date))
+      }
+      if (!sequences.includes(shot.sequence_id)) {
+        sequences.push(shot.sequence_id)
+      }
+      shot.tasks.forEach((task) => {
+        if (typeof task === 'string') {
+          task = helpers.getTask(task)
+        }
+        var taskType = task.task_type_id
+        var taskStatus = task.task_status_id
+        if (!(taskType in shotsDone)) {
+          shotsDone[taskType] = {}
+          shotsDone[taskType]['total'] = 0
+          shotsDone[taskType]['status'] = {}
+        }
+        if (!(taskStatus in shotsDone[taskType]['status'])) {
+          shotsDone[taskType]['status'][taskStatus] = 0
+        }
+        shotsDone[taskType]['status'][taskStatus] += 1
+        shotsDone[taskType]['total'] += 1
+      })
     })
+    if (dates.length > 1) {
+      var maxDate = new Date(Math.max.apply(null, dates)).toISOString().split('T')[0]
+      var minDate = new Date(Math.min.apply(null, dates)).toISOString().split('T')[0]
+      state.displayedMaxDates = minDate + '-' + maxDate
+    }
+    if (dates.length === 0) {
+      state.displayedMaxDates = ''
+    }
+    if (dates.length === 1) {
+      state.displayedMaxDates = dates[0].toISOString().split('T')[0]
+    }
     state.displayedShotsTimeSpent = timeSpent
     state.displayedShotsFrames = nbFrames
+    state.displayedSequencesLength = sequences.length
+    state.displayedShotsDone = shotsDone
+    console.log(state.displayedShotsDone)
   }
 }
 
@@ -206,6 +246,8 @@ const initialState = {
 
   displayedShots: [],
   displayedShotsLength: 0,
+  displayedMaxDates: '',
+  displayedShotsDone: {},
   displayedShotsTimeSpent: 0,
   displayedShotsFrames: 0,
   displayedSequences: [],
@@ -274,6 +316,8 @@ const getters = {
 
   displayedShots: state => state.displayedShots,
   displayedShotsLength: state => state.displayedShotsLength,
+  displayedMaxDates: state => state.displayedMaxDates,
+  displayedShotsDone: state => state.displayedShotsDone,
   displayedShotsTimeSpent: state => state.displayedShotsTimeSpent,
   displayedShotsFrames: state => state.displayedShotsFrames,
   displayedSequences: state => state.displayedSequences,
@@ -555,7 +599,7 @@ const actions = {
   uploadShotFile ({ commit, state, rootGetters }, callback) {
     commit(IMPORT_SHOTS_START)
     const currentProduction = rootGetters.currentProduction
-    shotsApi.postCsv(currentProduction, state.shotsCsvFormData, (err) => {
+    shotsApi.postXml(currentProduction, state.shotsCsvFormData, (err) => {
       commit(IMPORT_SHOTS_END)
       if (callback) callback(err)
     })
@@ -735,6 +779,8 @@ const mutations = {
     state.sequenceIndex = {}
     state.displayedShots = []
     state.displayedShotsLength = 0
+    state.displayedMaxDates = ''
+    state.displayedShotsDone = {}
     state.displayedTimeSpent = 0
     state.displayedFrames = 0
     state.shotSearchQueries = []
