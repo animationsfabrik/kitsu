@@ -126,7 +126,10 @@
           <td class="estimation">
             {{ formatEstimation(task.estimation) }}
           </td>
-          <td class="duration">
+          <td :class="{
+            duration: true,
+            error: isEstimationBurned(task)
+          }">
             {{ formatDuration(task.duration) }}
           </td>
           <td class="retake-count">
@@ -214,21 +217,21 @@ export default {
   },
 
   props: {
-    tasks: {
-      type: Array,
-      default: () => []
-    },
-    isLoading: {
+    isAssets: {
       type: Boolean,
-      default: false
+      default: true
     },
     isError: {
       type: Boolean,
       default: false
     },
-    isAssets: {
+    isLoading: {
       type: Boolean,
-      default: true
+      default: false
+    },
+    tasks: {
+      type: Array,
+      default: () => []
     },
     taskType: {
       type: Object,
@@ -239,9 +242,17 @@ export default {
   data () {
     return {
       lastSelection: null,
-      options: [],
       selectionGrid: {}
     }
+  },
+
+  mounted () {
+    window.addEventListener('keydown', this.onKeyDown, false)
+    this.$nextTick(this.resizeHeaders)
+  },
+
+  beforeDestroy () {
+    window.removeEventListener('keydown', this.onKeyDown)
   },
 
   computed: {
@@ -255,29 +266,20 @@ export default {
 
     timeSpent () {
       let total = 0
-      this.tasks.forEach(t => {
-        total += t.duration
+      this.tasks.forEach(task => {
+        total += task.duration
       })
       return total
     },
 
     nbFrames () {
       let total = 0
-      this.tasks.forEach(t => {
-        const entity = this.shotMap[t.entity.id]
+      this.tasks.forEach(task => {
+        const entity = this.shotMap[task.entity.id]
         if (entity && entity.nb_frames) total += entity.nb_frames
       })
       return total
     }
-  },
-
-  mounted () {
-    window.addEventListener('keydown', this.onKeyDown, false)
-    this.$nextTick(this.resizeHeaders)
-  },
-
-  beforeDestroy () {
-    window.removeEventListener('keydown', this.onKeyDown)
   },
 
   methods: {
@@ -305,9 +307,36 @@ export default {
       else return ''
     },
 
+    isEstimationBurned (task) {
+      return task.estimation &&
+        task.estimation > 0 &&
+        task.duration > task.estimation
+    },
+
     onBodyScroll (event, position) {
       this.$refs.headerWrapper.style.left = `-${position.scrollLeft}px`
       this.$emit('scroll', position.scrollTop)
+    },
+
+    getEntity (entityId) {
+      if (this.isAssets) {
+        return this.assetMap[entityId]
+      } else {
+        return this.shotMap[entityId]
+      }
+    },
+
+    onKeyDown (event) {
+      if (this.tasks.length > 0 && event.ctrlKey) {
+        let index = this.lastSelection ? this.lastSelection : 0
+        if ([37, 38].includes(event.keyCode)) {
+          index = (index - 1) < 0 ? index = this.tasks.length - 1 : index - 1
+          this.selectTask({}, index, this.tasks[index])
+        } else if ([39, 40].includes(event.keyCode)) {
+          index = (index + 1) >= this.tasks.length ? index = 0 : index + 1
+          this.selectTask({}, index, this.tasks[index])
+        }
+      }
     },
 
     selectTask (event, index, task) {
@@ -345,19 +374,6 @@ export default {
       this.scrollToLine(task.id)
     },
 
-    onKeyDown (event) {
-      if (this.tasks.length > 0 && event.ctrlKey) {
-        let index = this.lastSelection ? this.lastSelection : 0
-        if ([37, 38].includes(event.keyCode)) {
-          index = (index - 1) < 0 ? index = this.tasks.length - 1 : index - 1
-          this.selectTask({}, index, this.tasks[index])
-        } else if ([39, 40].includes(event.keyCode)) {
-          index = (index + 1) >= this.tasks.length ? index = 0 : index + 1
-          this.selectTask({}, index, this.tasks[index])
-        }
-      }
-    },
-
     setScrollPosition (scrollPosition) {
       if (this.$refs.body) {
         this.$refs.body.scrollTop = scrollPosition
@@ -390,14 +406,6 @@ export default {
     resetSelection () {
       this.selectionGrid = {}
       this.lastSelection = null
-    },
-
-    getEntity (entityId) {
-      if (this.isAssets) {
-        return this.assetMap[entityId]
-      } else {
-        return this.shotMap[entityId]
-      }
     },
 
     resizeHeaders () {
@@ -524,6 +532,13 @@ export default {
   text-align: center;
 }
 
+.last-comment-date,
+.real-start-date,
+.real-end-date {
+  min-width: 130px;
+  width: 130px;
+}
+
 .retake-count {
   min-width: 90px;
   width: 90px;
@@ -548,9 +563,6 @@ td.retake-count {
 
 .empty {
   width: 100%
-}
-
-.avatar {
 }
 
 .nb-tasks {

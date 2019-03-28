@@ -9,7 +9,15 @@
           <div
             class="company-logo has-text-centered"
           >
-            <img class="imglogo" src="../../assets/kitsu.png" />
+            <img
+              :src="logoPath"
+              class="imglogo"
+              v-if="organisation && organisation.has_avatar"
+            />
+            <img
+              src="../../assets/kitsu.png"
+              v-else
+            />
             <h2 class="subtitle sidebar-title" style="margin: 0px;">Intranet 2.0</h2>
           </div>
         </router-link>
@@ -141,6 +149,11 @@
               -{{ $t('custom_actions.title') }}
              </router-link>
            </p>-->
+           <p class="menu_sublink">
+             <router-link :to="{name: 'settings'}">
+               -{{ $t("settings.title") }}
+             </router-link>
+           </p>
          </div>
 
         </section>
@@ -171,6 +184,8 @@ export default {
   },
   data () {
     return {
+      title: '',
+      logoPath: '',
       currentProductionId: this.$route.params.production_id,
       currentEpisodeId: this.$route.params.episode_id,
       currentProjectSection: this.getCurrentSectionFromRoute(),
@@ -179,18 +194,8 @@ export default {
   },
 
   mounted () {
-    const userMenu = this.$refs['user-menu']
-    const userName = this.$refs['user-name']
-    if (userName) {
-      const userNameWidth = userName.clientWidth
-
-      if (userNameWidth > 100) {
-        userMenu.style.width = `${userNameWidth}px`
-        userName.style.width = `${userNameWidth}px`
-      }
-    }
-
     this.setProductionFromRoute()
+    this.reset()
   },
 
   computed: {
@@ -199,6 +204,8 @@ export default {
       'isCurrentUserClient',
       'isCurrentUserCGArtist',
       'isCurrentUserManager',
+      'isCurrentUserAdmin',
+      'organisation'
       'isCurrentUserAdmin',
       'openProductionOptions',
       'assetsPath',
@@ -218,6 +225,7 @@ export default {
       'taskTypes'
     ])
   },
+
   methods: {
     ...mapActions([
       'clearEpisodes',
@@ -229,6 +237,12 @@ export default {
       'toggleDarkTheme',
       'toggleUserMenu'
     ]),
+
+    reset () {
+      this.title = this.organisation.name
+      this.logoPath = `/api/pictures/thumbnails/organisations/` +
+        `${this.organisation.id}.png?t=` + new Date().toISOString()
+    },
 
     onLogoutClicked () {
       this.logout((err, success) => {
@@ -429,6 +443,10 @@ export default {
 
     currentProjectSection () {
       if (!this.silent) this.updateRoute()
+    },
+
+    organisation () {
+      this.reset()
     }
   },
 
@@ -446,6 +464,20 @@ export default {
           this.$refs.avatar.reloadAvatar()
         }
       }
+    }
+      'toggleSidebar'
+    ]),
+
+    reset () {
+      this.title = this.organisation.name
+      this.logoPath = `/api/pictures/thumbnails/organisations/` +
+        `${this.organisation.id}.png?t=` + new Date().toISOString()
+    }
+  },
+
+  watch: {
+    organisation () {
+      this.reset()
     }
   }
 }
@@ -503,13 +535,15 @@ aside.hidden {
 }
 
 .sidebar-title {
-  margin-top: 0;
-  margin-bottom: 3em;
+  margin-top: 0.5em;
+  margin-bottom: 1.5em;
   text-align: center;
+  font-size: 1.6em;
 }
 
 .company-logo {
-  text-align: center;
+  width: 150px;
+  margin: auto;
 }
 
 #c-mask {

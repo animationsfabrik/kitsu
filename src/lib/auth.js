@@ -1,12 +1,11 @@
 import superagent from 'superagent'
 import store from '../store'
-import router from '../router'
 import {
-  RESET_ALL,
+  DATA_LOADING_START,
+  SET_ORGANISATION,
   USER_LOGIN,
   USER_LOGOUT,
-  USER_LOGIN_FAIL,
-  DATA_LOADING_START
+  USER_LOGIN_FAIL
 } from '../store/mutation-types.js'
 
 const auth = {
@@ -18,10 +17,8 @@ const auth = {
       .end((err, res) => {
         if (err) {
           if (res.body.default_password) {
-            router.push({
-              name: 'reset-change-password',
-              params: {token: res.body.token}
-            })
+            err.default_password = res.body.default_password
+            err.token = res.body.token
           }
           callback(err)
         } else {
@@ -49,12 +46,6 @@ const auth = {
         store.commit(USER_LOGOUT)
         callback()
       })
-  },
-
-  backToLogin () {
-    router.push('/login')
-    store.commit(RESET_ALL)
-    store.commit(USER_LOGOUT)
   },
 
   resetPassword (email) {
@@ -96,7 +87,9 @@ const auth = {
           callback(err)
         } else {
           const user = res.body.user
+          const organisation = res.body.organisation
           const isLdap = res.body.ldap
+          store.commit(SET_ORGANISATION, organisation)
           store.commit(USER_LOGIN, user)
           callback(null, isLdap)
         }
@@ -108,10 +101,20 @@ const auth = {
   requireAuth (to, from, next) {
     const finalize = (isLdap) => {
       if (!store.state.user.isAuthenticated) {
-        next({
-          path: '/login',
-          query: { redirect: to.fullPath }
-        })
+        store.dispatch('getOrganisation')
+          .then(() => {
+            next({
+              path: '/login',
+              query: { redirect: to.fullPath }
+            })
+          })
+          .catch((err) => {
+            console.error(err)
+            next({
+              path: '/login',
+              query: { redirect: to.fullPath }
+            })
+          })
       } else {
         store.commit(DATA_LOADING_START, { isLdap })
         next()

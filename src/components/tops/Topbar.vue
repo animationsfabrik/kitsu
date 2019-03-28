@@ -1,7 +1,7 @@
 <template>
   <div class="topbar">
     <div id="c-mask-user-menu" @click="toggleUserMenu()"
-         v-bind:class="{ 'is-active': !isUserMenuHidden }"
+         v-bind:class="{'is-active': !isUserMenuHidden}"
     >
     </div>
 
@@ -104,7 +104,7 @@
         </li>
         <li>
           <a href="https://kitsu.cg-wire.com" target="_blank">
-            {{ $t("main.documentation ") }}
+            {{ $t("main.documentation ")}}
           </a>
         </li>
         <li>
@@ -122,7 +122,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { BellIcon } from 'vue-feather-icons'
 
 import Combobox from '../widgets/Combobox'
 import PeopleAvatar from '../widgets/PeopleAvatar'
@@ -131,7 +130,6 @@ import PeopleName from '../widgets/PeopleName'
 export default {
   name: 'topbar',
   components: {
-    BellIcon,
     Combobox,
     PeopleName,
     PeopleAvatar
@@ -178,14 +176,6 @@ export default {
       'productionMap',
       'user'
     ]),
-
-    notificationBellClass () {
-      if (this.isNewNotification) {
-        return 'has-notifications'
-      } else {
-        return 'has-no-notifications'
-      }
-    },
 
     isShotPage () {
       return this.$route.params.episode_id
@@ -559,16 +549,6 @@ export default {
 .context-selector {
   margin-top: 23px;
   margin-right: 1em;
-}
-
-.has-no-notifications {
-  margin-top: 5px;
-  color: $light-grey;
-}
-
-.has-notifications {
-  margin-top: 5px;
-  color: $orange;
 }
 
 .icon-link {

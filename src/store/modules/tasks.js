@@ -1175,6 +1175,7 @@ const mutations = {
       if (task &&
           !task.assignees.find((assigneeId) => assigneeId === personId)) {
         task.assignees.push(personId)
+        task.assignees = [...task.assignees]
       }
     })
   },

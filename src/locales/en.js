@@ -125,6 +125,7 @@ export default {
   },
 
   main: {
+    about: 'About',
     add: 'add',
     all: 'All',
     admin: 'Admin',
@@ -304,12 +305,14 @@ export default {
       free: 'Free value',
       title: 'Add metadata column'
     },
+
     status: {
       closed: 'Closed',
       open: 'Open',
       active: 'Open',
       archived: 'Closed'
     },
+
     type: {
       short: 'Short',
       featurefilm: 'Feature Film',
@@ -325,7 +328,8 @@ export default {
     title: 'Your Profile',
     change_avatar: 'Change avatar',
     avatar: {
-      title: 'Change avatar'
+      title: 'Change avatar',
+      error_upload: 'There was an error while uploading picture.'
     },
     change_password: {
       button: 'Change password',
@@ -336,6 +340,22 @@ export default {
     save: {
       button: 'Save changes',
       error: 'An error occured while saving changes'
+    }
+  },
+
+  settings: {
+    change_logo: 'Change logo',
+    logo: 'Studio logo',
+    no_logo: 'There is no set logo.',
+    set_logo: 'Set studio logo',
+    title: 'Settings',
+    fields: {
+      name: 'Studio name',
+      hours_by_day: 'Hours by day'
+    },
+    save: {
+      button: 'Save settings',
+      error: 'A server error occured while saving settings'
     }
   },
 
