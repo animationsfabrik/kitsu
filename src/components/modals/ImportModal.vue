@@ -8,26 +8,17 @@
 
     <div class="box content">
       <h1 class="title">
-        {{ $t("main.csv.import_title") }}
+        {{ $t("main.xml.import_title") }}
       </h1>
 
-      <p class="description" v-on:submit.prevent>
-        {{ $t("main.csv.required_fields") }}
-        <ul>
-          <li v-for="column in columns" :key="column">
-            {{ column }}
-          </li>
-        </ul>
-      </p>
-
       <p>
-        {{ $t("main.csv.select_file") }}
+        {{ $t("main.xml.select_file") }}
       </p>
 
-      <file-upload @fileselected="onFileSelected"></file-upload>
+      <file-upload accept=".xml" @fileselected="onFileSelected"></file-upload>
 
       <p class="error" v-if="isError">
-        {{ $t("main.csv.error_upload") }}
+        {{ $t("main.xml.error_upload") }}
       </p>
 
       <p class="has-text-right">

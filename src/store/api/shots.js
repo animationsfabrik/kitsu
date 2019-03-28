@@ -135,6 +135,14 @@ export default {
     )
   },
 
+  postXml (production, formData, callback) {
+    client.post(
+      `/api/import/xml/projects/${production.id}/shots`,
+      formData,
+      callback
+    )
+  },
+
   getEpisodeStats (productionId) {
     return new Promise((resolve, reject) => {
       client.get(
