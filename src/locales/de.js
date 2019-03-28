@@ -389,6 +389,22 @@ export default {
     }
   },
 
+  settings: {
+    change_logo: 'Logo ändern',
+    logo: 'Studio Logo',
+    no_logo: 'kein Logo ausgewählt.',
+    set_logo: 'Logo auswählen',
+    title: 'Einstellungen',
+    fields: {
+      name: 'Name des Studios',
+      hours_by_day: 'Stunden pro Tag'
+    },
+    save: {
+      button: 'Speichern',
+      error: 'Fehler beim Speichern der Einstellungen'
+    }
+  },
+
   task_status: {
     delete_text: 'Are you sure you want to remove {name} from your database?',
     delete_error: 'An error occured while deleting this task status. There are probably data linked to it. Are you sure this task status has no task linked to it?',

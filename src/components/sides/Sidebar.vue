@@ -18,7 +18,6 @@
               src="../../assets/kitsu.png"
               v-else
             />
-            <h2 class="subtitle sidebar-title" style="margin: 0px;">Intranet 2.0</h2>
           </div>
         </router-link>
 
@@ -205,7 +204,7 @@ export default {
       'isCurrentUserCGArtist',
       'isCurrentUserManager',
       'isCurrentUserAdmin',
-      'organisation'
+      'organisation',
       'isCurrentUserAdmin',
       'openProductionOptions',
       'assetsPath',
@@ -464,20 +463,12 @@ export default {
           this.$refs.avatar.reloadAvatar()
         }
       }
-    }
-      'toggleSidebar'
-    ]),
+    },
 
     reset () {
       this.title = this.organisation.name
       this.logoPath = `/api/pictures/thumbnails/organisations/` +
         `${this.organisation.id}.png?t=` + new Date().toISOString()
-    }
-  },
-
-  watch: {
-    organisation () {
-      this.reset()
     }
   }
 }
