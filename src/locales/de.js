@@ -56,7 +56,7 @@ export default {
     edit_title: 'Kommentar bearbeiten',
     error: 'Fehler beim Posten des Kommentars',
     no_file_attached: 'Kein Dateianhang',
-    post_status: 'Kommentar posten',
+    post_status: 'Speichern',
     retake: 'Retake',
     validated: 'Abgenommen',
     validation_required: 'Abnahme steht aus',
@@ -128,7 +128,7 @@ export default {
     all: 'Alle',
     admin: 'Admin',
     cancel: 'Abbrechen',
-    clear_selection: 'Aktuelle Auswahl aufheben',
+    clear_selection: 'Auswahl aufheben',
     documentation: 'Dokumentation',
     close: 'Schließen',
     confirmation: 'Bestätigen',
@@ -167,6 +167,13 @@ export default {
       import_title: 'Import data from a CSV file',
       required_fields: 'Your CSV file requires the following columns',
       select_file: 'Please select a file from one of your folder:'
+    },
+    xml: {
+      export_file: 'Export',
+      error_upload: 'An error occured while uploading your XML file.',
+      import_file: 'Import',
+      import_title: 'Import data from a XML file',
+      select_file: 'Please select a file from one of your folder:'
     }
   },
 
@@ -189,8 +196,8 @@ export default {
   notifications: {
     and_change_status: 'and changed status to',
     commented_on: 'commented on',
-    no_notifications: 'keine Benachrichtigungen',
-    title: 'Benachrichtigungen',
+    no_notifications: 'keine Nachrichten',
+    title: 'Meine Nachrichten',
     with_preview: 'with a preview'
   },
 
@@ -426,8 +433,13 @@ export default {
     number: 'Sequenz | Sequenzen',
     title: 'Sequenzen',
     fields: {
-      name: 'name',
-      description: 'Beschreibung'
+      name: 'Name',
+      description: 'Beschreibung',
+      percent: '%',
+      frames: 'Fr',
+      seconds: 'Sek',
+      minutes: 'Min',
+      entities: 'St'
     }
   },
 
@@ -466,7 +478,8 @@ export default {
       due_date: 'Enddatum',
       name: 'Shot',
       production: 'Prod',
-      sequence: 'Sequenz'
+      sequence: 'Sequenz',
+      total: 'TOTAL'
     }
   },
 

@@ -87,7 +87,7 @@
             :key="columnId"
             v-for="columnId in sortedValidationColumns"
           >
-            <div v-if="isStats(entry, taskTypeMap[columnId]) && isShowSequenceStats">
+            <div v-if="isStats(entry, taskTypeMap[columnId])">
               <div style="float: left;">
                 <pie-chart
                   width="70px"
@@ -98,13 +98,65 @@
                   v-if="isStats(entry, taskTypeMap[columnId])"
                 />
               </div>
+              <div style="overflow: hidden" v-if="isShowSequenceStats">
+                <table class="table" ref="headerWrapper">
+                  <thead class="table-header">
+                    <tr>
+                      <th class="status">
+                      </th>
+                      <th class="entities">
+                        {{ $t('sequences.fields.entities') }}
+                      </th>
+                      <th class="percent">
+                        {{ $t('sequences.fields.percent') }}
+                      </th>
+                      <th class="frames">
+                        {{ $t('sequences.fields.frames') }}
+                      </th>
+                      <th class="seconds">
+                        {{ $t('sequences.fields.seconds') }}
+                      </th>
+                      <th class="minutes">
+                        {{ $t('sequences.fields.minutes') }}
+                      </th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
 
-              <div v-for="data in chartData(entry, taskTypeMap[columnId])" :key="data[0]">
-                {{ data[0] }} ({{ Math.round(data[1] / chartTotal(entry, taskTypeMap[columnId]) * 100) }}%, {{ data[2] }} fr, {{ Math.round(data[2]/entry.fps*10)/10 }} sec, {{ Math.round(data[2]/entry.fps/60*10)/10 }} min)
+              <table-info
+                :is-loading="isLoading"
+                :is-error="isError"
+              />
+
+              <div class="table-body" v-scroll="onBodyScroll" v-if="chartData(entry, taskTypeMap[columnId]).length > 0 && isShowSequenceStats">
+                <table class="table">
+                  <tbody>
+                    <tr v-for="data in chartData(entry, taskTypeMap[columnId])" :key="data[0]">
+                      <td class="status">
+                        {{ data[0] }}
+                      </td>
+                      <td class="entities">
+                        {{ data[1] }}
+                      </td>
+                      <td class="percent">
+                        {{ Math.round(data[1] / chartTotal(entry, taskTypeMap[columnId]) * 100) }}%
+                      </td>
+                      <td class="frames">
+                        {{ data[2] }}
+                      </td>
+                      <td class="seconds">
+                        {{ Math.round(data[2]/entry.fps*10)/10 }}
+                      </td>
+                      <td class="minutes">
+                        {{ Math.round(data[2]/entry.fps/60*10)/10 }}
+                      </td>
+                   </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </td>
-
           <row-actions v-if="isCurrentUserManager"
             :entry="entry"
             :edit-route="editPath(entry.id)"
@@ -135,6 +187,7 @@ import RowActions from '../widgets/RowActions'
 import ButtonLink from '../widgets/ButtonLink'
 import PageTitle from '../widgets/PageTitle'
 import TableInfo from '../widgets/TableInfo'
+import ValidationTag from '../widgets/ValidationTag'
 
 export default {
   name: 'sequence-list',
@@ -159,7 +212,8 @@ export default {
     ButtonLink,
     PageTitle,
     RowActions,
-    TableInfo
+    TableInfo,
+    ValidationTag
   },
 
   computed: {
@@ -316,6 +370,13 @@ export default {
   width: 100px;
 }
 
+.table-header {
+  display: table;
+  border-bottom-color: $white-grey;
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+}
+
 .name {
   min-width: 100px;
   width: 100px;
@@ -336,9 +397,9 @@ td.name {
 }
 
 .validation {
-  min-width: 280px;
-  max-width: 280px;
-  width: 280px;
+  width: 480px;
+  min-width: 480px;
+  max-width: 480px;
   word-wrap: break-word;
 }
 
@@ -348,5 +409,35 @@ td.name {
 
 th.actions {
   padding: 0.4em;
+}
+
+.status {
+  max-width: 60px;
+  min-width: 60px;
+}
+
+.entities {
+  max-width: 50px;
+  min-width: 50px;
+}
+
+.percent {
+  max-width: 50px;
+  min-width: 50px;
+}
+
+.frames {
+  max-width: 50px;
+  min-width: 50px;
+}
+
+.seconds {
+  max-width: 45px;
+  min-width: 45px;
+}
+
+.minutes {
+  max-width: 50px;
+  min-width: 50px;
 }
 </style>
