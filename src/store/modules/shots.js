@@ -222,7 +222,6 @@ const helpers = {
     state.displayedShotsFrames = nbFrames
     state.displayedSequencesLength = sequences.length
     state.displayedShotsDone = shotsDone
-    console.log(state.displayedShotsDone)
   }
 }
 
@@ -1164,7 +1163,7 @@ const mutations = {
     cache.shots = sortShots(cache.shots)
     state.displayedShots = cache.shots.slice(0, PAGE_SIZE)
     state.displayedShotsLength = cache.shots.length
-    helpers.setListStats(state, cache)
+    helpers.setListStats(state, cache['shots'])
     state.shotFilledColumns = getFilledColumns(state.displayedShots)
     state.shotMap[shot.id] = shot
     cache.shotIndex = buildShotIndex(cache.shots)

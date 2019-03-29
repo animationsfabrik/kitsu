@@ -23,7 +23,8 @@ export default {
       episode: 'Ep.',
       name: 'Name',
       production: 'Prod',
-      type: 'Typ'
+      type: 'Typ',
+      time_spent: 'Arbeitszeit'
     }
   },
 
@@ -551,6 +552,7 @@ export default {
     no_assignation_right: 'You are not allowed to manage assignations',
     no_comment: 'Keine Kommentare für diesen Task',
     no_preview: 'Keine Previews für diesen Task',
+    number: 'Task | Tasks',
     preview: 'Previews',
     previous: 'vorheriger Task',
     unsubscribe_notifications: 'Benachrichtigungen kündigen',
