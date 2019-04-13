@@ -39,6 +39,13 @@
           v-model="form.description"
           v-focus
         />
+        <text-field
+          ref="dueDateField"
+          :label="$t('assets.fields.due_date')"
+          v-model="form.dueDate"
+          type="date"
+          @enter="runConfirmation"
+        />
         <div
           :key="descriptor.id"
           v-for="descriptor in assetMetadataDescriptors"
@@ -166,6 +173,10 @@ export default {
       'openProductions'
     ]),
 
+    dueDate () {
+      return this.assetToEdit.data ? this.assetToEdit.data.due_date : ''
+    },
+
     episodeOptions () {
       let options = this.episodes.map((episode) => {
         return {
@@ -242,6 +253,7 @@ export default {
           name: this.assetToEdit.name,
           description: this.assetToEdit.description,
           source_id: this.assetToEdit.source_id || this.assetToEdit.episode_id,
+          dueDate: this.dueDate,
           data: {...this.assetToEdit.data} || {}
         }
       }

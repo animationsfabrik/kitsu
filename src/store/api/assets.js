@@ -32,7 +32,6 @@ export default {
     if (asset.source_id !== 'null') {
       data.source_id = asset.source_id
     }
-
     client.post(`/api/data/entities/`, data, callback)
   },
 
@@ -46,6 +45,13 @@ export default {
     }
     if (asset.source_id === 'null' || asset.source_id) {
       data.source_id = asset.source_id
+    }
+    if (
+      asset.dueDate !== undefined
+    ) {
+      Object.assign(data.data, {
+        due_date: asset.dueDate
+      })
     }
     client.put(`/api/data/entities/${asset.id}`, data, callback)
   },
