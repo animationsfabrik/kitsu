@@ -14,6 +14,7 @@ export const applyFilters = (entries, filters, taskMap) => {
   const isAssignation = { assignation: true }
   const isExclusion = { exclusion: true }
   const isDescriptor = { descriptor: true }
+  const isAttribute = { attribute: true }
 
   if (filters && filters.length > 0) {
     return entries.filter((entry) => {
@@ -50,6 +51,20 @@ export const applyFilters = (entries, filters, taskMap) => {
             isOk = false
           }
           if (filter.excluding) isOk = !isOk
+        } else if (isAttribute[filter.type]) {
+          if (
+            entry &&
+            entry[filter.attribute] &&
+            filter.value
+          ) {
+            let dataValue = entry[filter.attribute]
+            if (!(typeof dataValue === 'object')) {
+              dataValue = dataValue.toLowerCase()
+            }
+            isOk = dataValue.indexOf(filter.value.toLowerCase()) >= 0
+          } else {
+            isOk = false
+          }
         }
       })
       return isOk
@@ -102,8 +117,10 @@ export const getFilters = (
 ) => {
   let filters = getTaskTypeFilters(taskTypes, taskStatuses, query)
   const descFilters = getDescFilters(descriptors, query)
+  const attrFilters = getAttrFilters(query)
   const excludingKeywords = getExcludingKeyWords(query) || []
   filters = filters.concat(descFilters)
+  filters = filters.concat(attrFilters)
   excludingKeywords.forEach((keyword) => {
     let excludedMap = {}
     let excludedEntries = indexSearch(entryIndex, [keyword]) || []
@@ -222,6 +239,35 @@ export const getDescFilters = (descriptors, queryText) => {
           descriptor: descriptors[0],
           value,
           type: 'descriptor',
+          excluding
+        })
+      }
+    })
+  }
+  return results
+}
+
+/*
+ * Extract metadata filters (like size=big or size=small) from given
+ * query.
+ */
+export const getAttrFilters = (queryText) => {
+  if (!queryText) return []
+  const results = []
+  const attributes = ['sequence_name', 'shot_name']
+  const rgxMatches = queryText.match(EQUAL_REGEX)
+  if (rgxMatches) {
+    rgxMatches.forEach((rgxMatch) => {
+      const pattern = rgxMatch.split('=')
+      let value = pattern[1]
+      let attributeName = pattern[0]
+      const excluding = value.startsWith('-')
+      if (excluding) value = value.substring(1)
+      if (attributes.includes(attributeName)) {
+        results.push({
+          attribute: attributeName,
+          value,
+          type: 'attribute',
           excluding
         })
       }
