@@ -34,7 +34,33 @@
         :is-error="false"
       />
     </div>
-    <div class="column">
+    <div class="column preview-column">
+      <div class="preview-column-content">
+        <div class="flexrow preview-header">
+          <h2 class="subtitle flexrow-item">
+            {{ $t('tasks.preview') }}
+          </h2>
+        </div>
+        <div
+          class="preview-list mt2"
+          v-if="currentAsset.preview_file_id !== null"
+        >
+        <img
+          class="thumbnail-picture"
+          style="width: 500px; height: auto"
+          v-lazy="getPreviewOriginalPath(currentAsset.preview_file_id)"
+        />
+        </div>
+        <div v-else>
+          <em>
+            {{ $t('tasks.no_preview')}}
+          </em>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="columns" style="margin-top: 1em;">
+    <div class="column asset_infos">
       <page-subtitle :text="$t('main.info')"></page-subtitle>
       <div class="table-body">
         <table class="table" v-if="currentAsset">
@@ -59,7 +85,6 @@
         </table>
       </div>
     </div>
-  </div>
 
   <div class="asset-casted-in">
     <page-subtitle :text="$t('assets.cast_in')"></page-subtitle>
@@ -71,35 +96,58 @@
         v-if="currentAsset.castInShotsBySequence[0].length > 0"
       >
         <div class="shot-sequence">
-          {{ sequenceShots.length > 0 ? sequenceShots[0].sequence_name : '' }}
+          {{ $tc('sequences.number', 1) }} {{ sequenceShots.length > 0 ? sequenceShots[0].sequence_name : '' }}
         </div>
-        <div class="shot-list">
-          <router-link
-            class="shot-link"
-            :key="shot.shot_id"
-            :to="{
-              name: 'shot',
-              params: {
-                production_id: currentProduction.id,
-                shot_id: shot.shot_id
-              }
-            }"
-            v-for="shot in sequenceShots"
-          >
-            <entity-thumbnail
-              :entity="shot"
-              :square="true"
-              :empty-width="100"
-              :empty-height="100"
-              :with-link="false"
-            />
-            <div>
-              <span>{{ shot.name }}</span>
-              <span v-if="shot.nb_occurences > 1">
-                ({{ shot.nb_occurences }})
+        <div class="shot-list" style="max-width: 200px">
+          <div style="overflow: hidden; text-align: left">
+          <table class="table table-header" style="max-width: 200px; display: table;">
+            <thead>
+              <tr>
+                <th class="shot_name">
+                  {{ $tc('shots.number', 1) }}
+                </th>
+                <th class="shot_nb_occurences">
+                  {{ $t('main.count') }}
+                </th>
+              </tr>
+            </thead>
+          </table>
+          </div>
+          <div class="table-body" style="max-width: 400px">
+          <table class="table" style="display: table; max-width: 200px;">
+            <tbody>
+              <tr v-for="shot in sequenceShots" :key="shot.id" style="font-size: 1.3em;">
+                <td class="shot_name">
+                  <router-link
+                    class="shot-link"
+                    :key="shot.shot_id"
+                    :to="{
+                      name: 'shot',
+                      params: {
+                        production_id: currentProduction.id,
+                        shot_id: shot.shot_id
+                      }
+                    }"
+                 >
+                 <!--<entity-thumbnail
+                   :entity="shot"
+                   :square="true"
+                   :empty-width="100"
+                   :empty-height="100"
+                   :with-link="false"
+                 />-->
+                 <span>{{ shot.name }}</span>
+                 </router-link>
+                </td>
+                <td class="shot_nb_occurences" style="text-align: right;"> 
+              <span>
+                {{ shot.nb_occurences }}
               </span>
-            </div>
-          </router-link>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
         </div>
       </div>
       <div v-else>
@@ -111,6 +159,7 @@
       :is-error="castIn.isError"
       v-else
     />
+  </div>
   </div>
 
   <edit-asset-modal
@@ -259,6 +308,11 @@ export default {
       'clearSelectedTasks'
     ]),
 
+    getPreviewOriginalPath (preview_file_id) {
+      return '/api/pictures/thumbnails/preview-files/' +
+             preview_file_id + '.png'
+    },
+
     changeTab (tab) {
       this.selectedTab = tab
     },
@@ -344,6 +398,7 @@ h2.subtitle {
 }
 
 .columns {
+  width: 100%;
   margin-left: 1em;
   margin-right: 1em;
 }
@@ -359,9 +414,29 @@ h2.subtitle {
   margin-right: 1em;
 }
 
+.asset_infos {
+  max-width: 50%;
+}
+
+.shot_name {
+  min-width: 60px;
+  width: 60px;
+  max-width: 60px;
+}
+
+.shot-link {
+  font-size: 1.2em;
+}
+
+.shot_nb_occurences {
+  min-width: 30px;
+  width: 30px;
+  max-width: 30px;
+}
+
 .asset-casted-in {
-  margin-left: 1em;
-  margin-right: 1em;
+  width: 49.5%;
+  float: right;
   background: white;
   padding: 1em;
   box-shadow: 0px 0px 6px #E0E0E0;
@@ -372,16 +447,10 @@ h2.subtitle {
 }
 
 .shot-sequence {
-  text-transform: uppercase;
-  font-size: 1.2em;
-  color: $grey;
-  margin-top: 2em;
+  font-size: 1.3em;
+  color: $white;
+  margin-top: 1em;
   margin-bottom: 0.4em;
-}
-
-.shot-list {
-  display: flex;
-  flex-wrap: wrap;
 }
 
 .shot-link {

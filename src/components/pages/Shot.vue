@@ -26,16 +26,7 @@
   </div>
 
   <div class="columns">
-    <div class="column task-column">
-    <page-subtitle :text="$t('shots.tasks')" />
-    <entity-task-list
-      class="task-list"
-      :entries="currentShot ? currentShot.tasks : []"
-      :is-loading="!currentShot"
-      :is-error="false"
-    />
-    </div>
-    <div class="column">
+    <div class="column shot_infos">
       <page-subtitle :text="$t('shots.information')" />
       <div class="table-body">
         <table class="table" v-if="currentShot">
@@ -82,9 +73,42 @@
           </tbody>
       </table>
     </div>
-    </div>
   </div>
-
+    <div class="column preview-column">
+      <div class="preview-column-content">
+        <div class="flexrow preview-header">
+          <h2 class="subtitle flexrow-item">
+            {{ $t('tasks.preview') }}
+          </h2>
+        </div>
+        <div
+          class="preview-list mt2"
+          v-if="currentShot.preview_file_id !== null"
+        >
+        <img
+          class="thumbnail-picture"
+          style="width: 500px; height: auto"
+          v-lazy="getPreviewOriginalPath(currentShot.preview_file_id)"
+        />
+        </div>
+        <div v-else>
+          <em>
+            {{ $t('tasks.no_preview')}}
+          </em>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="columns" style="margin-top: 1em;">
+    <div class="column task-column">
+      <page-subtitle :text="$t('shots.tasks')" />
+      <entity-task-list
+        class="task-list"
+        :entries="currentShot ? currentShot.tasks : []"
+        :is-loading="!currentShot"
+        :is-error="false"
+      />
+    </div>
   <div class="shot-casting">
     <page-subtitle :text="$t('shots.casting')" />
     <div v-if="currentShot">
@@ -97,7 +121,46 @@
         <div class="asset-type">
           {{ typeAssets.length > 0 ? typeAssets[0].asset_type_name : '' }}
         </div>
-        <div class="asset-list">
+        <div style="overflow: hidden; text-align: left">
+        <table class="table table-header" style="max-width: 400px; display: table;">
+          <thead>
+            <tr>
+              <th class="asset_name">
+                Name
+              </th>
+              <th class="asset_nb_occurences">
+                Anzahl
+              </th>
+            </tr>
+          </thead>
+        </table>
+        </div>
+        <div class="table-body" style="max-width: 400px">
+        <table class="table" style="display: table; max-width: 400px;">
+          <tbody>
+            <tr v-for="asset in typeAssets" :key="asset.id">
+              <td class="asset_name">
+                <router-link
+                  class="asset-link"
+                  :to="{
+                    name: 'asset',
+                    params: {
+                      production_id: currentProduction.id,
+                      asset_id: asset.asset_id
+                    }
+                  }"
+                >
+                {{ asset.name }}
+                </router-link>
+              </td>
+              <td class="asset_nb_occurences">
+                {{ asset.nb_occurences }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <!--<div class="asset-list">
           <router-link
             class="asset-link"
             :key="asset.id"
@@ -124,7 +187,7 @@
               </span>
             </div>
           </router-link>
-        </div>
+        </div>-->
       </div>
       <div v-else>
         {{ $t('shots.no_casting') }}
@@ -136,6 +199,7 @@
       v-else
     >
     </table-info>
+  </div>
   </div>
 
   <edit-shot-modal
@@ -207,7 +271,7 @@ export default {
 
     this.clearSelectedTasks()
 
-    this.currentShot = this.getCurrentShot()
+    // this.currentShot = this.getCurrentShot()
 
     this.casting.isLoading = true
     this.casting.isError = false
@@ -252,6 +316,7 @@ export default {
       'currentProduction',
       'route',
       'shotMap',
+      'assetMap',
       'shotMetadataDescriptors',
       'shotsPath'
     ]),
@@ -290,6 +355,11 @@ export default {
       'loadShotCasting',
       'clearSelectedTasks'
     ]),
+
+    getPreviewOriginalPath (previewFileId) {
+      return '/api/pictures/thumbnails/preview-files/' +
+             previewFileId + '.png'
+    },
 
     changeTab (tab) {
       this.selectedTab = tab
@@ -377,6 +447,7 @@ h2.subtitle {
 }
 
 .columns {
+  width: 100%;
   margin-left: 1em;
   margin-right: 1em;
 }
@@ -388,13 +459,17 @@ h2.subtitle {
   margin: 0;
 }
 
+.shot_infos {
+  max-width: 50%;
+}
+
 .column:first-child {
   margin-right: 1em;
 }
 
 .shot-casting {
-  margin-left: 1em;
-  margin-right: 1em;
+  width: 49.5%;
+  float: right;
   background: white;
   padding: 1em;
   box-shadow: 0px 0px 6px #E0E0E0;
@@ -416,6 +491,19 @@ h2.subtitle {
   margin-bottom: 0.4em;
 }
 
+.asset_name {
+  font-size: 1.2em;
+  min-width: 100px;
+  width: 100px;
+  max-width: 100px;
+}
+
+.asset_nb_occurences {
+  min-width: 40px;
+  width: 40px;
+  max-width: 40px;
+}
+
 .asset-list {
   display: flex;
   flex-wrap: wrap;
@@ -426,7 +514,6 @@ h2.subtitle {
   margin-right: 1em;
   display: flex;
   flex-direction: column;
-  align-items: center;
   font-size: 0.8em;
 }
 
@@ -463,6 +550,10 @@ h2.subtitle {
 
 .task-list {
   width: 100%;
+}
+
+.task-column {
+  max-width: 50%
 }
 
 @media screen and (max-width: 768px) {
