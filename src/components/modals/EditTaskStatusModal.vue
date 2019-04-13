@@ -31,6 +31,12 @@
           v-focus
         />
         <combobox
+          :label="$t('task_types.fields.priority')"
+          :options="priorityOptions"
+          @enter="confirmClicked"
+          v-model="form.priority"
+        />
+        <combobox
           :label="$t('task_status.fields.is_done')"
           :options="isDoneOptions"
           v-model="form.is_done"
@@ -83,6 +89,7 @@ import { mapGetters, mapActions } from 'vuex'
 import TextField from '../widgets/TextField'
 import Combobox from '../widgets/Combobox.vue'
 import ColorField from '../widgets/ColorField'
+import { range } from '../../lib/helpers'
 
 export default {
   name: 'edit-task-status-modal',
@@ -110,8 +117,12 @@ export default {
         short_name: '',
         color: '$grey999',
         is_reviewable: 'true',
-        is_done: 'false'
+        is_done: 'false',
+        priority: ''
       },
+      priorityOptions: range(1, 100).map((v) => {
+        return { label: `${v}`, value: `${v}` }
+      }),
       isRetakeOptions: [
         {label: this.$t('main.yes'), value: 'true'},
         {label: this.$t('main.no'), value: 'false'}
@@ -170,7 +181,8 @@ export default {
           is_reviewable: String(this.taskStatusToEdit.is_reviewable),
           is_done: String(this.taskStatusToEdit.is_done),
           is_retake: String(this.taskStatusToEdit.is_retake || false),
-          is_artist_allowed: String(this.taskStatusToEdit.is_artist_allowed)
+          is_artist_allowed: String(this.taskStatusToEdit.is_artist_allowed),
+          priority: String(this.taskStatusToEdit.priority)
         }
       }
     }

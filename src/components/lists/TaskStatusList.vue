@@ -10,6 +10,7 @@
           <th class="short-name">
             {{ $t('task_status.fields.short_name') }}
           </th>
+          <th class="priority">{{ $t('task_status.fields.priority') }}</th>
           <th class="is-done">
             {{ $t('task_status.fields.is_done') }}
           </th>
@@ -38,6 +39,7 @@
             {{ entry.name }}
           </td>
           <task-status-name class="short-name" :entry="entry" />
+          <td class="priority">{{ entry.priority }}</td>
           <td class="is-done">
             {{ translateBoolean(entry.is_done) }}
           </td>
@@ -116,6 +118,10 @@ export default {
 .name {
   width: 200px;
   min-width: 200px;
+}
+.priority {
+  width: 80px;
+  min-width: 80px;
 }
 
 .short-name {
