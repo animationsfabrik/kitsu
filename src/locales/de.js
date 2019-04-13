@@ -13,7 +13,7 @@ export default {
     new_assets: 'Add assets',
     new_success: 'Asset {name} successfully created.',
     no_cast_in: 'This asset is not cast in any shot.',
-    number: 'asset | assets',
+    number: 'Asset | Assets',
     restore_text: 'Are you sure you want to restore {name} into your database?',
     restore_error: 'An error occured while restoring this asset.',
     tasks: 'Asset tasks',
@@ -24,7 +24,8 @@ export default {
       name: 'Name',
       production: 'Prod',
       type: 'Typ',
-      time_spent: 'Arbeitszeit'
+      time_spent: 'Arbeitszeit',
+      due_date: 'Enddatum'
     }
   },
 
@@ -130,6 +131,7 @@ export default {
     admin: 'Admin',
     cancel: 'Abbrechen',
     clear_selection: 'Auswahl aufheben',
+    count: 'Anzahl',
     documentation: 'Dokumentation',
     close: 'Schließen',
     confirmation: 'Bestätigen',
@@ -420,7 +422,8 @@ export default {
       is_reviewable: 'Wird abgenommen',
       is_retake: 'Hat Retakes',
       name: 'Name',
-      short_name: 'Kürzel'
+      short_name: 'Kürzel',
+      priority: 'Priority'
     }
   },
 
@@ -475,8 +478,8 @@ export default {
     new_sequences: 'Add sequences',
     new_episodes: 'Add episodes',
     no_casting: 'The shot casting is empty.',
-    number: 'shot | shots',
-    total_frames: 'frame | frames',
+    number: 'Shot | Shots',
+    total_frames: 'Frame | Frames',
     manage: 'Create shots',
     task_display: 'Edit task display',
     new_success: 'Shot {name} successfully created.',

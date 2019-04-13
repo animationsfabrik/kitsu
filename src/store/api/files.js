@@ -15,7 +15,6 @@ export default {
   },
 
   deleteWorkingFile (workingFileId) {
-    console.log('/api/data/working-files/' + workingFileId)
     client.del(`/api/data/working-files/${workingFileId}`)
   }
 }

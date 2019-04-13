@@ -819,7 +819,7 @@ div.combobox-item {
   position: fixed;
   width: 200px;
   z-index: 200;
-  left: 0;
+  left: 215px;
   top: 60px;
   background: #5e60ba;
   color: white;

@@ -5,9 +5,10 @@
         class="flexrow header-title"
       >
         <div class="title flexrow-item">
-          <router-link :to="taskEntityPath">
+          <!--<router-link :to="taskEntityPath">
             {{ task ? title : 'Loading...' }}
-          </router-link>
+          </router-link>-->
+          {{ task ? title: 'Loading...' }}
         <validation-tag
           class="flexrow-item title"
           style="margin-left: 0.1em;"
@@ -557,7 +558,6 @@ export default {
     },
 
     deleteWorkingFile (workingFileId) {
-      console.log(workingFileId)
       filesApi.deleteWorkingFile(workingFileId)
       return true
     },
