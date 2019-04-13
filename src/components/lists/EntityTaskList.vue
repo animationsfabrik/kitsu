@@ -17,6 +17,12 @@
           <th class="due_date">
             {{ $t('tasks.fields.due_date') }}
           </th>
+          <th class="real_start_date">
+            {{ $t('tasks.fields.real_start_date') }}
+          </th>
+          <th class="real_end_date">
+            {{ $t('tasks.fields.real_end_date') }}
+          </th>
         </tr>
       </thead>
     </table>
@@ -27,10 +33,10 @@
     :is-error="isError"
   />
 
-  <div class="table-body" v-scroll="onBodyScroll" v-if="entries.length > 0">
+  <div class="table-body" style="overflow: hidden" v-scroll="onBodyScroll" v-if="entries.length > 0">
     <table class="table">
       <tbody>
-        <tr v-for="task in entries" :key="task.task_type_id">
+        <tr v-for="task in entriesSorted()" :key="getTaskType(task).priority" :style="'background-color: ' + darkenColor(taskStatusMap[getTask(task).task_status_id].color) + ';'">
           <task-type-name
             class="type"
             :entry="getTaskType(task)"
@@ -63,7 +69,13 @@
             </div>
           </td>
           <td class="due_date">
-            {{ getDueDate(task) }}
+            {{ getTask(task).due_date !== 'None' ? formatDate(getTask(task).due_date) : '' }}
+          </td>
+          <td class="real_start_date">
+            {{ getTask(task).real_start_date !== 'None' ? formatDate(getTask(task).real_start_date) : ''}}
+          </td>
+          <td class="real_end_date">
+            {{ getTask(task).real_end_date !== 'None' ? formatDate(getTask(task).real_end_date) : '' }}
           </td>
        </tr>
       </tbody>
@@ -75,7 +87,9 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import _ from 'lodash'
 import moment from 'moment-timezone'
+import colors from '../../lib/colors'
 import TaskTypeName from '../cells/TaskTypeName'
 import TableInfo from '../widgets/TableInfo'
 import ValidationTag from '../widgets/ValidationTag'
@@ -113,13 +127,18 @@ export default {
       'currentProduction',
       'personMap',
       'taskMap',
-      'taskTypeMap'
+      'taskTypeMap',
+      'taskStatusMap'
     ])
   },
 
   methods: {
     ...mapActions([
     ]),
+
+    darkenColor (color) {
+      return colors.darkenColor(color)
+    },
 
     onBodyScroll (event, position) {
       this.$refs.headerWrapper.style.left = `-${position.scrollLeft}px`
@@ -150,12 +169,19 @@ export default {
 
     getDueDate (entry) {
       const task = this.getTask(entry)
-      return task ? this.formatDate(task.due_date) : []
+      return task.due_date ? this.formatDate(task.due_date) : []
     },
 
     getLastComment (entry) {
       const task = this.getTask(entry)
       return task ? task.id : []
+    },
+
+    entriesSorted () {
+      for (var i = 0; i < this.entries.length; i++) {
+        this.entries[i]['taskpriority'] = this.getTaskType(this.entries[i]).priority
+      }
+      return _.orderBy(this.entries, 'taskpriority')
     }
   }
 }
@@ -163,12 +189,11 @@ export default {
 
 <style lang="scss" scoped>
 .data-list {
-  max-width: 652px;
 }
 
 .type {
-  max-width: 250px;
-  min-width: 250px;
+  max-width: 150px;
+  min-width: 150px;
 }
 
 .status {
@@ -182,6 +207,16 @@ export default {
 }
 
 .due_date {
+  max-width: 150px;
+  min-width: 150px;
+}
+
+.real_start_date {
+  max-width: 150px;
+  min-width: 150px;
+}
+
+.real_end_date {
   max-width: 150px;
   min-width: 150px;
 }
