@@ -20,6 +20,16 @@
             <display-select-menu
               ref="displaySelectMenu"
             />
+            <p style="margin: 10px;">{{ $t('sequences.title') }}</p>
+            <combobox
+              class="level-item"
+              :options="sequenceOptions"
+              :is-top="false"
+              style="margin-bottom: 0px"
+              background="#4E5159"
+              v-model="selectedSequence"
+              @input="onSequenceSelect"
+            />
             <div class="level-item">
               <button class="button" @click="showDisplaySelectMenu($event)">Show / Hide</button>
             </div>
@@ -59,7 +69,7 @@
 
       <asset-list
         ref="asset-list"
-        :displayed-assets="displayedAssetsByType"
+        :displayed-assets="filteredDisplayedAssetsByType()"
         :is-loading="isAssetsLoading || initialLoading"
         :is-error="isAssetsLoadingError"
         :validation-columns="assetValidationColumns"
@@ -184,6 +194,7 @@ import AddMetadataModal from '../modals/AddMetadataModal'
 import ButtonHrefLink from '../widgets/ButtonHrefLink'
 import ButtonLink from '../widgets/ButtonLink'
 import CreateTasksModal from '../modals/CreateTasksModal'
+import Combobox from '../widgets/Combobox'
 import DeleteModal from '../widgets/DeleteModal'
 import EditAssetModal from '../modals/EditAssetModal'
 import ImportModal from '../modals/ImportModal'
@@ -206,6 +217,7 @@ export default {
     ButtonLink,
     ButtonHrefLink,
     CreateTasksModal,
+    Combobox,
     DeleteModal,
     EditAssetModal,
     HardDeleteModal,
@@ -221,6 +233,8 @@ export default {
 
   data () {
     return {
+      sequenceOptions: [],
+      selectedSequence: 'all',
       initialLoading: true,
       modals: {
         isAddMetadataDisplayed: false,
@@ -292,7 +306,9 @@ export default {
       'nbSelectedTasks',
       'restoreAsset',
       'selectedTasks',
-      'taskTypeMap'
+      'taskTypeMap',
+      'sequenceMap',
+      'getSequenceOptions'
     ]),
 
     newAssetPath () {
@@ -306,6 +322,8 @@ export default {
 
   created () {
     this.setLastProductionScreen('assets')
+    this.sequenceOptions = this.getSequenceOptions
+    this.sequenceOptions.push({label: this.$t('main.all'), value: 'all'})
   },
 
   mounted () {
@@ -356,12 +374,41 @@ export default {
       'deleteAllTasks',
       'deleteMetadataDescriptor',
       'loadAssets',
+      'loadAssetsFromSequence',
       'loadComment',
       'removeAssetSearch',
       'saveAssetSearch',
       'setLastProductionScreen',
       'setAssetSearch'
     ]),
+
+    onSequenceSelect (value) {
+      this.loadAssetsFromSequence({ sequenceId: value })
+    },
+
+    filteredDisplayedAssetsByType () {
+      const displayedAssets = this.displayedAssetsByType
+      const filter = this.selectedSequence
+      let filteredAssets = []
+      if (filter === 'all') {
+        return displayedAssets
+      } else {
+        filteredAssets = displayedAssets.map(obj => obj.filter(a => a['sequence_name'].includes(this.sequenceMap[filter].name)))
+      }
+      return filteredAssets
+    },
+
+    onSequenceSelect (value) {
+      if (value === 'all') {
+        this.setAssetSearch('')
+        this.resizeHeaders()
+      } else {
+        const sequence = this.sequenceMap[value].name
+        const searchQuery = 'sequence_name=' + sequence
+        this.setAssetSearch(searchQuery)
+        this.resizeHeaders()
+      }
+    },
 
     confirmNewAssetStay (form) {
       let action = 'newAsset'

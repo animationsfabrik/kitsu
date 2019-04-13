@@ -137,6 +137,50 @@ const helpers = {
     assetsByType.push(assetTypeAssets)
 
     return assetsByType
+  },
+
+  setListStats (state, assets) {
+    let timeSpent = 0
+    let dates = []
+    let assetsDone = []
+    state.displayedAssetsLength = assets.length
+    assets.forEach((asset) => {
+      timeSpent += asset.timeSpent
+      if (!(asset.data.due_date === undefined)) {
+        dates.push(new Date(asset.data.due_date))
+      }
+      asset.tasks.forEach((task) => {
+        if (typeof task === 'string') {
+          task = helpers.getTask(task)
+        }
+        var taskType = task.task_type_id
+        var taskStatus = task.task_status_id
+        if (!(taskType in assetsDone)) {
+          assetsDone[taskType] = {}
+          assetsDone[taskType]['total'] = 0
+          assetsDone[taskType]['status'] = {}
+        }
+        if (!(taskStatus in assetsDone[taskType]['status'])) {
+          assetsDone[taskType]['status'][taskStatus] = {}
+          assetsDone[taskType]['status'][taskStatus]['count'] = 0
+        }
+        assetsDone[taskType]['status'][taskStatus]['count'] += 1
+        assetsDone[taskType]['total'] += 1
+      })
+    })
+    if (dates.length > 1) {
+      var maxDate = new Date(Math.max.apply(null, dates)).toISOString().split('T')[0]
+      var minDate = new Date(Math.min.apply(null, dates)).toISOString().split('T')[0]
+      state.displayedAssetsMaxDates = minDate + '-' + maxDate
+    }
+    if (dates.length === 0) {
+      state.displayedAssetsMaxDates = ''
+    }
+    if (dates.length === 1) {
+      state.displayedAssetsMaxDates = dates[0].toISOString().split('T')[0]
+    }
+    state.displayedAssetsTimeSpent = timeSpent
+    state.displayedAssetsDone = assetsDone
   }
 }
 
@@ -153,10 +197,15 @@ const initialState = {
   filteredAssets: [],
   displayedAssets: [],
   displayedAssetsLength: 0,
+  displayedAssetsMaxDates: '',
+  displayedAssetsTimeSpent: 0,
+  displayedAssetsDone: {},
   assetFilledColumns: {},
   assetSearchText: '',
   assetSelectionGrid: {},
   assetSearchQueries: [],
+
+  isDueDateAsset: false,
 
   displayedAssetTypes: [],
   displayedAssetTypesLength: 0,
@@ -203,7 +252,12 @@ const getters = {
 
   displayedAssets: state => state.displayedAssets,
   displayedAssetsLength: state => state.displayedAssetsLength,
+  displayedAssetsTimeSpent: state => state.displayedAssetsTimeSpent,
+  displayedAssetsMaxDates: state => state.displayedAssetsMaxDates,
+  displayedAssetsDone: state => state.displayedAssetsDone,
   assetFilledColumns: state => state.assetFilledColumns,
+
+  isDueDateAsset: state => state.isDueDateAsset,
 
   displayedAssetTypes: state => state.displayedAssetTypes,
   displayedAssetTypesLength: state => state.displayedAssetTypesLength,
@@ -253,6 +307,8 @@ const actions = {
       else {
         assets.forEach((asset) => {
           asset.project_name = production.name
+          asset.sequence_name = []
+          asset.shot_name = []
           return asset
         })
         commit(
@@ -281,6 +337,32 @@ const actions = {
         commit(LOAD_ASSET_CAST_IN_END, { asset, castIn, shotMap })
       }
       if (callback) callback(err, castIn)
+    })
+  },
+
+  loadAssetsFromSequence ({ commit, dispatch, state, rootGetters }, { sequenceId }) {
+    const production = rootGetters.currentProduction
+    const userFilters = rootGetters.userFilters
+    const personMap = rootGetters.personMap
+    const episode = rootGetters.currentEpisode
+    const isTVShow = rootGetters.isTVShow
+
+    commit(LOAD_ASSETS_START)
+    assetsApi.getAssets(production, episode, (err, assets) => {
+      if (err) commit(LOAD_ASSETS_ERROR)
+      else {
+        assets.forEach((asset) => {
+          asset.project_name = production.name
+          asset.sequence_name = []
+          asset.shot_name = []
+          return asset
+        })
+        assets = assets.filter(asset => asset.sequence_id === sequenceId)
+        commit(
+          LOAD_ASSETS_END,
+          { production, assets, userFilters, personMap }
+        )
+      }
     })
   },
 
@@ -470,6 +552,9 @@ const mutations = {
     state.displayedAssets = []
     state.assetFilledColumns = {}
     state.displayedAssetsLength = 0
+    state.displayedAssetsTimeSpent = 0
+    state.displayedAssetsMaxDates = ''
+    state.displayedAssetsDone = {}
     state.assetSearchQueries = []
   },
 
@@ -480,6 +565,7 @@ const mutations = {
 
   [LOAD_ASSETS_END] (state, { production, assets, userFilters }) {
     const validationColumns = {}
+    const isDueDateAsset = false
     const assetTypeMap = {}
     assets = sortAssets(assets)
 
@@ -493,14 +579,25 @@ const mutations = {
         }
       }
       asset.production_id = production.id
-
+      assetsApi.getCastIn(asset, (err, castIn) => {
+        if (!err) {
+          castIn.forEach((cast) => {
+            if (!(asset.sequence_name.includes(cast['sequence_name']))) {
+              asset.sequence_name.push(cast['sequence_name'])
+            }
+            if (!(asset.shot_name.includes(cast['shot_name']))) {
+              asset.shot_name.push(cast['shot_name'])
+            }
+          })
+        }
+      })
       asset.tasks.forEach((task) => {
         helpers.populateTask(task, asset)
         validationColumns[task.task_type_id] = true
         timeSpent += task.duration
       })
       asset.timeSpent = timeSpent
-
+      if (!isDueDateAsset && asset.data && asset.data.due_date) state.isDueDateAsset = true
       state.assetMap[asset.id] = asset
     })
 
@@ -517,6 +614,7 @@ const mutations = {
     state.assetTypes = Object.values(assetTypeMap)
     state.displayedAssetTypes = state.assetTypes
     state.displayedAssetTypesLength = state.assetTypes.length
+    helpers.setListStats(state, assets)
     cache.assetTypeIndex = buildNameIndex(state.assetTypes)
 
     const maxX = state.displayedAssets.length
@@ -574,6 +672,11 @@ const mutations = {
       newAsset.episode_id = newAsset.source_id
       Object.assign(asset, newAsset)
       state.displayedAssets = sortAssets(state.displayedAssets)
+      if (state.assetSearchText) {
+        helpers.setListStats(state, cache.result)
+      } else {
+        helpers.setListStats(state, cache.assets)
+      }
     } else {
       newAsset.validations = {}
       newAsset.production_id = newAsset.project_id
@@ -584,6 +687,7 @@ const mutations = {
       state.displayedAssets = sortAssets(state.displayedAssets)
       state.assetFilledColumns = getFilledColumns(state.displayedAssets)
       state.displayedAssetsLength = cache.assets.length
+      helpers.setListStats(state, cache['assets'])
 
       const maxX = state.displayedAssets.length
       const maxY = state.nbValidationColumns
@@ -595,6 +699,7 @@ const mutations = {
       isError: false
     }
     cache.assetIndex = buildAssetIndex(cache.assets)
+    if (newAsset.data.due_date) state.isDueDateAsset = true
   },
 
   [DELETE_ASSET_START] (state) {
@@ -724,6 +829,7 @@ const mutations = {
     result = applyFilters(result, filters, taskMap)
 
     state.displayedAssets = result.slice(0, PAGE_SIZE)
+    helpers.setListStats(state, result)
     state.assetFilledColumns = getFilledColumns(state.displayedAssets)
     state.displayedAssetsLength = result ? result.length : 0
     state.assetSearchText = query

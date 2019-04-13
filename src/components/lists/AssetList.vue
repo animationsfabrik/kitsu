@@ -64,6 +64,9 @@
           >
             {{ $t('assets.fields.time_spent') }}
           </th>
+          <th class="duedate" v-if="isDueDateAsset && isShowInfos">
+            {{ $t('assets.fields.due_date') }}
+          </th>
           <th
             :class="{
               'validation-cell': !hiddenColumns[columnId],
@@ -148,7 +151,7 @@
         class="tbody"
         ref="body-tbody"
         :key="group[0] ? group[0].asset_type_id + group[0].canceled : ''"
-        v-for="(group, k) in displayedAssets"
+        v-for="(group, k) in this.filterEmptyAssetGroups()"
       >
         <tr class="type-header">
           <td colspan="30">
@@ -193,6 +196,9 @@
           >
             {{ formatDuration(asset.timeSpent) }}
           </td>
+          <td class="duedate" v-if="isDueDateAsset && isShowInfos">
+             {{ asset.data !== null && asset.data.due_date ? asset.data.due_date : '' }}
+          </td>
 
           <validation-cell
             :class="{
@@ -224,6 +230,64 @@
         </tr>
         <tr class="empty-line"><td colspan="30"></td></tr>
       </tbody>
+      <tfoot v-if="!isEmptyList">
+        <tr>
+          <td style="padding-left: 0.5em" class="thumbnail tablefooter">
+            {{ $t('shots.fields.total') }}
+          </td>
+          <td class="tablefooter name shot-name">
+            {{ displayedAssetsLength }}
+          </td>
+          <td class="tablefooter description" v-if="!isCurrentUserClient && isShowInfos">
+          </td>
+          <td class="metadata-descriptor" :key="descriptor.id" v-for="descriptor in assetMetadataDescriptors" v-if="isShowInfos">metadata
+          </td>
+          <td class="tablefooter time-spent" v-if="!isCurrentUserClient && isShowInfos">
+            {{ formatDuration(displayedAssetsTimeSpent) }}
+          </td>
+          <td class="tablefooter duedate" v-if="isDueDateAsset && isShowInfos">{{ displayedAssetsMaxDates }}
+          </td>
+          <td style="padding: 0px" :class="{'tablefooter': true, 'validation-cell': !hiddenColumns[columnId], 'hidden-validation-cell': hiddenColumns[columnId]}" :key="columnId" v-for="columnId in sortedValidationColumns" v-if="!isLoading && (!hiddenColumns[columnId] || isShowInfos)">
+              <!--<div style="overflow: hidden">
+                <table style="font-size: 10px; color: white;" class="table">
+                  <thead class="table-header">
+                    <tr>
+                      <th class="status">
+                      </th>
+                      <th class="percent">
+                        {{ $t('sequences.fields.percent') }}
+                      </th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>-->
+
+              <table-info
+                :is-loading="isLoading"
+                :is-error="isError"
+              />
+
+              <div class="table-body">
+                <table class="table" style="background-color: unset; font-size: 10px;">
+                  <tbody class="tablefooter" v-for="taskStatus in sortedDisplayedAssetsDone(columnId)" :key="taskStatus['task_status_id']" style="color: white;">
+                    <tr class="tablefooter">
+                      <th rowspan="2" style="padding: 0px; text-align: center;" class="status">
+                        <span :style="'text-transform: uppercase; color: white; font-weight: 400; background-color:' + taskStatusMap[taskStatus['task_status_id']].color + ';'" class="tag">
+                        {{ taskStatusMap[taskStatus['task_status_id']].short_name }}
+                        </span>
+                      </th>
+                      <td class="tablefooter percent">
+                        {{ Math.round(taskStatus['count'] / displayedAssetsDone[columnId]['total'] * 100) }}%
+                      </td>
+                   </tr>
+                  </tbody>
+                </table>
+              </div>
+          </td>
+          <td class="actions">
+          </td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 
@@ -257,6 +321,7 @@ import TableHeaderMenu from '../widgets/TableHeaderMenu'
 import TableInfo from '../widgets/TableInfo'
 import TableMetadataHeaderMenu from '../widgets/TableMetadataHeaderMenu'
 import ValidationCell from '../cells/ValidationCell'
+import _ from 'lodash'
 
 export default {
   name: 'asset-list',
@@ -312,9 +377,13 @@ export default {
       'assetSearchText',
       'assetSelectionGrid',
       'episodeMap',
+      'isDueDateAsset',
       'currentEpisode',
       'currentProduction',
       'displayedAssetsLength',
+      'displayedAssetsDone',
+      'displayedAssetsTimeSpent',
+      'displayedAssetsMaxDates',
       'nbSelectedTasks',
       'isCurrentUserAdmin',
       'isCurrentUserClient',
@@ -323,7 +392,8 @@ export default {
       'isTVShow',
       'selectedTasks',
       'taskMap',
-      'taskTypeMap'
+      'taskTypeMap',
+      'taskStatusMap'
     ]),
 
     createTasksPath () {
@@ -359,6 +429,23 @@ export default {
     ...mapActions([
       'displayMoreAssets'
     ]),
+
+    sortedDisplayedAssetsDone (columnId) {
+      const assets = this.displayedAssetsDone[columnId]['status']
+      let newassets = []
+      Object.keys(assets).forEach(key => {
+        let newobj = {}
+        newobj = assets[key]
+        newobj['task_status_id'] = key
+        newobj['task_status_index'] = this.taskStatusMap[key].priority
+        newassets.push(newobj)
+      })
+      return _.sortBy(newassets, 'task_status_index')
+    },
+
+    filterEmptyAssetGroups () {
+      return this.displayedAssets.filter(f => f.length > 0)
+    },
 
     onBodyScroll (event, position) {
       this.$refs.headerWrapper.style.left = `-${position.scrollLeft}px`
@@ -489,8 +576,10 @@ export default {
   color: $light-grey;
 }
 
-.table {
-  min-width: 1000px;
+.duedate {
+  min-width: 110px;
+  max-width: 110px;
+  width: 110px;
 }
 
 .actions {
@@ -505,6 +594,16 @@ export default {
 
 th.time-spent,
 td.time-spent {
+  min-width: 80px;
+  width: 80px;
+}
+
+.sequences {
+  min-width: 80px;
+  width: 80px;
+}
+
+.shots {
   min-width: 80px;
   width: 80px;
 }
@@ -616,5 +715,49 @@ tbody:last-child .empty-line:last-child {
 
 th {
   word-break: break-all
+}
+
+.tablefooter td {
+  background-color: unset;
+}
+
+.tablefooter tbody {
+  border-bottom: 5px solid $dark-grey;
+}
+
+.tablefooter th {
+  background-color: $dark-grey;
+  border: 0px;
+}
+
+.tablefooter {
+  background-color: $dark-grey;
+  font-weight: bold;
+  color: white;
+}
+
+.status {
+  max-width: 30px;
+  min-width: 30px;
+}
+
+.percent {
+  max-width: 20px;
+  min-width: 20px;
+}
+
+.frames_footer {
+  max-width: 30px;
+  min-width: 30px;
+}
+
+.seconds {
+  max-width: 25px;
+  min-width: 25px;
+}
+
+.minutes {
+  max-width: 20px;
+  min-width: 20px;
 }
 </style>
