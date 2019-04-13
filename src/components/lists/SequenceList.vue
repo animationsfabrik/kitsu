@@ -99,7 +99,7 @@
                 />
               </div>
               <div style="overflow: hidden" v-if="isShowSequenceStats">
-                <table class="table" ref="headerWrapper">
+                <table class="table">
                   <thead class="table-header">
                     <tr>
                       <th class="status">
@@ -129,10 +129,10 @@
                 :is-error="isError"
               />
 
-              <div class="table-body" v-scroll="onBodyScroll" v-if="chartData(entry, taskTypeMap[columnId]).length > 0 && isShowSequenceStats">
+              <div class="table-body" v-if="chartData(entry, taskTypeMap[columnId]).length > 0 && isShowSequenceStats">
                 <table class="table">
                   <tbody>
-                    <tr v-for="data in chartData(entry, taskTypeMap[columnId])" :key="data[0]">
+                    <tr v-for="data in chartData(entry, taskTypeMap[columnId])" :key="data[0]" :style="'background-color: ' + data[3] + ';'">
                       <td class="status">
                         {{ data[0] }}
                       </td>
@@ -227,6 +227,7 @@ export default {
       'isTVShow',
       'sequenceSearchText',
       'taskTypeMap',
+      'taskStatusMap',
       'isShowSequenceStats'
     ]),
 
@@ -260,13 +261,21 @@ export default {
     },
 
     chartData (entry, column) {
-      return Object.keys(this.sequenceStats[entry.id][column.id]).map((key) => {
+      let data = Object.keys(this.sequenceStats[entry.id][column.id]).map((key) => {
+        const data = this.sequenceStats[entry.id][column.id][key]
+        this.sequenceStats[entry.id][column.id][key]['color'] = data.name === 'todo' ? '#5F626A' : data.color
+        this.sequenceStats[entry.id][column.id][key]['priority'] = this.taskStatusMap[data.task_status_id].priority
+
         return [
           this.sequenceStats[entry.id][column.id][key].name,
           this.sequenceStats[entry.id][column.id][key].value,
-          this.sequenceStats[entry.id][column.id][key].frames
+          this.sequenceStats[entry.id][column.id][key].frames,
+          this.sequenceStats[entry.id][column.id][key].color,
+          this.sequenceStats[entry.id][column.id][key].priority
         ]
       })
+      data.sort((a, b) => a[4] > b[4])
+      return data
     },
 
     chartTotal (entry, column) {
