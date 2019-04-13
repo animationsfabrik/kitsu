@@ -20,13 +20,15 @@
             <display-select-menu
               ref="displaySelectMenu"
             />
+            <p style="margin: 10px;">{{ $t('sequences.title') }}</p>
             <combobox
               class="level-item"
-              :options="getSequenceOptions"
+              :options="sequenceOptions"
               :is-top="false"
-              @input="onSequenceSelect"
               style="margin-bottom: 0px"
               background="#4E5159"
+              v-model="selectedSequence"
+              @input="onSequenceSelect"
             />
             <div class="level-item">
               <button class="button" @click="showDisplaySelectMenu($event)">Show / Hide</button>
@@ -67,7 +69,7 @@
 
       <shot-list
         ref="shot-list"
-        :entries="displayedShots"
+        :entries="filteredDisplayedShots()"
         :is-loading="isShotsLoading || initialLoading"
         :is-error="isShotsLoadingError"
         :validation-columns="shotValidationColumns"
@@ -253,6 +255,8 @@ export default {
 
   data () {
     return {
+      selectedSequence: 'all',
+      sequenceOptions: [],
       initialLoading: true,
       modals: {
         isAddMetadataDisplayed: false,
@@ -349,6 +353,8 @@ export default {
 
   created () {
     this.setLastProductionScreen('shots')
+    this.sequenceOptions = this.getSequenceOptions
+    this.sequenceOptions.push({label: this.$t('main.all'), value: 'all'})
   },
 
   mounted () {
@@ -397,6 +403,7 @@ export default {
       'deleteAllTasks',
       'deleteMetadataDescriptor',
       'loadShots',
+      'loadShotsFromSequence',
       'loadComment',
       'removeShotSearch',
       'saveShotSearch',
@@ -409,10 +416,21 @@ export default {
     ]),
 
     onSequenceSelect (value) {
-      const sequence = this.sequenceMap[value].name
-      const searchQuery = sequence
-      this.setShotSearch(searchQuery)
-      this.resizeHeaders()
+      this.loadShotsFromSequence({ sequenceId: value })
+    },
+
+    filteredDisplayedShots () {
+      const displayedShots = this.displayedShots
+      const filter = this.selectedSequence
+      let filteredShots = {}
+      if (filter === 'all') {
+        return displayedShots
+      } else {
+        filteredShots = displayedShots.filter(obj => {
+          return obj['sequence_name'] === this.sequenceMap[filter].name
+        })
+      }
+      return filteredShots
     },
 
     confirmAddMetadata (form) {

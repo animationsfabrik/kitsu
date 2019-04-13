@@ -241,14 +241,70 @@
           <td class="tablefooter frames" v-if="isShowInfos">
             {{ displayedShotsFrames }}
           </td>
-          <td class="tablefooter duedate" v-if="isShowInfos">{{ displayedMaxDates }}
+          <td class="tablefooter duedate" v-if="isDueDate && isShowInfos">{{ displayedMaxDates }}
           </td>
-          <td :class="{'tablefooter': true, 'validation-cell': !hiddenColumns[columnId], 'hidden-validation-cell': hiddenColumns[columnId]}" :key="columnId" v-for="columnId in sortedValidationColumns" v-if="!isLoading && (!hiddenColumns[columnId] || isShowInfos)">
-          <ul style="list-style: none;">
-            <li v-for="(taskStatus, value) in displayedShotsDone[columnId]['status']" :key="taskStatus">
-              {{ taskStatus / displayedShotsDone[columnId]['total'] *100 }}% {{ taskStatusMap[value].short_name }}
+          <td style="padding: 0px" :class="{'tablefooter': true, 'validation-cell': !hiddenColumns[columnId], 'hidden-validation-cell': hiddenColumns[columnId]}" :key="columnId" v-for="columnId in sortedValidationColumns" v-if="!isLoading && (!hiddenColumns[columnId] || isShowInfos)">
+              <!--<div style="overflow: hidden">
+                <table style="font-size: 10px; color: white;" class="table" ref="headerWrapper">
+                  <thead class="table-header">
+                    <tr>
+                      <th class="status">
+                      </th>
+                      <th class="percent">
+                        {{ $t('sequences.fields.percent') }}
+                      </th>
+                      <th class="frames_footer">
+                        {{ $t('sequences.fields.frames') }}
+                      </th>
+                      <th class="seconds">
+                        {{ $t('sequences.fields.seconds') }}
+                      </th>
+                      <th class="minutes">
+                        {{ $t('sequences.fields.minutes') }}
+                      </th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>-->
+
+              <table-info
+                :is-loading="isLoading"
+                :is-error="isError"
+              />
+
+              <div class="table-body" v-scroll="onBodyScroll">
+                <table class="table" style="background-color: unset; font-size: 10px;">
+                  <tbody class="tablefooter" v-for="taskStatus in sortedDisplayedShotsDone(columnId)" :key="taskStatus['task_status_id']" style="color: white;">
+                    <tr class="tablefooter">
+                      <th rowspan="2" style="padding: 0px; text-align: center;" class="status">
+                        <span :style="'text-transform: uppercase; color: white; font-weight: 400; background-color:' + taskStatusMap[taskStatus['task_status_id']].color + ';'" class="tag">
+                        {{ taskStatusMap[taskStatus['task_status_id']].short_name }}
+                        </span>
+                      </th>
+                      <td class="tablefooter percent">
+                        {{ Math.round(taskStatus['count'] / displayedShotsDone[columnId]['total'] * 100) }}%
+                      </td>
+                      <td class="tablefooter frames_footer">
+                        {{ taskStatus['frames'] }}fr
+                      </td>
+                   </tr>
+                   <tr class="tablefooter">
+                      <td class="seconds tablefooter">
+                        {{ Math.round(taskStatus['frames']/currentProduction.fps*10)/10 }}sec
+                      </td>
+                      <td class="minutes tablefooter">
+                        {{ Math.round(taskStatus['frames']/currentProduction.fps/60*10)/10 }}min
+                      </td>
+                   </tr>
+                  </tbody>
+                </table>
+              </div>
+
+          <!--<ul style="list-style: none;">
+            <li v-for="(taskStatus, value) in displayedShotsDone[columnId]['status']" :key="taskStatus['count']">
+              {{ Math.round(taskStatus['count'] / displayedShotsDone[columnId]['total'] *100) }}% {{ taskStatus['frames'] }} fr. {{ taskStatusMap[value].short_name }}
             </li>
-          </ul>
+          </ul>-->
           </td>
           <td class="actions">
           </td>
@@ -257,7 +313,7 @@
     </table>
   </div>
 
-  <p
+  <!--<p
     class="has-text-centered nb-shots"
     style="margin-bottom: 10px; margin-top: 10px;"
     v-if="!isEmptyList && !isLoading"
@@ -266,7 +322,7 @@
     ({{ formatDuration(displayedShotsTimeSpent) }}
      {{ $tc('main.days_spent', displayedShotsTimeSpent) }}, {{ displayedShotsFrames }} {{ $tc('main.nb_frames', displayedShotsFrames) }})
 
-  </p>
+  </p>-->
 
 </div>
 </template>
@@ -291,6 +347,7 @@ import RowActions from '../widgets/RowActions'
 import TableHeaderMenu from '../widgets/TableHeaderMenu'
 import TableInfo from '../widgets/TableInfo'
 import ValidationCell from '../cells/ValidationCell'
+import _ from 'lodash'
 
 export default {
   name: 'shot-list',
@@ -397,6 +454,19 @@ export default {
     ...mapActions([
       'displayMoreShots'
     ]),
+
+    sortedDisplayedShotsDone (columnId) {
+      const shots = this.displayedShotsDone[columnId]['status']
+      let newshots = []
+      Object.keys(shots).forEach(key => {
+        let newobj = {}
+        newobj = shots[key]
+        newobj['task_status_id'] = key
+        newobj['task_status_index'] = this.taskStatusMap[key].priority
+        newshots.push(newobj)
+      })
+      return _.sortBy(newshots, 'task_status_index')
+    },
 
     onHeaderScroll (event, position) {
       this.$refs.tableWrapper.scrollLeft = position.scrollLeft
@@ -647,9 +717,49 @@ th {
   word-break: break-all
 }
 
+.tablefooter td {
+  background-color: unset;
+}
+
+.tablefooter tbody {
+  border-bottom: 5px solid $dark-grey;
+}
+
+.tablefooter th {
+  background-color: $dark-grey;
+  border: 0px;
+}
+
 .tablefooter {
   background-color: $dark-grey;
   font-weight: bold;
   color: white;
+  vertical-align: top;
 }
+
+.status {
+  max-width: 30px;
+  min-width: 30px;
+}
+
+.percent {
+  max-width: 20px;
+  min-width: 20px;
+}
+
+.frames_footer {
+  max-width: 30px;
+  min-width: 30px;
+}
+
+.seconds {
+  max-width: 25px;
+  min-width: 25px;
+}
+
+.minutes {
+  max-width: 20px;
+  min-width: 20px;
+}
+
 </style>

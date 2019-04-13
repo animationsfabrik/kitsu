@@ -201,9 +201,12 @@ const helpers = {
           shotsDone[taskType]['status'] = {}
         }
         if (!(taskStatus in shotsDone[taskType]['status'])) {
-          shotsDone[taskType]['status'][taskStatus] = 0
+          shotsDone[taskType]['status'][taskStatus] = {}
+          shotsDone[taskType]['status'][taskStatus]['count'] = 0
+          shotsDone[taskType]['status'][taskStatus]['frames'] = 0
         }
-        shotsDone[taskType]['status'][taskStatus] += 1
+        shotsDone[taskType]['status'][taskStatus]['count'] += 1
+        shotsDone[taskType]['status'][taskStatus]['frames'] += shot.nb_frames
         shotsDone[taskType]['total'] += 1
       })
     })
@@ -422,6 +425,39 @@ const actions = {
             )
           }
           if (callback) callback(err)
+        })
+      }
+    })
+  },
+
+  loadShotsFromSequence ({ commit, dispatch, state, rootGetters }, { sequenceId }) {
+    const production = rootGetters.currentProduction
+    const userFilters = rootGetters.userFilters
+    const taskTypeMap = rootGetters.taskTypeMap
+    const personMap = rootGetters.personMap
+    const isTVShow = rootGetters.isTVShow
+    const episode = isTVShow ? rootGetters.currentEpisode : null
+
+    commit(LOAD_SHOTS_START)
+    shotsApi.getSequences(production, episode, (err, sequences) => {
+      if (err) commit(LOAD_SHOTS_ERROR)
+      else {
+        shotsApi.getShots(production, episode, (err, shots) => {
+          if (err) commit(LOAD_SHOTS_ERROR)
+          else {
+            shots.forEach((shot) => {
+              shot.project_name = production.name
+              return shot
+            })
+            commit(LOAD_SEQUENCES_END, sequences)
+            if (!(sequenceId === 'all')) {
+              shots = shots.filter(shot => shot.sequence_id === sequenceId)
+            }
+            commit(
+              LOAD_SHOTS_END,
+              { production, shots, userFilters, taskTypeMap, personMap }
+            )
+          }
         })
       }
     })
@@ -679,7 +715,7 @@ const actions = {
 
       if (state.sequences.length === 0 ||
           state.sequences[0].production_id !== productionId) {
-        dispatch('loadShots', (err) => {
+        dispatch('loadShots', err => {
           if (err) {
             reject(err)
           } else {
