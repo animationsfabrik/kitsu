@@ -502,7 +502,7 @@ body {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .page {
@@ -611,6 +611,10 @@ a:hover {
 
 .mr1 {
   margin-right: 1em;
+}
+
+.filler {
+  flex: 1;
 }
 
 .select select:hover,

@@ -32,7 +32,7 @@
           :disabled="!isSetThumbnailAllowed"
           :title="$t('tasks.set_preview')"
           @click="setCurrentPreviewAsEntityThumbnail"
-          v-if="isCurrentUserManager"
+          v-if="isCurrentUserManager && isPreview"
         />-->
         <subscribe-button
           class="flexrow-item"
@@ -83,7 +83,7 @@
       </table>
     </div>
     <div class="task-columns" ref="task-columns">
-      <div class="task-column preview-column" v-if="taskPreviews && taskPreviews.length > 0">
+      <div class="task-column preview-column" v-if="isPreview">
         <div class="preview-column-content">
           <div class="preview-picture">
             <div
@@ -228,7 +228,7 @@
 
   </div>
   <div class="side task-info has-text-centered" v-else>
-    $t('tasks.no_task_selected')
+    {{ $t('tasks.no_task_selected') }}
   </div>
 </template>
 
@@ -293,6 +293,10 @@ export default {
     isLoading: {
       type: Boolean,
       default: true
+    },
+    isPreview: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -305,6 +309,7 @@ export default {
       currentPreviewPath: '',
       currentPreviewDlPath: '',
       isSubscribed: false,
+      otherPreviews: [],
       taskComments: [],
       taskWorkingFiles: [],
       uniqueWorkingFileNames: [],
@@ -324,8 +329,7 @@ export default {
       modals: {
         addPreview: false,
         addExtraPreview: false
-      },
-      otherPreviews: []
+      }
     }
   },
 
@@ -625,6 +629,10 @@ export default {
       })
     },
 
+    focusCommentTextarea () {
+      if (this.$refs['add-comment']) this.$refs['add-comment'].focus()
+    },
+
     getOriginalPath () {
       let previewId = this.currentPreviewId
       const extension = this.extension ? this.extension : 'png'
@@ -637,12 +645,14 @@ export default {
     },
 
     setOtherPreviews () {
-      this.otherPreviews = this.taskPreviews.filter((p) => {
-        return (
-          p.id !== this.currentPreviewId &&
-          p.extension === 'mp4'
-        )
-      })
+      if (this.taskPreviews) {
+        this.otherPreviews = this.taskPreviews.filter((p) => {
+          return (
+            p.id !== this.currentPreviewId &&
+            p.extension === 'mp4'
+          )
+        })
+      }
       return this.otherPreviews
     },
 
@@ -810,6 +820,10 @@ export default {
 
 .dark .side {
   background: #36393F;
+}
+
+.dark .task-info {
+  color: white;
 }
 
 .side {

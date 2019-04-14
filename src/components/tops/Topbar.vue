@@ -56,6 +56,18 @@
             </div>
           </div>
         </div>
+        <div
+          class="nav-item"
+          v-else-if="lastProduction && $route.path !== '/open-productions'"
+        >
+          <router-link
+            :to="lastSectionPath"
+            class="flexrow"
+          >
+            <chevron-left-icon />
+            {{ $t('main.go_productions') }}
+          </router-link>
+        </div>
       </div>-->
 
       <div class="nav-right">
@@ -122,6 +134,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { ChevronLeftIcon } from 'vue-feather-icons'
 
 import Combobox from '../widgets/Combobox'
 import PeopleAvatar from '../widgets/PeopleAvatar'
@@ -131,6 +144,7 @@ export default {
   name: 'topbar',
   components: {
     Combobox,
+    ChevronLeftIcon,
     PeopleName,
     PeopleAvatar
   },
@@ -140,6 +154,7 @@ export default {
       currentProductionId: this.$route.params.production_id,
       currentEpisodeId: this.$route.params.episode_id,
       currentProjectSection: this.getCurrentSectionFromRoute(),
+      kitsuVersion: version,
       silent: false
     }
   },
@@ -171,6 +186,8 @@ export default {
       'isUserMenuHidden',
       'isTVShow',
       'isNewNotification',
+      'lastProductionScreen',
+      'lastProductionViewed',
       'openProductions',
       'openProductionOptions',
       'productionMap',
@@ -193,16 +210,43 @@ export default {
              this.episodes.length > 0
     },
 
+    lastProduction () {
+      let production = this.productionMap[this.lastProductionViewed]
+      if (!production) {
+        production = this.currentProduction
+      }
+      return production
+    },
+
+    lastSectionPath () {
+      const production = this.lastProduction
+      const section = this.lastProductionScreen
+      let route = {
+        name: section,
+        params: {
+          production_id: production.id
+        }
+      }
+      console.log(production.name)
+      console.log(production.production_type)
+      console.log(production.first_episode_id)
+      if (production.production_type === 'tvshow') {
+        route.name = `episode-${section}`
+        route.params.episode_id = production.first_episode_id
+      }
+      return route
+    },
+
     navigationOptions () {
       const options = [
-        { label: this.$t('assets.title'), value: 'assets' },
-        { label: this.$t('shots.title'), value: 'shots' },
-        { label: this.$t('sequences.title'), value: 'sequences' },
-        { label: this.$t('episodes.title'), value: 'episodes' },
-        { label: this.$t('asset_types.title'), value: 'assetTypes' },
-        { label: this.$t('breakdown.title'), value: 'breakdown' },
-        { label: this.$t('playlists.title'), value: 'playlists' },
-        { label: this.$t('people.team'), value: 'team' }
+        {label: this.$t('assets.title'), value: 'assets'},
+        {label: this.$t('shots.title'), value: 'shots'},
+        {label: this.$t('sequences.title'), value: 'sequences'},
+        {label: this.$t('episodes.title'), value: 'episodes'},
+        {label: this.$t('asset_types.production_title'), value: 'assetTypes'},
+        {label: this.$t('breakdown.title'), value: 'breakdown'},
+        {label: this.$t('playlists.title'), value: 'playlists'},
+        {label: this.$t('people.team'), value: 'team'}
       ]
       if (!this.isTVShow) { // Remove episode Section from the list.
         options.splice(3, 1)
@@ -447,20 +491,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dark .topbar .nav,
-.dark .user-menu {
-  background-color: $dark-grey-strong;
-  color: $white-grey;
-  border-left: 1px solid #2F3136;
-  border-bottom: 1px solid #2F3136;
-}
+.dark {
+  a,
+  .user-menu a {
+    color: $white-grey;
+  }
 
-.dark .user-menu a {
-  color: $white-grey;
-}
+  #toggle-menu-button:hover {
+    color: $white-grey;
+  }
 
-.dark #toggle-menu-button:hover {
-  color: $white-grey;
+  .topbar .nav,
+  .user-menu {
+    background-color: $dark-grey-strong;
+    color: $white-grey;
+    border-left: 1px solid #2F3136;
+    border-bottom: 1px solid #2F3136;
+  }
 }
 
 .nav {
@@ -557,6 +604,10 @@ export default {
 
 strong {
   margin-right: 1em;
+}
+
+.version {
+  color: $grey;
 }
 
 @media screen and (max-width: 768px) {

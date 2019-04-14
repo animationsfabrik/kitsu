@@ -13,6 +13,7 @@
       <select
         class="select-input"
         ref="select"
+        :disabled="disabled"
         @keyup.enter="emitEnter()"
         @change="updateValue"
         :style="{'background-color': this.background}"
@@ -81,6 +82,10 @@ export default {
       default: false,
       type: Boolean
     },
+    disabled: {
+      default: false,
+      type: Boolean
+    },
     background: {
       default: '',
       type: String
@@ -110,6 +115,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.dark select:disabled {
+  background: $dark-grey;
+  border-color: $dark-grey-strong;
+}
+
 .is-top select {
   font-size: 1.2em;
   border: 0;

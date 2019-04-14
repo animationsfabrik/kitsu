@@ -1,6 +1,6 @@
 {
   "name": "kitsu",
-  "version": "0.9.34",
+  "version": "0.9.39",
   "description": "Production Management Software (user interface)",
   "author": "Frank Rousseau <frank@cg-wire.com>",
   "scripts": {
@@ -36,6 +36,7 @@
     "vue-chartkick": "0.4.0",
     "vue-color": "2.4.6",
     "vue-cookie": "1.1.4",
+    "vue-drag-drop": "1.1.4",
     "vue-feather-icons": "4.7.1",
     "vue-i18n": "8.0.0",
     "vue-infinite-scroll": "2.0.2",
