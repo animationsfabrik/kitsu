@@ -121,6 +121,15 @@
            </p>
          </div>
 
+         <div v-if="isCurrentUserManager">
+           <h2>{{ $t('productions.analysis') }}</h2>
+            <p class="menu_sublink">
+              <router-link :to='"/"'>
+              -{{ $t('shots.changes') }}
+              </router-link>
+            </p>
+         </div>
+
          <div v-if="isCurrentUserAdmin">
            <h2>{{ $t('productions.production_planning')}}</h2>
            <p class="menu_sublink">

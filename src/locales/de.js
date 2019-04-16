@@ -143,7 +143,7 @@ export default {
     delete_text: 'Are you sure you want to remove {name} from your database?',
     edit: 'Bearbeiten',
     empty_comment: 'Leerer Kommentar',
-    history: 'Verlauf',
+    history: 'Tododetails',
     info: 'Information',
     or: 'oder',
     no: 'Nein',
@@ -310,9 +310,10 @@ export default {
   },
 
   productions: {
+    analysis: 'Auswertung',
     sequence_management: 'Sequenzen',
     production_planning: 'Administration',
-    production_management: 'Produktionsmanagement',
+    production_management: 'Management',
     task_type_planning: 'Todo-planung',
     task_status_planning: 'Todostatus-planung',
     asset_type_planning: 'Asset-planung',
@@ -465,6 +466,7 @@ export default {
 
   shots: {
     casting: 'Shot casting',
+    changes: 'Szenenänderungen',
     delete_text: 'Are you sure you want to remove {name} from your database?',
     delete_error: 'An error occured while deleting this shot. There are probably data linked to it. Are you sure this shot has no task linked to it?',
     edit_success: 'Shot {name} successfully edited.',

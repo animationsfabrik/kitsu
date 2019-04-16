@@ -222,7 +222,7 @@
       </tbody>
       <tfoot v-if="!isEmptyList">
         <tr>
-          <td style="padding-left: 0.5em" class="thumbnail tablefooter">
+          <td style="padding-left: 0.5em; padding-top: 0.5em;" class="thumbnail tablefooter">
             {{ $t('shots.fields.total') }}
           </td>
           <td class="tablefooter">

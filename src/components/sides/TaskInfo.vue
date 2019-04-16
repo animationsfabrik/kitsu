@@ -1,6 +1,15 @@
 <template>
   <div class="side task-info" v-if="task">
     <div class="page-header">
+      <div>
+        <router-link
+          class="button"
+          style="float: right;"
+          :to="taskPath"
+        >
+          {{ $t('main.history') }}
+        </router-link>
+      </div></br></br>
       <div
         class="flexrow header-title"
       >
@@ -43,15 +52,6 @@
       </div>
     </div>
     <button class="button is-primary" @click="newTaskVersion(task.id, user.id)">{{ $t('tasks.new_version') }}</button>
-
-        <router-link
-          class="button"
-          style="float: right;"
-          :to="taskPath"
-        >
-          {{ $t('main.history') }}
-        </router-link>
-
     <div class="table-body" style="margin-top: 1em;">
         <table class="table">
           <tbody>
