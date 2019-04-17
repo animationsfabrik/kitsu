@@ -1,11 +1,10 @@
 <template>
   <div>
-    <div :class="{
+    <div :style="getTopbarStyle" :class="{
       'action-topbar': true,
       'hidden': isHidden
     }">
       <div class="flexrow action-bar">
-
         <div class="flexrow-item more-menu-icon" @click="toggleMenu">
           <div class="flexrow">
             <span class="flexrow-item hide-small-screen">
@@ -319,7 +318,7 @@
 
         <div
           class="more-menu-item"
-          v-if="(isCurrentViewAsset || isCurrentViewShot) && !isCurrentViewTaskType"
+          v-if="(isCurrentViewAsset || isCurrentViewShot) && !isCurrentViewTaskType && !isCurrentViewTaskDetail"
           @click="selectBar('tasks')"
         >
           {{ $t('menu.create_tasks') }}
@@ -327,7 +326,7 @@
 
         <div
           class="more-menu-item"
-          v-if="isCurrentViewAsset || isCurrentViewShot"
+          v-if="isCurrentViewAsset || isCurrentViewShot && !isCurrentViewTaskDetail"
           @click="selectBar('delete-tasks')"
         >
           {{ $t('menu.delete_tasks') }}
@@ -335,7 +334,7 @@
 
         <div
           class="more-menu-item"
-          v-if="!isCurrentViewTaskType"
+          v-if="!isCurrentViewTaskType && !isCurrentViewTaskDetail"
           @click="selectBar('custom-actions')"
         >
           {{ $t('menu.run_custom_action') }}
@@ -505,6 +504,10 @@ export default {
       return this.$route.path.indexOf('task-type') > 0
     },
 
+    isCurrentViewTaskDetail () {
+      return this.$route.path.indexOf('tasks') > 0
+    },
+
     isList () {
       return this.isCurrentViewAsset || this.isCurrentViewShot
     },
@@ -515,6 +518,14 @@ export default {
 
     currentProductionTeam () {
       return this.currentProduction ? this.currentProduction.team : []
+    },
+
+    getTopbarStyle () {
+      if (this.isCurrentViewTaskDetail) {
+        return 'left: 215px; right: 0px;'
+      } else {
+        return 'left: 215px; right: 400px;'
+      }
     },
 
     currentMenuLabel () {
@@ -762,8 +773,6 @@ export default {
   min-height: 60px;
   z-index: 210;
   position: fixed;
-  left: 215px;
-  right: 400px;
 }
 
 div.assignation {

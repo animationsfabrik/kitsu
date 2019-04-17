@@ -154,7 +154,6 @@ export default {
       currentProductionId: this.$route.params.production_id,
       currentEpisodeId: this.$route.params.episode_id,
       currentProjectSection: this.getCurrentSectionFromRoute(),
-      kitsuVersion: version,
       silent: false
     }
   },

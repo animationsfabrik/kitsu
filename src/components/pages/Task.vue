@@ -6,16 +6,17 @@
         class="flexrow header-title"
         v-if="currentTask"
       >
-        <router-link
+        <!--<router-link
           :to="entityPage"
           class="flexrow-item has-text-centered back-link"
         >
           <chevron-left-icon />
-        </router-link>
+        </router-link>-->
         <div class="title flexrow-item">
           <router-link :to="taskEntityPath">
             {{ currentTask ? title : 'Loading...'}}
           </router-link>
+        <button class="button" @click="selectTask()">Edit</button>
         </div>
         <task-type-name
           class="flexrow-item task-type"
@@ -42,19 +43,21 @@
           :is-static="true"
           v-if="currentTask"
         />
+        <span class="flexrow-item">{{ $t('tasks.fields.due_date') }}:</span>
+        <span class="flexrow-item">{{ formatDate(currentTask.due_date) }}</span>
         <span class="flexrow-item">{{ $t('tasks.fields.assignees') }}:</span>
         <span
           class="flexrow-item avatar-wrapper"
           :key="personId"
           v-for="personId in currentTask.assignees"
-        >
-          <people-avatar
+        >{{ personMap[personId].name }}
+          <!--<people-avatar
             class="flexrow-item"
             :key="personId"
             :person="personMap[personId]"
             :size="30"
             :font-size="16"
-          />
+          />-->
        </span>
       </div>
     </div>
@@ -267,6 +270,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import moment from 'moment-timezone'
 import {
   ChevronLeftIcon,
   DownloadIcon,
@@ -711,6 +715,7 @@ export default {
     ...mapActions([
       'addCommentPreview',
       'addCommentExtraPreview',
+      'addSelectedTask',
       'commentTask',
       'commentTaskWithPreview',
       'changeCommentPreview',
@@ -732,6 +737,11 @@ export default {
       'unsubscribeFromTask',
       'updatePreviewAnnotation'
     ]),
+
+    formatDate (date) {
+      if (date) return moment(date).format('YYYY-MM-DD')
+      else return ''
+    },
 
     getEntityPage () {
       if (this.currentTask) {
@@ -786,6 +796,7 @@ export default {
             }
             loadingFunction(() => {
               this.currentTask = task
+              console.log('task')
               this.loadTaskComments({
                 taskId: task.id,
                 entityId: task.entity_id,
@@ -841,6 +852,14 @@ export default {
           }
         })
       }
+    },
+
+    selectTask () {
+      let validationInfo = {}
+      validationInfo['task'] = this.currentTask
+      validationInfo['x'] = 1
+      validationInfo['y'] = 0
+      this.addSelectedTask(validationInfo)
     },
 
     isHighlighted (comment) {

@@ -227,7 +227,6 @@ export default {
       'isTVShow',
       'isNewNotification',
       'openProductions',
-      'openProductionOptions',
       'productionMap',
       'user',
       'taskTypes'
@@ -313,7 +312,6 @@ export default {
           production_id: this.currentProductionId
         }
       }
-
       if (
         this.productionMap[this.currentProductionId] &&
         (
