@@ -91,7 +91,6 @@ export default {
     ]),
 
     runConfirmation () {
-      console.log(this.token)
       this.$emit('confirm', this.token)
     },
 

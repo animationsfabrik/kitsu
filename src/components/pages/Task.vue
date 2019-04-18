@@ -796,7 +796,6 @@ export default {
             }
             loadingFunction(() => {
               this.currentTask = task
-              console.log('task')
               this.loadTaskComments({
                 taskId: task.id,
                 entityId: task.entity_id,
