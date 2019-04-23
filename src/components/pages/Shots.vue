@@ -23,7 +23,7 @@
             <p style="margin: 10px;">{{ $t('sequences.title') }}</p>
             <combobox
               class="level-item"
-              :options="sequenceOptions"
+              :options="currentSequenceOptions"
               :is-top="false"
               style="margin-bottom: 0px"
               background="#4E5159"
@@ -256,7 +256,6 @@ export default {
   data () {
     return {
       selectedSequence: 'all',
-      sequenceOptions: [],
       initialLoading: true,
       modals: {
         isAddMetadataDisplayed: false,
@@ -338,6 +337,12 @@ export default {
       'sequenceMap'
     ]),
 
+    currentSequenceOptions () {
+      let options = this.getSequenceOptions
+      options.unshift({label: this.$t('main.all'), value: 'all'})
+      return options
+    },
+
     importPath () {
       return this.getPath('import-shots')
     },
@@ -353,8 +358,6 @@ export default {
 
   created () {
     this.setLastProductionScreen('shots')
-    this.sequenceOptions = this.getSequenceOptions
-    this.sequenceOptions.push({label: this.$t('main.all'), value: 'all'})
   },
 
   mounted () {
@@ -405,6 +408,7 @@ export default {
       'loadShots',
       'loadShotsFromSequence',
       'loadComment',
+      'initSequences',
       'removeShotSearch',
       'saveShotSearch',
       'setLastProductionScreen',
@@ -417,6 +421,9 @@ export default {
 
     onSequenceSelect (value) {
       this.loadShotsFromSequence({ sequenceId: value })
+      this.setShotSearch('')
+      this.$refs['shot-search-field'].setValue('')
+      this.resizeHeaders()
     },
 
     filteredDisplayedShots () {
@@ -426,9 +433,13 @@ export default {
       if (filter === 'all') {
         return displayedShots
       } else {
-        filteredShots = displayedShots.filter(obj => {
-          return obj['sequence_name'] === this.sequenceMap[filter].name
-        })
+        if (this.sequenceMap[filter]) {
+          filteredShots = displayedShots.filter(obj => {
+            return obj['sequence_name'] === this.sequenceMap[filter].name
+          })
+        } else {
+          return displayedShots
+        }
       }
       return filteredShots
     },
@@ -766,6 +777,7 @@ export default {
     },
 
     currentProduction () {
+      this.selectedSequence = 'all'
       this.$refs['shot-search-field'].setValue('')
       this.$store.commit('SET_SHOT_LIST_SCROLL_POSITION', 0)
 

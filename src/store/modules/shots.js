@@ -1227,7 +1227,7 @@ const mutations = {
     cache.shots = sortShots(cache.shots)
     state.displayedShots = cache.shots.slice(0, PAGE_SIZE)
     state.displayedShotsLength = cache.shots.length
-    helpers.setListStats(state, cache['shots'])
+    helpers.setListStats(state, cache.shots)
     state.shotFilledColumns = getFilledColumns(state.displayedShots)
     state.shotMap[shot.id] = shot
     cache.shotIndex = buildShotIndex(cache.shots)
