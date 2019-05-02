@@ -176,7 +176,7 @@
             >
               {{ asset.name }}
             </router-link>
-          </td>{{ asset.sequence_name }}
+          </td>
           <description-cell
             class="description"
             v-if="!isCurrentUserClient && isShowInfos"

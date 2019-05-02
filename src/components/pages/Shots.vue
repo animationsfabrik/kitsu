@@ -1,4 +1,4 @@
-1<template>
+<template>
 <div class="columns fixed-page">
   <div class="column main-column">
     <div class="shots page">
@@ -23,12 +23,12 @@
             <p style="margin: 10px;">{{ $t('sequences.title') }}</p>
             <combobox
               class="level-item"
-              :options="shotsSequenceOptions"
+              :options="currentSequenceOptions"
               :is-top="false"
               style="margin-bottom: 0px"
               background="#4E5159"
-              v-model="selectedShotsSequence"
-              @input="onShotsSequenceSelect"
+              v-model="selectedSequence"
+              @input="onSequenceSelect"
             />
             <div class="level-item">
               <button class="button" @click="showDisplaySelectMenu($event)">Show / Hide</button>
@@ -255,7 +255,7 @@ export default {
 
   data () {
     return {
-      selectedShotsSequence: 'all',
+      selectedSequence: 'all',
       initialLoading: true,
       modals: {
         isAddMetadataDisplayed: false,
@@ -337,7 +337,7 @@ export default {
       'sequenceMap'
     ]),
 
-    shotsSequenceOptions () {
+    currentSequenceOptions () {
       let options = this.getSequenceOptions
       options.unshift({label: this.$t('main.all'), value: 'all'})
       return options
@@ -419,7 +419,7 @@ export default {
       'hideTasks'
     ]),
 
-    onShotsSequenceSelect (value) {
+    onSequenceSelect (value) {
       this.loadShotsFromSequence({ sequenceId: value })
       this.setShotSearch('')
       this.$refs['shot-search-field'].setValue('')
@@ -428,7 +428,7 @@ export default {
 
     filteredDisplayedShots () {
       const displayedShots = this.displayedShots
-      const filter = this.selectedShotsSequence
+      const filter = this.selectedSequence
       let filteredShots = {}
       if (filter === 'all') {
         return displayedShots
@@ -777,7 +777,7 @@ export default {
     },
 
     currentProduction () {
-      this.selectedShotsSequence = 'all'
+      this.selectedSequence = 'all'
       this.$refs['shot-search-field'].setValue('')
       this.$store.commit('SET_SHOT_LIST_SCROLL_POSITION', 0)
 

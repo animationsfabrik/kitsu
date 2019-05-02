@@ -38,8 +38,6 @@ import {
   LOAD_ASSET_END,
   LOAD_ASSET_CAST_IN_END,
 
-  ASSETS_SET_SEQUENCES,
-
   EDIT_ASSET_START,
   EDIT_ASSET_ERROR,
   EDIT_ASSET_END,
@@ -206,7 +204,6 @@ const initialState = {
   assetSearchText: '',
   assetSelectionGrid: {},
   assetSearchQueries: [],
-  assetsSequenceOptions: [],
 
   isDueDateAsset: false,
 
@@ -249,7 +246,6 @@ const getters = {
   assetSearchText: state => state.assetSearchText,
   assetSearchQueries: state => state.assetSearchQueries,
   assetSelectionGrid: state => state.assetSelectionGrid,
-  assetsSequenceOptions: state => state.assetsSequenceOptions,
 
   isAssetsLoading: state => state.isAssetsLoading,
   isAssetsLoadingError: state => state.isAssetsLoadingError,
@@ -288,11 +284,6 @@ const getters = {
 }
 
 const actions = {
-
-  getAssetsSequenceOptions ({ commit, state, rootGetters, rootState }) {
-    let assetsSequenceShots = rootState.shots.sequences
-    commit(ASSETS_SET_SEQUENCES, assetsSequenceShots)
-  },
 
   loadAssets ({ commit, state, rootGetters }, callback) {
     const production = rootGetters.currentProduction
@@ -354,6 +345,7 @@ const actions = {
     const userFilters = rootGetters.userFilters
     const personMap = rootGetters.personMap
     const episode = rootGetters.currentEpisode
+    const isTVShow = rootGetters.isTVShow
 
     commit(LOAD_ASSETS_START)
     assetsApi.getAssets(production, episode, (err, assets) => {
@@ -564,15 +556,6 @@ const mutations = {
     state.displayedAssetsMaxDates = ''
     state.displayedAssetsDone = {}
     state.assetSearchQueries = []
-  },
-
-  [ASSETS_SET_SEQUENCES] (state, sequences) {
-    state.assetsSequenceOptions = sequences.map((sequence) => {
-      return {
-        label: sequence.name,
-        value: sequence.id
-      }
-    })
   },
 
   [LOAD_ASSETS_ERROR] (state) {

@@ -3,7 +3,7 @@
   <div class="column main-column">
     <div class="assets page">
       <div class="asset-list-header page-header">
-        <div class="level header-title">{{ this.selectedAssetsSequence }}
+        <div class="level header-title">
           <div class="level-left flexcolumn">
             <div class="filters-area flexcolumn-item">
               <search-field
@@ -23,12 +23,12 @@
             <p style="margin: 10px;">{{ $t('sequences.title') }}</p>
             <combobox
               class="level-item"
-              :options="assetsSequenceOptions"
+              :options="sequenceOptions"
               :is-top="false"
               style="margin-bottom: 0px"
               background="#4E5159"
-              v-model="selectedAssetsSequence"
-              @input="onAssetsSequenceSelect"
+              v-model="selectedSequence"
+              @input="onSequenceSelect"
             />
             <div class="level-item">
               <button class="button" @click="showDisplaySelectMenu($event)">Show / Hide</button>
@@ -234,7 +234,7 @@ export default {
   data () {
     return {
       sequenceOptions: [],
-      selectedAssetsSequence: 'all',
+      selectedSequence: 'all',
       initialLoading: true,
       modals: {
         isAddMetadataDisplayed: false,
@@ -291,7 +291,6 @@ export default {
       'assetsCsvFormData',
       'assetSearchText',
       'assetSearchQueries',
-      'assetsSequenceOptions',
       'assetTypes',
       'assetValidationColumns',
       'currentEpisode',
@@ -309,16 +308,8 @@ export default {
       'selectedTasks',
       'taskTypeMap',
       'sequenceMap',
-      'shots',
-      'sequences'
+      'getSequenceOptions'
     ]),
-
-    assetsSequenceOptions () {
-      console.log(this.assetsSequenceOptions)
-      let options = this.assetsSequenceOptions
-      options.unshift({label: this.$t('main.all'), value: 'all'})
-      return options
-    },
 
     newAssetPath () {
       return this.getPath('new-asset')
@@ -331,6 +322,8 @@ export default {
 
   created () {
     this.setLastProductionScreen('assets')
+    this.sequenceOptions = this.getSequenceOptions
+    this.sequenceOptions.push({label: this.$t('main.all'), value: 'all'})
   },
 
   mounted () {
@@ -380,7 +373,6 @@ export default {
       'addMetadataDescriptor',
       'deleteAllTasks',
       'deleteMetadataDescriptor',
-      'getAssetsSequenceOptions',
       'loadAssets',
       'loadAssetsFromSequence',
       'loadComment',
@@ -390,27 +382,32 @@ export default {
       'setAssetSearch'
     ]),
 
-    onAssetsSequenceSelect (value) {
+    onSequenceSelect (value) {
       this.loadAssetsFromSequence({ sequenceId: value })
-      this.setAssetSearch('')
-      this.$refs['asset-search-field'].setValue('')
-      this.resizeHeaders()
     },
 
     filteredDisplayedAssetsByType () {
       const displayedAssets = this.displayedAssetsByType
-      const filter = this.selectedAssetsSequence
+      const filter = this.selectedSequence
       let filteredAssets = []
       if (filter === 'all') {
         return displayedAssets
       } else {
-        if (this.sequenceMap[filter]) {
-          filteredAssets = displayedAssets.map(obj => obj.filter(a => a['sequence_name'].includes(this.sequenceMap[filter].name)))
-        } else {
-          return displayedAssets
-        }
+        filteredAssets = displayedAssets.map(obj => obj.filter(a => a['sequence_name'].includes(this.sequenceMap[filter].name)))
       }
       return filteredAssets
+    },
+
+    onSequenceSelect (value) {
+      if (value === 'all') {
+        this.setAssetSearch('')
+        this.resizeHeaders()
+      } else {
+        const sequence = this.sequenceMap[value].name
+        const searchQuery = 'sequence_name=' + sequence
+        this.setAssetSearch(searchQuery)
+        this.resizeHeaders()
+      }
     },
 
     confirmNewAssetStay (form) {
@@ -761,7 +758,6 @@ export default {
     },
 
     currentProduction () {
-      this.selectedAssetsSequence = 'all'
       this.$refs['asset-search-field'].setValue('')
       this.$store.commit('SET_ASSET_LIST_SCROLL_POSITION', 0)
 
