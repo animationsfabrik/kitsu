@@ -35,7 +35,7 @@
                 v-for="task in projects[projectId][taskTypeId]"
               >
                 <td class="name">{{ task.name }}</td>
-                <td class="duration">{{ task.duration / 60 }}</td>
+                <td class="duration">{{ formatDuration(task.duration) }}</td>
               </tr>
             </tbody>
           </table>
@@ -134,7 +134,12 @@ export default {
 
     onBodyScroll (event, position) {
       this.$refs.headerWrapper.style.left = `-${position.scrollLeft}px`
+    },
+
+    formatDuration (duration) {
+      return Math.round(duration / 60)
     }
+
   },
 
   watch: {
@@ -159,6 +164,7 @@ export default {
 
 .duration {
   text-align: right;
+  white-space: nowrap;
 }
 
 .data-list {

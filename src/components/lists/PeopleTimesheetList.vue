@@ -163,11 +163,13 @@ import {
   getWeekRange,
   getDayRange
 } from '../../lib/helpers'
+import { formatListMixin } from './format_mixin'
 import PeopleNameCell from '../cells/PeopleNameCell'
 import TableInfo from '../widgets/TableInfo'
 
 export default {
   name: 'people-timesheet-list',
+  mixins: [formatListMixin],
 
   components: {
     PeopleNameCell,
@@ -281,7 +283,7 @@ export default {
       if (this.timesheet &&
           this.timesheet[index] &&
           this.timesheet[index][personId]) {
-        return this.timesheet[index][personId] / 60
+        return Math.round(this.timesheet[index][personId] / 60)
       } else {
         return '-'
       }
@@ -409,7 +411,7 @@ a:hover {
 
 .duration {
   border-radius: 0.3em;
-  padding: 0.5em;
+  padding: 0.3em;
 }
 
 .selected .duration.warning {
